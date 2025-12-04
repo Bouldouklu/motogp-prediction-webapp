@@ -32,14 +32,18 @@
   - [ ] Apply manual penalties
 
 ### Scoring Engine
-- [ ] Implement automatic score calculation
-  - [ ] Calculate sprint winner points
-  - [ ] Calculate race winner points
-  - [ ] Calculate glorious 7 points
-  - [ ] Track and apply late submission penalties
-- [ ] Create scoring API endpoints
-- [ ] Build score breakdown component
-- [ ] Add historical score tracking
+- [x] Implement automatic score calculation
+  - [x] Calculate sprint winner points
+  - [x] Calculate race winner points
+  - [x] Calculate glorious 7 points
+  - [x] Track and apply late submission penalties
+- [x] Create scoring API endpoints
+  - [x] POST /api/scores/calculate - Calculate and store scores
+  - [x] GET /api/scores/calculate - Preview score calculation
+  - [x] GET /api/scores/breakdown - Get detailed score breakdown
+  - [x] GET /api/scores/history - Get player historical scores
+- [x] Build score breakdown component
+- [x] Add historical score tracking
 
 ### Championship Predictions
 - [ ] Championship prediction form
