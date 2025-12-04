@@ -48,7 +48,10 @@ ADD COLUMN IF NOT EXISTS race_2nd_points INT DEFAULT 0,
 ADD COLUMN IF NOT EXISTS race_3rd_points INT DEFAULT 0;
 
 -- Step 6: Create a new generated column for total_points that includes all positions
--- First, drop the old generated column
+-- First, drop the leaderboard view that depends on total_points column
+DROP VIEW IF EXISTS leaderboard;
+
+-- Now drop the old generated column
 ALTER TABLE player_scores DROP COLUMN IF EXISTS total_points;
 
 -- Recreate with updated calculation including all position points
@@ -58,6 +61,66 @@ ADD COLUMN total_points INT GENERATED ALWAYS AS (
   COALESCE(race_1st_points, 0) + COALESCE(race_2nd_points, 0) + COALESCE(race_3rd_points, 0) +
   COALESCE(glorious_7_points, 0) - COALESCE(penalty_points, 0)
 ) STORED;
+
+-- Recreate the leaderboard view
+CREATE OR REPLACE VIEW leaderboard AS
+SELECT
+  p.id as player_id,
+  p.name,
+  COALESCE(SUM(ps.total_points), 0) as race_points,
+  COALESCE(
+    (
+      SELECT
+        CASE
+          WHEN cp.first_place_id = cr1.rider_id THEN 37
+          ELSE 0
+        END +
+        CASE
+          WHEN cp.second_place_id = cr2.rider_id THEN 25
+          ELSE 0
+        END +
+        CASE
+          WHEN cp.third_place_id = cr3.rider_id THEN 25
+          ELSE 0
+        END
+      FROM championship_predictions cp
+      LEFT JOIN championship_results cr1 ON cr1.position = 1 AND cr1.season_year = cp.season_year
+      LEFT JOIN championship_results cr2 ON cr2.position = 2 AND cr2.season_year = cp.season_year
+      LEFT JOIN championship_results cr3 ON cr3.position = 3 AND cr3.season_year = cp.season_year
+      WHERE cp.player_id = p.id
+      LIMIT 1
+    ),
+    0
+  ) as championship_points,
+  COALESCE(SUM(ps.total_points), 0) + COALESCE(
+    (
+      SELECT
+        CASE
+          WHEN cp.first_place_id = cr1.rider_id THEN 37
+          ELSE 0
+        END +
+        CASE
+          WHEN cp.second_place_id = cr2.rider_id THEN 25
+          ELSE 0
+        END +
+        CASE
+          WHEN cp.third_place_id = cr3.rider_id THEN 25
+          ELSE 0
+        END
+      FROM championship_predictions cp
+      LEFT JOIN championship_results cr1 ON cr1.position = 1 AND cr1.season_year = cp.season_year
+      LEFT JOIN championship_results cr2 ON cr2.position = 2 AND cr2.season_year = cp.season_year
+      LEFT JOIN championship_results cr3 ON cr3.position = 3 AND cr3.season_year = cp.season_year
+      WHERE cp.player_id = p.id
+      LIMIT 1
+    ),
+    0
+  ) as total_points
+FROM players p
+LEFT JOIN player_scores ps ON p.id = ps.player_id
+WHERE LOWER(p.name) != 'admin'
+GROUP BY p.id, p.name
+ORDER BY total_points DESC;
 
 -- Migrate existing sprint_points to sprint_1st_points
 UPDATE player_scores 
