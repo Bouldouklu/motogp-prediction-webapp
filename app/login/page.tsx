@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -47,74 +48,85 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-6">
+    <main className="flex min-h-screen flex-col items-center justify-center p-6 font-sans text-white">
       <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-2">MotoGP Betting</h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Sign in to make your predictions
+        <div className="text-center mb-12">
+          <h1 className="text-6xl font-display font-black italic tracking-tighter uppercase transform -skew-x-12 leading-none mb-4">
+             MotoGP <span className="text-motogp-red">Bet</span>
+          </h1>
+          <p className="text-gray-400 font-bold uppercase tracking-widest text-sm">
+            Rider Sign In
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium mb-2"
-            >
-              Player Name
-            </label>
-            <input
-              type="text"
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800"
-              placeholder="Enter your name"
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="passphrase"
-              className="block text-sm font-medium mb-2"
-            >
-              Passphrase
-            </label>
-            <input
-              type="password"
-              id="passphrase"
-              value={passphrase}
-              onChange={(e) => setPassphrase(e.target.value)}
-              required
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800"
-              placeholder="Enter your passphrase"
-            />
-          </div>
-
-          {error && (
-            <div className="p-3 bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-800 text-red-700 dark:text-red-400 rounded-lg text-sm">
-              {error}
+        <div className="bg-track-gray p-8 rounded-xl border-l-4 border-motogp-red border-y border-r border-gray-800 shadow-2xl relative overflow-hidden">
+            {/* Decorative bg element */}
+            <div className="absolute -right-10 -top-10 text-9xl opacity-5 font-display italic font-black pointer-events-none">
+                GO
             </div>
-          )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-lg font-medium transition-colors"
-          >
-            {loading ? 'Signing in...' : 'Sign In'}
-          </button>
-        </form>
+            <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
+            <div>
+                <label
+                htmlFor="name"
+                className="block text-xs font-bold uppercase tracking-wider text-motogp-red mb-1 font-display italic"
+                >
+                Player Name
+                </label>
+                <input
+                type="text"
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                className="w-full px-4 py-3 bg-black/20 border border-gray-700 text-white font-bold placeholder-gray-600 focus:outline-none focus:border-motogp-red focus:bg-black/40 transition-all"
+                placeholder="ENTER NAME"
+                />
+            </div>
 
-        <div className="mt-6 text-center">
-          <a
-            href="/"
-            className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-          >
-            Back to Home
-          </a>
+            <div>
+                <label
+                htmlFor="passphrase"
+                className="block text-xs font-bold uppercase tracking-wider text-motogp-red mb-1 font-display italic"
+                >
+                Passphrase
+                </label>
+                <input
+                type="password"
+                id="passphrase"
+                value={passphrase}
+                onChange={(e) => setPassphrase(e.target.value)}
+                required
+                className="w-full px-4 py-3 bg-black/20 border border-gray-700 text-white font-bold placeholder-gray-600 focus:outline-none focus:border-motogp-red focus:bg-black/40 transition-all"
+                placeholder="••••••••"
+                />
+            </div>
+
+            {error && (
+                <div className="p-3 bg-red-900/20 border-l-4 border-red-600 text-red-400 text-sm font-bold">
+                ⚠️ {error}
+                </div>
+            )}
+
+            <button
+                type="submit"
+                disabled={loading}
+                className="w-full px-4 py-4 bg-motogp-red hover:bg-white hover:text-black text-white font-black italic uppercase text-xl tracking-wider transform -skew-x-12 transition-all shadow-lg mt-4"
+            >
+                <span className="inline-block skew-x-12">
+                    {loading ? 'Starting Engine...' : 'Start Engine'}
+                </span>
+            </button>
+            </form>
+
+            <div className="mt-8 text-center pt-6 border-t border-gray-800">
+            <Link
+                href="/"
+                className="text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-white transition-colors"
+            >
+                ← Back to Pit Lane
+            </Link>
+            </div>
         </div>
       </div>
     </main>

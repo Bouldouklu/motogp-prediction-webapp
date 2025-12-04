@@ -65,182 +65,185 @@ export default async function Home() {
   const nextRace = upcomingRaces?.[0] || null
 
   return (
-    <main className="min-h-screen p-6">
-      {/* Header with Login button at top right */}
-      <div className="max-w-4xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
+    <main className="min-h-screen p-4 md:p-8 font-sans text-white">
+      {/* Hero Header */}
+      <div className="max-w-7xl mx-auto mb-12">
+        <div className="flex flex-col md:flex-row justify-between items-end border-b-4 border-motogp-red pb-6">
           <div>
-            <h1 className="text-4xl font-bold mb-2">MotoGP Betting Platform</h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              Welcome to the MotoGP prediction and betting system for friends.
+            <h1 className="text-6xl md:text-9xl font-display font-black italic tracking-tighter uppercase transform -skew-x-12 leading-none">
+              MotoGP <span className="text-motogp-red">Bet</span>
+            </h1>
+            <p className="text-xl md:text-2xl text-gray-400 mt-2 font-display font-bold tracking-widest uppercase pl-2">
+              Official Prediction Championship
             </p>
           </div>
           <Link
             href="/login"
-            className="rounded-lg bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 transition-colors font-medium"
+            className="mt-8 md:mt-0 group relative inline-flex items-center justify-center px-8 py-3 font-display font-black italic text-xl uppercase tracking-wider text-white transition-all duration-200 bg-motogp-red hover:bg-white hover:text-black -skew-x-12 shadow-[0_0_20px_rgba(239,68,68,0.5)] hover:shadow-[0_0_30px_rgba(255,255,255,0.5)]"
           >
-            Login
+            <span className="transform skew-x-12">Login / Play</span>
           </Link>
         </div>
+      </div>
 
-        {/* Next Race Section */}
-        {nextRace && (
-          <div className="mb-8 p-6 bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg text-white">
-            <h2 className="text-2xl font-bold mb-4">🏁 Next Race</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <p className="text-blue-200 text-sm">Round {nextRace.round_number}</p>
-                <h3 className="text-xl font-bold">{nextRace.name}</h3>
-                <p className="text-blue-100">{nextRace.circuit}</p>
-                <p className="text-blue-100">{nextRace.country}</p>
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        {/* Main Content Column */}
+        <div className="lg:col-span-2 space-y-8">
+          
+          {/* Next Race Card */}
+          {nextRace && (
+            <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-track-gray to-black border border-gray-800 shadow-2xl">
+              <div className="absolute top-0 right-0 p-4 opacity-10 text-9xl font-display font-black italic">
+                {nextRace.round_number}
               </div>
-              <div className="space-y-2">
-                <div>
-                  <p className="text-blue-200 text-sm">Sprint Race</p>
-                  <p className="font-medium">{new Date(nextRace.sprint_date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+              
+              <div className="relative z-10 p-1 bg-gradient-to-r from-motogp-red to-transparent">
+                 <div className="bg-black/40 backdrop-blur-sm p-6">
+                    <div className="flex items-center gap-3 mb-2">
+                        <span className="bg-motogp-red text-white text-xs font-bold uppercase px-2 py-1 -skew-x-12">Next Round</span>
+                        <span className="text-gray-400 font-mono uppercase text-sm">Round {nextRace.round_number}</span>
+                    </div>
+                    <h2 className="text-4xl md:text-5xl font-display font-black italic uppercase mb-2 leading-none">
+                        {nextRace.name}
+                    </h2>
+                    <div className="flex flex-wrap gap-4 text-gray-300 mb-6 font-medium">
+                        <div className="flex items-center gap-2">
+                            <span className="text-motogp-red">📍</span> {nextRace.circuit}, {nextRace.country}
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-gray-800 pt-6">
+                        <div className="bg-gray-900/50 p-3 rounded border-l-2 border-motogp-red">
+                            <div className="text-xs text-gray-500 uppercase font-bold">Sprint Race</div>
+                            <div className="text-lg font-display font-bold">
+                                {new Date(nextRace.sprint_date).toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' })}
+                            </div>
+                        </div>
+                        <div className="bg-gray-900/50 p-3 rounded border-l-2 border-white">
+                            <div className="text-xs text-gray-500 uppercase font-bold">Grand Prix</div>
+                            <div className="text-lg font-display font-bold">
+                                {new Date(nextRace.race_date).toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' })}
+                            </div>
+                        </div>
+                        <div className="bg-motogp-red/10 p-3 rounded border-l-2 border-motogp-red">
+                            <div className="text-xs text-motogp-red uppercase font-bold">Lockout (FP1)</div>
+                            <div className="text-lg font-display font-bold text-white">
+                                {new Date(nextRace.fp1_datetime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
+                            </div>
+                        </div>
+                    </div>
+                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* Last Race Results */}
+          {lastRace && (sprintResults.length > 0 || raceResults.length > 0) && (
+            <div>
+              <div className="flex items-center gap-4 mb-4">
+                <div className="h-8 w-2 bg-motogp-red skew-x-12"></div>
+                <h2 className="text-3xl font-display font-black italic uppercase">Last Results</h2>
+              </div>
+              
+              <div className="bg-track-gray border border-gray-800 rounded-xl overflow-hidden">
+                <div className="bg-black/50 p-4 border-b border-gray-700 flex justify-between items-center">
+                    <div>
+                        <span className="text-motogp-red font-bold uppercase text-sm tracking-wider">Round {lastRace.round_number}</span>
+                        <h3 className="text-2xl font-display font-bold italic">{lastRace.name}</h3>
+                    </div>
                 </div>
-                <div>
-                  <p className="text-blue-200 text-sm">Main Race</p>
-                  <p className="font-medium">{new Date(nextRace.race_date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                </div>
-                <div>
-                  <p className="text-blue-200 text-sm">Prediction Deadline (FP1)</p>
-                  <p className="font-medium">{new Date(nextRace.fp1_datetime).toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-800">
+                    {/* Sprint */}
+                    {sprintResults.length > 0 && (
+                    <div className="p-4">
+                        <h4 className="text-orange-500 font-display font-bold italic text-xl mb-4 uppercase flex items-center gap-2">
+                             Sprint
+                        </h4>
+                        <div className="space-y-2">
+                        {sprintResults.filter(r => r.rider).map((result, index) => (
+                            <div key={result.position} className="flex items-center justify-between p-2 bg-gray-900/50 rounded border-l-4 border-transparent hover:border-orange-500 transition-colors">
+                                <div className="flex items-center gap-3">
+                                    <span className={`font-display font-bold text-xl w-6 text-center ${index === 0 ? 'text-yellow-400' : index === 1 ? 'text-gray-400' : index === 2 ? 'text-amber-700' : 'text-gray-600'}`}>{result.position}</span>
+                                    <div>
+                                        <div className="text-xs text-gray-500 font-mono">#{result.rider!.number}</div>
+                                        <div className="font-bold uppercase">{result.rider!.name}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                        </div>
+                    </div>
+                    )}
+
+                    {/* Race */}
+                    {raceResults.length > 0 && (
+                    <div className="p-4">
+                        <h4 className="text-motogp-red font-display font-bold italic text-xl mb-4 uppercase flex items-center gap-2">
+                            GP Race
+                        </h4>
+                        <div className="space-y-2">
+                        {raceResults.filter(r => r.rider).map((result, index) => (
+                            <div key={result.position} className="flex items-center justify-between p-2 bg-gray-900/50 rounded border-l-4 border-transparent hover:border-motogp-red transition-colors">
+                                <div className="flex items-center gap-3">
+                                    <span className={`font-display font-bold text-xl w-6 text-center ${index === 0 ? 'text-yellow-400' : index === 1 ? 'text-gray-400' : index === 2 ? 'text-amber-700' : 'text-gray-600'}`}>{result.position}</span>
+                                    <div>
+                                        <div className="text-xs text-gray-500 font-mono">#{result.rider!.number}</div>
+                                        <div className="font-bold uppercase">{result.rider!.name}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                        </div>
+                    </div>
+                    )}
                 </div>
               </div>
             </div>
-          </div>
-        )}
-
-        {/* Last Race Results Section */}
-        {lastRace && (sprintResults.length > 0 || raceResults.length > 0) && (
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold mb-4">📊 Last Race Results</h2>
-            <div className="p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-              <div className="mb-4">
-                <span className="inline-block px-2 py-1 text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 rounded">
-                  Round {lastRace.round_number} - Completed
-                </span>
-                <h3 className="text-xl font-bold mt-2">{lastRace.name}</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">{lastRace.circuit}, {lastRace.country}</p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Sprint Results */}
-                {sprintResults.length > 0 && (
-                  <div>
-                    <h4 className="font-semibold mb-3 text-orange-600 dark:text-orange-400">🏃 Sprint Results</h4>
-                    <div className="space-y-2">
-                      {sprintResults.filter(r => r.rider).map((result, index) => (
-                        <div key={result.position} className="flex items-center gap-3 p-2 bg-gray-50 dark:bg-gray-900/50 rounded">
-                          <span className="text-xl">
-                            {index === 0 && '🥇'}
-                            {index === 1 && '🥈'}
-                            {index === 2 && '🥉'}
-                          </span>
-                          <span className="font-mono text-sm text-gray-500">#{result.rider!.number}</span>
-                          <span className="font-medium">{result.rider!.name}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Race Results */}
-                {raceResults.length > 0 && (
-                  <div>
-                    <h4 className="font-semibold mb-3 text-red-600 dark:text-red-400">🏁 Race Results</h4>
-                    <div className="space-y-2">
-                      {raceResults.filter(r => r.rider).map((result, index) => (
-                        <div key={result.position} className="flex items-center gap-3 p-2 bg-gray-50 dark:bg-gray-900/50 rounded">
-                          <span className="text-xl">
-                            {index === 0 && '🥇'}
-                            {index === 1 && '🥈'}
-                            {index === 2 && '🥉'}
-                          </span>
-                          <span className="font-mono text-sm text-gray-500">#{result.rider!.number}</span>
-                          <span className="font-medium">{result.rider!.name}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Leaderboard Section */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold mb-2">🏆 Leaderboard</h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">
-            Current season standings
-          </p>
+          )}
         </div>
 
-        {leaderboard && leaderboard.length > 0 ? (
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <table className="w-full">
-              <thead className="bg-gray-50 dark:bg-gray-900">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Position
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Player
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Race Points
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Championship
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Total Points
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                {leaderboard.map((entry, index) => (
-                  <tr key={entry.player_id} className="hover:bg-gray-50 dark:hover:bg-gray-900/50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        {index === 0 && (
-                          <span className="text-2xl mr-2">🥇</span>
-                        )}
-                        {index === 1 && (
-                          <span className="text-2xl mr-2">🥈</span>
-                        )}
-                        {index === 2 && (
-                          <span className="text-2xl mr-2">🥉</span>
-                        )}
-                        <span className="font-medium">{index + 1}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap font-medium">
-                      {entry.name}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right">
-                      {entry.race_points}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right">
-                      {entry.championship_points}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right font-bold text-blue-600">
-                      {entry.total_points}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div className="p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-            <p className="text-gray-600 dark:text-gray-400">
-              No standings available yet. Start making predictions!
-            </p>
-          </div>
-        )}
+        {/* Sidebar: Leaderboard */}
+        <div className="lg:col-span-1">
+            <div className="bg-track-gray rounded-xl border border-gray-800 overflow-hidden shadow-xl sticky top-4">
+                <div className="bg-motogp-red p-4">
+                    <h2 className="text-2xl font-display font-black italic uppercase text-white text-center">Championship Standings</h2>
+                </div>
+                
+                {leaderboard && leaderboard.length > 0 ? (
+                    <div className="divide-y divide-gray-800">
+                         <div className="grid grid-cols-12 gap-2 p-2 bg-black/40 text-xs uppercase text-gray-500 font-bold tracking-wider">
+                            <div className="col-span-2 text-center">Pos</div>
+                            <div className="col-span-7">Rider</div>
+                            <div className="col-span-3 text-center">Pts</div>
+                         </div>
+                         {leaderboard.map((entry, index) => (
+                            <div key={entry.player_id} className="grid grid-cols-12 gap-2 p-3 items-center hover:bg-gray-800 transition-colors">
+                                <div className="col-span-2 text-center">
+                                    <span className={`font-display font-bold text-xl ${index === 0 ? 'text-yellow-400' : 'text-white'}`}>
+                                        {index + 1}
+                                    </span>
+                                </div>
+                                <div className="col-span-7">
+                                    <div className="font-bold uppercase truncate text-sm md:text-base">{entry.name}</div>
+                                    <div className="text-xs text-gray-500">Race: {entry.race_points} | Champ: {entry.championship_points}</div>
+                                </div>
+                                <div className="col-span-3 text-center">
+                                    <div className="font-display font-black text-xl text-motogp-red">{entry.total_points}</div>
+                                </div>
+                            </div>
+                         ))}
+                    </div>
+                ) : (
+                    <div className="p-8 text-center text-gray-500">
+                        <p>No standings yet.</p>
+                        <p className="text-sm mt-2">Season starts soon!</p>
+                    </div>
+                )}
+            </div>
+        </div>
+
       </div>
     </main>
   );

@@ -92,11 +92,11 @@ export default function PredictionForm({
 
   if (isPastDeadline) {
     return (
-      <div className="p-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-        <h3 className="text-lg font-semibold text-red-800 dark:text-red-400 mb-2">
+      <div className="p-6 bg-red-900/20 border border-red-800 rounded-lg">
+        <h3 className="text-lg font-display italic font-bold text-red-500 mb-2 uppercase">
           Deadline Passed
         </h3>
-        <p className="text-red-700 dark:text-red-300">
+        <p className="text-gray-400">
           The prediction deadline for this race has passed. You can no longer
           submit or modify predictions.
         </p>
@@ -105,63 +105,92 @@ export default function PredictionForm({
   }
 
   return (
-    <div>
-      <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-        <p className="text-sm font-medium text-blue-800 dark:text-blue-400">
-          Deadline: {deadline.toLocaleString()}
-        </p>
-        <p className="text-sm text-blue-700 dark:text-blue-300">
-          {formatTimeRemaining(timeUntilDeadline)} remaining
-        </p>
+    <div className="bg-black/20 p-6 rounded-xl border border-gray-800">
+      <div className="mb-8 p-4 bg-track-gray border-l-4 border-motogp-red rounded flex justify-between items-center">
+        <div>
+             <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+               Time Remaining
+             </p>
+             <p className="text-2xl font-mono font-bold text-white">
+               {formatTimeRemaining(timeUntilDeadline)}
+             </p>
+        </div>
+        <div className="text-right">
+            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Deadline</p>
+            <p className="text-sm font-bold text-motogp-red">{deadline.toLocaleString()}</p>
+        </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <RiderSelect
-          label="Sprint Winner"
-          riders={riders}
-          value={sprintWinnerId}
-          onChange={setSprintWinnerId}
-          excludeIds={[raceWinnerId, glorious7Id]}
-        />
+      <form onSubmit={handleSubmit} className="space-y-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="md:col-span-2">
+                 <div className="flex items-center gap-2 mb-4">
+                    <span className="w-8 h-8 flex items-center justify-center bg-orange-500 text-black font-black italic rounded skew-x-12">S</span>
+                    <h3 className="text-xl font-display italic font-bold uppercase">Sprint Race</h3>
+                 </div>
+                 <RiderSelect
+                    label="Winner Prediction"
+                    riders={riders}
+                    value={sprintWinnerId}
+                    onChange={setSprintWinnerId}
+                    excludeIds={[raceWinnerId, glorious7Id]}
+                  />
+            </div>
 
-        <RiderSelect
-          label="Race Winner"
-          riders={riders}
-          value={raceWinnerId}
-          onChange={setRaceWinnerId}
-          excludeIds={[sprintWinnerId, glorious7Id]}
-        />
+            <div className="md:col-span-2 border-t border-gray-800 pt-6">
+                 <div className="flex items-center gap-2 mb-4">
+                    <span className="w-8 h-8 flex items-center justify-center bg-motogp-red text-white font-black italic rounded skew-x-12">R</span>
+                    <h3 className="text-xl font-display italic font-bold uppercase">Grand Prix Race</h3>
+                 </div>
+                 <RiderSelect
+                  label="Winner Prediction"
+                  riders={riders}
+                  value={raceWinnerId}
+                  onChange={setRaceWinnerId}
+                  excludeIds={[sprintWinnerId, glorious7Id]}
+                />
+            </div>
 
-        <RiderSelect
-          label="Glorious 7 (7th Place)"
-          riders={riders}
-          value={glorious7Id}
-          onChange={setGlorious7Id}
-          excludeIds={[sprintWinnerId, raceWinnerId]}
-        />
+            <div className="md:col-span-2 border-t border-gray-800 pt-6">
+                 <div className="flex items-center gap-2 mb-4">
+                    <span className="w-8 h-8 flex items-center justify-center bg-blue-600 text-white font-black italic rounded skew-x-12">7</span>
+                    <h3 className="text-xl font-display italic font-bold uppercase">Glorious 7th</h3>
+                 </div>
+                 <p className="text-sm text-gray-500 mb-4 italic">Predict who will finish exactly in 7th place.</p>
+                 <RiderSelect
+                  label="7th Place Prediction"
+                  riders={riders}
+                  value={glorious7Id}
+                  onChange={setGlorious7Id}
+                  excludeIds={[sprintWinnerId, raceWinnerId]}
+                />
+            </div>
+        </div>
 
         {error && (
-          <div className="p-3 bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-800 text-red-700 dark:text-red-400 rounded-lg text-sm">
-            {error}
+          <div className="p-4 bg-red-900/20 border border-red-800 text-red-400 rounded font-bold">
+            ⚠️ {error}
           </div>
         )}
 
         {success && (
-          <div className="p-3 bg-green-100 dark:bg-green-900/30 border border-green-400 dark:border-green-800 text-green-700 dark:text-green-400 rounded-lg text-sm">
-            Prediction saved successfully! Redirecting...
+          <div className="p-4 bg-green-900/20 border border-green-800 text-green-400 rounded font-bold">
+            ✅ Prediction saved successfully! Redirecting...
           </div>
         )}
 
         <button
           type="submit"
           disabled={loading || success}
-          className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-lg font-medium transition-colors"
+          className="w-full px-4 py-4 bg-motogp-red hover:bg-red-600 disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-black italic uppercase text-xl tracking-wider transform -skew-x-12 transition-all shadow-lg hover:shadow-red-600/40 mt-8"
         >
+          <span className="inline-block skew-x-12">
           {loading
             ? 'Saving...'
             : existingPrediction
             ? 'Update Prediction'
             : 'Submit Prediction'}
+          </span>
         </button>
       </form>
     </div>
@@ -182,5 +211,5 @@ function formatTimeRemaining(milliseconds: number): string {
   if (hours > 0) parts.push(`${hours}h`)
   if (minutes > 0) parts.push(`${minutes}m`)
 
-  return parts.join(' ') || 'Less than 1m'
+  return parts.join(' : ') || '< 1m'
 }

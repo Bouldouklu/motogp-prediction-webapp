@@ -1,13 +1,5 @@
 # Development Roadmap
 
-## ✅ Phase 2: Core Features (COMPLETED)
-
-### Championship Predictions
-- [x] Championship prediction form
-- [x] Lock predictions before first race
-- [x] End-of-season championship scoring (via admin panel)
-- [x] Display championship predictions on dashboard
-
 ## 📈 Phase 3: Polish & UX (FUTURE)
 
 ### User Experience
@@ -15,9 +7,9 @@
 - [ ] Improve error messages
 - [ ] Add success animations
 - [ ] Countdown timer component (live updates)
-- [ ] Race card component with better styling
+- [x] Race card component with better styling
 - [ ] Mobile-responsive improvements
-- [ ] Dark mode refinements
+- [x] Dark mode refinements
 
 ### Data Visualization
 - [ ] Player performance charts
