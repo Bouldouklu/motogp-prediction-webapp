@@ -25,11 +25,6 @@
 - [ ] Head-to-head comparisons
 - [ ] Prediction accuracy statistics
 
-### Notifications
-- [ ] Email reminders for upcoming deadlines
-- [ ] Browser push notifications
-- [ ] Webhook for Discord/Slack integration
-
 ## 🚀 Phase 4: Advanced Features (NICE TO HAVE)
 
 ### Results Automation

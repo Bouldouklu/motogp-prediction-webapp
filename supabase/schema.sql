@@ -193,6 +193,11 @@ CREATE POLICY "Public read access to championship results" ON championship_resul
 CREATE POLICY "Public read access to player scores" ON player_scores FOR SELECT USING (true);
 CREATE POLICY "Public read access to leaderboard" ON player_scores FOR SELECT USING (true);
 
+-- Admin write access for race results (allows saving race/sprint results)
+CREATE POLICY "Allow insert race results" ON race_results FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow update race results" ON race_results FOR UPDATE USING (true);
+CREATE POLICY "Allow delete race results" ON race_results FOR DELETE USING (true);
+
 -- Players can read their own data
 CREATE POLICY "Players can read their own predictions" ON race_predictions FOR SELECT USING (true);
 CREATE POLICY "Players can read their own championship predictions" ON championship_predictions FOR SELECT USING (true);
