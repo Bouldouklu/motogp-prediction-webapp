@@ -182,7 +182,8 @@ ALTER TABLE championship_results ENABLE ROW LEVEL SECURITY;
 ALTER TABLE player_scores ENABLE ROW LEVEL SECURITY;
 ALTER TABLE penalties ENABLE ROW LEVEL SECURITY;
 
--- Public read access to riders and races
+-- Public read access for authentication and public data
+CREATE POLICY "Public read access to players for auth" ON players FOR SELECT USING (true);
 CREATE POLICY "Public read access to riders" ON riders FOR SELECT USING (true);
 CREATE POLICY "Public read access to races" ON races FOR SELECT USING (true);
 CREATE POLICY "Public read access to race results" ON race_results FOR SELECT USING (true);
