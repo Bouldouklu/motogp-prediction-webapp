@@ -5,7 +5,7 @@ And this make no sense that we can't select the same rider for sprint as for the
 Please adapt accordingly the code and what I have to change on Supabase for this to be taken into account.  
 
 ## Changes of home page:
-I want the leaderboard to be on the home page and not on a separate page. At the top right of this home page I want to see the login button.  
+I want to see the last race results on the home page.   
 
 ## Bug or normal?:
 I tried entering race results for Thailand (way before the actual race, I know) and got this error: Failed to save sprint results. Is it normal as the race did not happen yet or is it a internal bug?  

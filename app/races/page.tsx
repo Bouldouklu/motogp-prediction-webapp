@@ -1,8 +1,10 @@
 import { createClient } from '@/lib/supabase/server'
+import { getCurrentUser } from '@/lib/auth'
 import Link from 'next/link'
 
 export default async function RacesPage() {
   const supabase = await createClient()
+  const user = await getCurrentUser()
 
   // Fetch all races grouped by status
   const { data: upcomingRaces } = await supabase
@@ -16,6 +18,19 @@ export default async function RacesPage() {
     .select('*')
     .eq('status', 'completed')
     .order('round_number', { ascending: false })
+
+  // Fetch user's predictions for upcoming races to check which ones are already done
+  let predictedRaceIds = new Set<string>()
+  if (user) {
+    const upcomingRaceIds = upcomingRaces?.map(race => race.id) || []
+    const { data: userPredictions } = await supabase
+      .from('race_predictions')
+      .select('race_id')
+      .eq('player_id', user.id)
+      .in('race_id', upcomingRaceIds)
+
+    predictedRaceIds = new Set(userPredictions?.map(p => p.race_id) || [])
+  }
 
   return (
     <main className="min-h-screen p-6">
@@ -66,12 +81,21 @@ export default async function RacesPage() {
                     <span className="font-medium">Deadline:</span>{' '}
                     {new Date(race.fp1_datetime).toLocaleString()}
                   </p>
-                  <Link
-                    href={`/predict/${race.id}`}
-                    className="inline-block px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
-                  >
-                    Make Prediction
-                  </Link>
+                  {predictedRaceIds.has(race.id) ? (
+                    <Link
+                      href={`/predict/${race.id}`}
+                      className="inline-block px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
+                    >
+                      ✓ Edit Prediction
+                    </Link>
+                  ) : (
+                    <Link
+                      href={`/predict/${race.id}`}
+                      className="inline-block px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                    >
+                      Make Prediction
+                    </Link>
+                  )}
                 </div>
               ))}
             </div>

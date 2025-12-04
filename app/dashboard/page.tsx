@@ -27,6 +27,17 @@ export default async function DashboardPage() {
     .select('*', { count: 'exact', head: true })
     .eq('player_id', user.id)
 
+  // Fetch user's predictions for upcoming races to check which ones are already done
+  const upcomingRaceIds = upcomingRaces?.map(race => race.id) || []
+  const { data: userPredictions } = await supabase
+    .from('race_predictions')
+    .select('race_id')
+    .eq('player_id', user.id)
+    .in('race_id', upcomingRaceIds)
+
+  // Create a Set of race IDs that have predictions for quick lookup
+  const predictedRaceIds = new Set(userPredictions?.map(p => p.race_id) || [])
+
   // Fetch championship prediction status with rider details
   const { data: championshipPrediction } = await supabase
     .from('championship_predictions')
@@ -226,12 +237,21 @@ export default async function DashboardPage() {
                         {new Date(race.fp1_datetime).toLocaleString()}
                       </p>
                     </div>
-                    <Link
-                      href={`/predict/${race.id}`}
-                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
-                    >
-                      Make Prediction
-                    </Link>
+                    {predictedRaceIds.has(race.id) ? (
+                      <Link
+                        href={`/predict/${race.id}`}
+                        className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
+                      >
+                        ✓ Edit Prediction
+                      </Link>
+                    ) : (
+                      <Link
+                        href={`/predict/${race.id}`}
+                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                      >
+                        Make Prediction
+                      </Link>
+                    )}
                   </div>
                 </div>
               ))}
