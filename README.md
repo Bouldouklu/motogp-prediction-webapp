@@ -10,7 +10,7 @@ A full-stack web application for MotoGP prediction and betting among friends. Pl
 - **Real-time Leaderboard**: Live standings with race points and championship points
 - **Deadline Enforcement**: Predictions lock at FP1 start time
 - **Late Submission Penalties**: Progressive penalties for late predictions
-- **2025 Race Calendar**: Full 22-race season with automatic deadline tracking
+- **2026 Race Calendar**: Full 22-race season with automatic deadline tracking
 
 ## Tech Stack
 
@@ -41,8 +41,8 @@ Follow the detailed instructions in [`supabase/README.md`](supabase/README.md):
 
 1. Create a Supabase project
 2. Run `schema.sql` to create tables
-3. Run `seed-riders.sql` to add 2025 riders
-4. Run `seed-races.sql` to add 2025 race calendar
+3. Run `seed-riders.sql` to add 2026 riders
+4. Run `seed-races.sql` to add 2026 race calendar
 
 ### 3. Configure Environment Variables
 
@@ -71,15 +71,8 @@ Run this SQL in Supabase SQL Editor:
 
 ```sql
 INSERT INTO players (name, passphrase) VALUES
-  ('Gil', 'gil-speed-2025'),
-  ('Maxime', 'maxime-speed-2025'),
-  ('Ben', 'ben-speed-2025'),
-  ('Marcello', 'marcello-speed-2025'),
-  ('Willi', 'willi-speed-2025'),
-  ('Danny', 'danny-speed-2025'),
-  ('Reno', 'reno-speed-2025'),
-  ('Stefan', 'stefan-speed-2025'),
-  ('Jacques', 'jacques-speed-2025')
+  ('test', 'test-speed-2026'),
+  ('test2', 'test2-speed-2026'),
 ON CONFLICT (name) DO NOTHING;
 ```
 
@@ -184,7 +177,7 @@ This is a private project for friends. If you want to use this for your own grou
 
 1. Fork the repository
 2. Update player names in seed data
-3. Adjust the 2025 race calendar if needed
+3. Adjust the 2026 race calendar if needed
 4. Deploy to your own Vercel + Supabase instance
 
 ## License

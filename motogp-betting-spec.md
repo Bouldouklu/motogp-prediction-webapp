@@ -26,8 +26,8 @@ A web application to replace an Excel-based MotoGP betting system for a group of
 Gil, Maxime, Ben, Marcello, Willi, Danny, Reno, Stefan, Jacques, (potentially more to add in future)
 
 ### Season Structure
-- 22 races (Thailand → Valencia) (to check with MotoGP 2026 planned races)
-- Each race weekend: Sprint Race + Main Race (to check with MotoGP 2026 planned races)
+- 22 races (Thailand → Valencia) (confirmed for MotoGP 2026)
+- Each race weekend: Sprint Race + Main Race (confirmed for MotoGP 2026)
  
 ### Predictions Per Race
 1. **Sprint Winner** - Who wins Saturday sprint
@@ -449,7 +449,7 @@ MOTOGP_SCRAPE_URL=https://www.motogp.com/en/Results+Statistics
 - [ ] Set up Supabase project and schema
 - [ ] Create basic authentication flow
 - [ ] Build rider selection component
-- [ ] Seed database with riders and 2025 race calendar
+- [ ] Seed database with riders and 2026 race calendar
 
 ### Phase 2: Core Features (Week 2)
 - [ ] Prediction form and submission
@@ -474,64 +474,61 @@ MOTOGP_SCRAPE_URL=https://www.motogp.com/en/Results+Statistics
 
 ---
 
-## 2025 Race Calendar (Seed Data)
+## 2026 Race Calendar (Seed Data)
 
 | Round | Race | Circuit | Date |
 |-------|------|---------|------|
-| 1 | Thailand | Chang International Circuit | Mar 2 |
-| 2 | Argentina | Termas de Río Hondo | Mar 16 |
-| 3 | USA | Circuit of the Americas | Mar 30 |
-| 4 | Qatar | Lusail | Apr 13 |
-| 5 | Spain | Jerez | Apr 27 |
-| 6 | France | Le Mans | May 11 |
-| 7 | UK | Silverstone | May 25 |
-| 8 | Aragon | MotorLand | Jun 8 |
-| 9 | Italy | Mugello | Jun 22 |
-| 10 | Netherlands | Assen | Jun 29 |
-| 11 | Germany | Sachsenring | Jul 13 |
-| 12 | Czechia | Brno | Jul 20 |
-| 13 | Austria | Red Bull Ring | Aug 17 |
-| 14 | Hungary | Balaton Park | Aug 24 |
-| 15 | Catalonia | Barcelona | Sep 7 |
-| 16 | San Marino | Misano | Sep 14 |
-| 17 | Japan | Motegi | Sep 28 |
-| 18 | Indonesia | Mandalika | Oct 5 |
-| 19 | Australia | Phillip Island | Oct 19 |
-| 20 | Malaysia | Sepang | Oct 26 |
-| 21 | Portugal | Algarve | Nov 9 |
-| 22 | Valencia | Ricardo Tormo | Nov 16 |
+| 1 | Thailand | Chang International Circuit | Mar 1 |
+| 2 | Brazil | Autódromo Internacional Ayrton Senna | Mar 22 |
+| 3 | USA | Circuit of the Americas | Mar 29 |
+| 4 | Qatar | Lusail International Circuit | Apr 12 |
+| 5 | Spain | Circuito de Jerez – Ángel Nieto | Apr 26 |
+| 6 | France | Bugatti Circuit | May 10 |
+| 7 | Catalonia | Circuit de Barcelona-Catalunya | May 17 |
+| 8 | Italy | Autodromo Internazionale del Mugello | May 31 |
+| 9 | Hungary | Balaton Park Circuit | Jun 7 |
+| 10 | Czech Republic | Brno Circuit | Jun 21 |
+| 11 | Netherlands | TT Circuit Assen | Jun 28 |
+| 12 | Germany | Sachsenring | Jul 12 |
+| 13 | UK | Silverstone Circuit | Aug 9 |
+| 14 | Aragon | MotorLand Aragón | Aug 30 |
+| 15 | San Marino | Misano World Circuit Marco Simoncelli | Sep 13 |
+| 16 | Austria | Red Bull Ring | Sep 20 |
+| 17 | Japan | Mobility Resort Motegi | Oct 4 |
+| 18 | Indonesia | Pertamina Mandalika International Street Circuit | Oct 11 |
+| 19 | Australia | Phillip Island Grand Prix Circuit | Oct 25 |
+| 20 | Malaysia | Petronas Sepang International Circuit | Nov 1 |
+| 21 | Portugal | Algarve International Circuit | Nov 15 |
+| 22 | Valencia | Circuit Ricardo Tormo | Nov 22 |
 
 ---
 
-## Riders (2025 Grid - Seed Data)
+## Riders (2026 Grid - Seed Data)
 
 | # | Rider | Team |
 |---|-------|------|
-| 1 | Jorge Martin | Aprilia |
 | 5 | Johann Zarco | Honda LCR |
-| 10 | Luca Marini | Honda Repsol |
+| 7 | Toprak Razgatlıoğlu | Yamaha Pramac |
+| 10 | Luca Marini | Honda HRC Castrol |
+| 11 | Diogo Moreira | Honda LCR |
 | 12 | Maverick Viñales | KTM Tech3 |
 | 20 | Fabio Quartararo | Yamaha |
 | 21 | Franco Morbidelli | Ducati VR46 |
 | 23 | Enea Bastianini | KTM Tech3 |
-| 25 | Raul Fernandez | Aprilia Trackhouse |
-| 30 | Takaaki Nakagami | Honda LCR |
-| 32 | Lorenzo Savadori | Aprilia (test) |
+| 25 | Raúl Fernández | Aprilia Trackhouse |
 | 33 | Brad Binder | KTM |
-| 35 | Somkiat Chantra | Honda LCR |
-| 36 | Joan Mir | Honda Repsol |
+| 36 | Joan Mir | Honda HRC Castrol |
 | 37 | Pedro Acosta | KTM |
-| 42 | Alex Rins | Yamaha |
+| 42 | Álex Rins | Yamaha |
 | 43 | Jack Miller | Yamaha Pramac |
 | 49 | Fabio Di Giannantonio | Ducati VR46 |
-| 51 | Michele Pirro | Ducati (wild card) |
-| 54 | Fermin Aldeguer | Ducati Gresini |
+| 54 | Fermín Aldeguer | Ducati Gresini |
 | 63 | Francesco Bagnaia | Ducati |
 | 72 | Marco Bezzecchi | Aprilia |
-| 73 | Alex Marquez | Ducati Gresini |
+| 73 | Álex Márquez | Ducati Gresini |
 | 79 | Ai Ogura | Aprilia Trackhouse |
-| 88 | Miguel Oliveira | Yamaha Pramac |
-| 93 | Marc Marquez | Ducati |
+| 89 | Jorge Martín | Aprilia |
+| 93 | Marc Márquez | Ducati |
 
 ---
 

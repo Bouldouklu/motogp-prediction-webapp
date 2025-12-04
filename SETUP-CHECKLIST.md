@@ -13,9 +13,9 @@ Follow this checklist to get your MotoGP betting app running.
 ### 2. Database Setup
 - [ ] Open Supabase SQL Editor
 - [ ] Run `supabase/schema.sql` (creates all tables)
-- [ ] Run `supabase/seed-riders.sql` (adds 25 riders)
+- [ ] Run `supabase/seed-riders.sql` (adds 22 riders)
 - [ ] Run `supabase/seed-races.sql` (adds 22 races)
-- [ ] Verify in Table Editor: riders table has 25 rows, races has 22 rows
+- [ ] Verify in Table Editor: riders table has 22 rows, races has 22 rows
 
 ### 3. Environment Configuration
 - [ ] Create `.env.local` file in project root
@@ -29,15 +29,15 @@ Follow this checklist to get your MotoGP betting app running.
 - [ ] In Supabase SQL Editor, run:
 ```sql
 INSERT INTO players (name, passphrase) VALUES
-  ('Gil', 'gil-speed-2025'),
-  ('Maxime', 'maxime-speed-2025'),
-  ('Ben', 'ben-speed-2025'),
-  ('Marcello', 'marcello-speed-2025'),
-  ('Willi', 'willi-speed-2025'),
-  ('Danny', 'danny-speed-2025'),
-  ('Reno', 'reno-speed-2025'),
-  ('Stefan', 'stefan-speed-2025'),
-  ('Jacques', 'jacques-speed-2025');
+  ('Gil', 'gil-speed-2026'),
+  ('Maxime', 'maxime-speed-2026'),
+  ('Ben', 'ben-speed-2026'),
+  ('Marcello', 'marcello-speed-2026'),
+  ('Willi', 'willi-speed-2026'),
+  ('Danny', 'danny-speed-2026'),
+  ('Reno', 'reno-speed-2026'),
+  ('Stefan', 'stefan-speed-2026'),
+  ('Jacques', 'jacques-speed-2026');
 ```
 - [ ] Verify in Table Editor: players table has 9 rows
 
@@ -45,7 +45,7 @@ INSERT INTO players (name, passphrase) VALUES
 - [ ] Run `npm run dev`
 - [ ] Open http://localhost:3000
 - [ ] Click "Login"
-- [ ] Test login with one of the players (e.g., Gil / gil-speed-2025)
+- [ ] Test login with one of the players (e.g., Gil / gil-speed-2026)
 - [ ] Verify dashboard loads
 - [ ] Try making a prediction on any upcoming race
 - [ ] Check leaderboard page
@@ -56,7 +56,7 @@ INSERT INTO players (name, passphrase) VALUES
 - [ ] Login works ✓
 - [ ] Dashboard shows upcoming races ✓
 - [ ] Can make predictions ✓
-- [ ] Rider dropdown shows all 25 riders ✓
+- [ ] Rider dropdown shows all 22 riders ✓
 - [ ] Cannot select same rider twice ✓
 - [ ] Leaderboard displays ✓
 - [ ] Races calendar shows all 22 races ✓
@@ -96,8 +96,8 @@ git push -u origin main
 
 ## ✅ Phase 3: Pre-Season Preparation
 
-### 1. Verify 2025 Schedule
-- [ ] Check official MotoGP 2025 calendar when published
+### 1. Verify 2026 Schedule
+- [ ] Check official MotoGP 2026 calendar when published
 - [ ] Update race dates in Supabase if needed
 - [ ] Verify FP1 times are correct (critical for deadlines!)
 - [ ] Update timezone conversions if necessary
@@ -112,7 +112,7 @@ git push -u origin main
 - [ ] Build score calculation trigger
 - [ ] Test end-to-end: enter results → calculate scores → verify leaderboard
 
-## ✅ Phase 4: Season Launch (Before March 2, 2025)
+## ✅ Phase 4: Season Launch (Before March 1, 2026)
 
 ### 1. Final Testing
 - [ ] Test making predictions

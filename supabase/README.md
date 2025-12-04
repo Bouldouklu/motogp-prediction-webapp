@@ -40,14 +40,14 @@ ADMIN_PASSPHRASE=choose-a-secure-admin-password
 
 ## 5. Seed the Database
 
-### Seed Riders (2025 Grid)
+### Seed Riders (2026 Grid)
 
 1. In the SQL Editor, create a **New Query**
 2. Copy the contents of `seed-riders.sql` and paste
 3. Click **Run**
-4. Verify: Go to **Table Editor** → **riders** to see all 25 riders
+4. Verify: Go to **Table Editor** → **riders** to see all 22 riders
 
-### Seed Races (2025 Calendar)
+### Seed Races (2026 Calendar)
 
 1. In the SQL Editor, create a **New Query**
 2. Copy the contents of `seed-races.sql` and paste
@@ -62,15 +62,15 @@ If you want to create test players, run this SQL:
 -- Example: Create test players
 -- Note: In production, use proper password hashing!
 INSERT INTO players (name, passphrase) VALUES
-  ('Gil', 'gil-speed-2025'),
-  ('Maxime', 'maxime-speed-2025'),
-  ('Ben', 'ben-speed-2025'),
-  ('Marcello', 'marcello-speed-2025'),
-  ('Willi', 'willi-speed-2025'),
-  ('Danny', 'danny-speed-2025'),
-  ('Reno', 'reno-speed-2025'),
-  ('Stefan', 'stefan-speed-2025'),
-  ('Jacques', 'jacques-speed-2025')
+  ('Gil', 'gil-speed-2026'),
+  ('Maxime', 'maxime-speed-2026'),
+  ('Ben', 'ben-speed-2026'),
+  ('Marcello', 'marcello-speed-2026'),
+  ('Willi', 'willi-speed-2026'),
+  ('Danny', 'danny-speed-2026'),
+  ('Reno', 'reno-speed-2026'),
+  ('Stefan', 'stefan-speed-2026'),
+  ('Jacques', 'jacques-speed-2026')
 ON CONFLICT (name) DO NOTHING;
 ```
 
@@ -79,7 +79,7 @@ ON CONFLICT (name) DO NOTHING;
 Run these queries to verify everything is set up correctly:
 
 ```sql
--- Check riders count (should be 25)
+-- Check riders count (should be 22)
 SELECT COUNT(*) FROM riders;
 
 -- Check races count (should be 22)
@@ -100,7 +100,7 @@ SELECT * FROM leaderboard;
 
 ## Notes
 
-- **FP1 Times**: The seed data includes estimated FP1 times. Update these with actual times when the 2025 schedule is published.
+- **FP1 Times**: The seed data includes estimated FP1 times. Update these with actual times when the 2026 schedule is published.
 - **Security**: The current RLS policies are simplified for development. Implement proper authentication for production.
 - **Backup**: Supabase automatically backs up your database, but consider exporting important data regularly.
 - **Service Role Key**: Never commit the service role key to version control. It's in `.env.local` which is gitignored.

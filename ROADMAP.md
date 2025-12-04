@@ -6,8 +6,8 @@
 - [x] Set up Tailwind CSS v4
 - [x] Configure Supabase integration
 - [x] Create database schema with all tables
-- [x] Seed 2025 riders (25 riders)
-- [x] Seed 2025 race calendar (22 races)
+- [x] Seed 2026 riders (22 riders)
+- [x] Seed 2026 race calendar (22 races)
 - [x] Implement passphrase authentication
 - [x] Build rider selection component
 - [x] Create prediction form
@@ -143,7 +143,7 @@
 
 ## 🎯 Priority Order
 
-### Before 2025 Season Starts
+### Before 2026 Season Starts
 1. Admin panel for results entry
 2. Scoring engine implementation
 3. Championship prediction form
@@ -170,7 +170,7 @@
 - **Phase 5**: 1-2 weeks
 - **Phase 6**: 4-6 weeks (if pursued)
 
-**Target Launch**: Before 2025 Thailand GP (March 2, 2025)
+**Target Launch**: Before 2026 Thailand GP (March 1, 2026)
 
 ## Success Metrics
 
@@ -182,4 +182,4 @@
 
 ---
 
-**Note**: This roadmap is flexible and priorities may shift based on user feedback and time constraints. The goal is to have a fully functional betting system before the 2025 season begins.
+**Note**: This roadmap is flexible and priorities may shift based on user feedback and time constraints. The goal is to have a fully functional betting system before the 2026 season begins.

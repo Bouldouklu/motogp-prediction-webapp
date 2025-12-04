@@ -39,7 +39,7 @@ npm run lint          # Run ESLint
 The application uses Supabase (PostgreSQL) with the following core tables:
 
 - **players**: User accounts with passphrase authentication (no email/password)
-- **riders**: MotoGP riders (2025 grid with 25+ riders)
+- **riders**: MotoGP riders (2026 grid with 22+ riders)
 - **races**: 22-race calendar with FP1 deadline timestamps
 - **race_predictions**: Player predictions (sprint winner, race winner, glorious 7th)
 - **championship_predictions**: Season-long podium predictions (locked before first race)
@@ -170,8 +170,8 @@ The project follows a phased approach:
 
 ## Important Notes
 
-- The 2025 race calendar (22 races from Thailand to Valencia) is in motogp-betting-spec.md
-- The 2025 rider grid (25+ riders) seed data is in motogp-betting-spec.md
+- The 2026 race calendar (22 races from Thailand to Valencia) is in motogp-betting-spec.md
+- The 2026 rider grid (22+ riders) seed data is in motogp-betting-spec.md
 - Riders can change mid-season (injury/replacement) - riders table must remain updatable
 - Each race weekend has Sprint Race (Saturday) + Main Race (Sunday)
 - Championship predictions are locked before the first race and scored at season end

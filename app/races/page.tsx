@@ -21,7 +21,7 @@ export default async function RacesPage() {
     <main className="min-h-screen p-6">
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">2025 Race Calendar</h1>
+          <h1 className="text-4xl font-bold mb-2">2026 Race Calendar</h1>
           <p className="text-gray-600 dark:text-gray-400">
             22 rounds around the world
           </p>
