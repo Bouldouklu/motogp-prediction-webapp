@@ -112,6 +112,7 @@ CREATE INDEX IF NOT EXISTS idx_races_status ON races(status);
 CREATE INDEX IF NOT EXISTS idx_races_round ON races(round_number);
 
 -- Leaderboard view
+-- Note: Excludes admin users (identified by name = 'admin', case-insensitive)
 CREATE OR REPLACE VIEW leaderboard AS
 SELECT
   p.id as player_id,
@@ -167,6 +168,7 @@ SELECT
   ) as total_points
 FROM players p
 LEFT JOIN player_scores ps ON p.id = ps.player_id
+WHERE LOWER(p.name) != 'admin'
 GROUP BY p.id, p.name
 ORDER BY total_points DESC;
 
