@@ -100,3 +100,18 @@ export function isAdmin(name: string): boolean {
   // In production, you might want to store admin status in the database
   return name.toLowerCase() === 'admin'
 }
+
+/**
+ * Get current user and verify admin status
+ * Combines getCurrentUser() and isAdmin() check for admin route protection
+ * @returns Admin user object or null if not authenticated or not admin
+ */
+export async function requireAdmin(): Promise<AuthUser | null> {
+  const user = await getCurrentUser()
+
+  if (!user || !isAdmin(user.name)) {
+    return null
+  }
+
+  return user
+}
