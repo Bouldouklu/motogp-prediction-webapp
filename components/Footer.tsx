@@ -6,11 +6,18 @@ export default function Footer() {
             <div className="max-w-7xl mx-auto px-4 py-8">
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                     <div className="text-gray-400 text-sm">
-                        <p>Built by <span className="text-motogp-red font-semibold">Bouldouklu</span></p>
+                        <p>Built by <span className="text-motogp-red font-semibold">Jeremy Cabaret (Bouldouklu)</span></p>
                     </div>
 
                     <div className="flex flex-col md:flex-row items-center gap-4 text-sm text-gray-500">
                         <p>For entertainment purposes only. Not affiliated with Dorna Sports S.L.</p>
+                        <div className="hidden md:block w-1 h-1 bg-gray-700 rounded-full"></div>
+                        <a
+                            href="mailto:contact@example.com"
+                            className="hover:text-white transition-colors"
+                        >
+                            Contact
+                        </a>
                         <div className="hidden md:block w-1 h-1 bg-gray-700 rounded-full"></div>
                         <Link
                             href="https://github.com/Start-Z-One/motogp-prediction-webapp"
