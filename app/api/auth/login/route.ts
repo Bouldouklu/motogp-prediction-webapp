@@ -24,7 +24,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Set authentication cookie
+    console.log(`Setting auth cookie for user: ${user.name} (${user.id})`)
     await setAuthCookie(user.id, user.name)
+    console.log('Auth cookie set successfully')
 
     return NextResponse.json({
       success: true,

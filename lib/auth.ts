@@ -48,13 +48,13 @@ export async function authenticatePlayer(
 export async function setAuthCookie(userId: string, userName: string) {
   const cookieStore = await cookies()
 
-  // Store user session as a simple JSON string
-  // In production, use proper session management with encryption
+  // Store user session as a Base64 encoded JSON string
   const sessionData = JSON.stringify({ userId, userName })
+  const encodedSession = Buffer.from(sessionData).toString('base64')
 
   const oneMonth = 60 * 60 * 24 * 30 * 1000 // 30 days in milliseconds
 
-  cookieStore.set('motogp_session', sessionData, {
+  cookieStore.set('motogp_session', encodedSession, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
@@ -77,7 +77,16 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
   }
 
   try {
-    const sessionData = JSON.parse(sessionCookie.value)
+    // Try to parse as direct JSON first (backward compatibility for dev), then fallback to base64
+    let sessionData
+    try {
+      sessionData = JSON.parse(sessionCookie.value)
+    } catch {
+      // If JSON parse fails, try base64 decode
+      const decodedString = Buffer.from(sessionCookie.value, 'base64').toString('utf-8')
+      sessionData = JSON.parse(decodedString)
+    }
+
     return {
       id: sessionData.userId,
       name: sessionData.userName,
