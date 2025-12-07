@@ -77,6 +77,73 @@ export default async function DashboardPage() {
           <LogoutButton />
         </div>
 
+        {/* Championship Prediction Display - After deadline or submitted */}
+        {championshipPrediction && (
+          <div className="mb-12">
+            <h2 className="text-2xl font-display font-bold italic uppercase mb-4 flex items-center gap-2">
+              <span className="w-1 h-6 bg-motogp-red skew-x-12 inline-block"></span>
+              Your Championship Prediction
+            </h2>
+            <div className="p-6 bg-track-gray rounded-xl border border-gray-800 relative overflow-hidden">
+              <div className="space-y-4 relative z-10">
+                {championshipDeadlinePassed && (
+                  <div className="mb-4 p-3 bg-blue-900/30 border border-blue-800 rounded-lg">
+                    <p className="text-sm text-blue-300 font-medium">
+                      🔒 Championship predictions are locked.
+                    </p>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* 1st Place */}
+                  <div className="p-4 bg-gradient-to-br from-gray-900 to-black border border-yellow-500/30 rounded-lg relative overflow-hidden">
+                    <div className="absolute top-2 right-2 text-4xl opacity-20">🥇</div>
+                    <div className="text-xs text-yellow-500 font-bold uppercase tracking-wider mb-1">Winner</div>
+                    <div className="text-xl font-display font-black italic uppercase">{championshipPrediction.first_place?.name}</div>
+                    <div className="flex items-center gap-2 text-sm text-gray-400">
+                      <span className="font-mono text-white">#{championshipPrediction.first_place?.number}</span>
+                      <span>{championshipPrediction.first_place?.team}</span>
+                    </div>
+                  </div>
+
+                  {/* 2nd Place */}
+                  <div className="p-4 bg-gradient-to-br from-gray-900 to-black border border-gray-700 rounded-lg relative overflow-hidden">
+                    <div className="absolute top-2 right-2 text-4xl opacity-20">🥈</div>
+                    <div className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">Runner Up</div>
+                    <div className="text-xl font-display font-black italic uppercase">{championshipPrediction.second_place?.name}</div>
+                    <div className="flex items-center gap-2 text-sm text-gray-400">
+                      <span className="font-mono text-white">#{championshipPrediction.second_place?.number}</span>
+                      <span>{championshipPrediction.second_place?.team}</span>
+                    </div>
+                  </div>
+
+                  {/* 3rd Place */}
+                  <div className="p-4 bg-gradient-to-br from-gray-900 to-black border border-orange-700/30 rounded-lg relative overflow-hidden">
+                    <div className="absolute top-2 right-2 text-4xl opacity-20">🥉</div>
+                    <div className="text-xs text-orange-500 font-bold uppercase tracking-wider mb-1">Third</div>
+                    <div className="text-xl font-display font-black italic uppercase">{championshipPrediction.third_place?.name}</div>
+                    <div className="flex items-center gap-2 text-sm text-gray-400">
+                      <span className="font-mono text-white">#{championshipPrediction.third_place?.number}</span>
+                      <span>{championshipPrediction.third_place?.team}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {!championshipDeadlinePassed && (
+                  <div className="mt-4 pt-4 border-t border-gray-800 text-right">
+                    <Link
+                      href="/championship"
+                      className="text-motogp-red hover:text-white font-bold uppercase text-sm tracking-wider transition-colors"
+                    >
+                      Update prediction →
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Quick Predict - Next Race */}
         {upcomingRaces && upcomingRaces.length > 0 && (
           <div className="mb-10 p-6 md:p-8 bg-gradient-to-r from-gray-900 via-gray-900 to-gray-800 rounded-2xl border border-gray-700 shadow-2xl relative overflow-hidden group">
@@ -172,72 +239,7 @@ export default async function DashboardPage() {
           )}
         </div>
 
-        {/* Championship Prediction Display - After deadline or submitted */}
-        {championshipPrediction && (
-          <div className="mb-12">
-            <h2 className="text-2xl font-display font-bold italic uppercase mb-4 flex items-center gap-2">
-              <span className="w-1 h-6 bg-motogp-red skew-x-12 inline-block"></span>
-              Your Championship Prediction
-            </h2>
-            <div className="p-6 bg-track-gray rounded-xl border border-gray-800 relative overflow-hidden">
-              <div className="space-y-4 relative z-10">
-                {championshipDeadlinePassed && (
-                  <div className="mb-4 p-3 bg-blue-900/30 border border-blue-800 rounded-lg">
-                    <p className="text-sm text-blue-300 font-medium">
-                      🔒 Championship predictions are locked.
-                    </p>
-                  </div>
-                )}
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {/* 1st Place */}
-                  <div className="p-4 bg-gradient-to-br from-gray-900 to-black border border-yellow-500/30 rounded-lg relative overflow-hidden">
-                    <div className="absolute top-2 right-2 text-4xl opacity-20">🥇</div>
-                    <div className="text-xs text-yellow-500 font-bold uppercase tracking-wider mb-1">Winner</div>
-                    <div className="text-xl font-display font-black italic uppercase">{championshipPrediction.first_place?.name}</div>
-                    <div className="flex items-center gap-2 text-sm text-gray-400">
-                      <span className="font-mono text-white">#{championshipPrediction.first_place?.number}</span>
-                      <span>{championshipPrediction.first_place?.team}</span>
-                    </div>
-                  </div>
-
-                  {/* 2nd Place */}
-                  <div className="p-4 bg-gradient-to-br from-gray-900 to-black border border-gray-700 rounded-lg relative overflow-hidden">
-                    <div className="absolute top-2 right-2 text-4xl opacity-20">🥈</div>
-                    <div className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">Runner Up</div>
-                    <div className="text-xl font-display font-black italic uppercase">{championshipPrediction.second_place?.name}</div>
-                    <div className="flex items-center gap-2 text-sm text-gray-400">
-                      <span className="font-mono text-white">#{championshipPrediction.second_place?.number}</span>
-                      <span>{championshipPrediction.second_place?.team}</span>
-                    </div>
-                  </div>
-
-                  {/* 3rd Place */}
-                  <div className="p-4 bg-gradient-to-br from-gray-900 to-black border border-orange-700/30 rounded-lg relative overflow-hidden">
-                    <div className="absolute top-2 right-2 text-4xl opacity-20">🥉</div>
-                    <div className="text-xs text-orange-500 font-bold uppercase tracking-wider mb-1">Third</div>
-                    <div className="text-xl font-display font-black italic uppercase">{championshipPrediction.third_place?.name}</div>
-                    <div className="flex items-center gap-2 text-sm text-gray-400">
-                      <span className="font-mono text-white">#{championshipPrediction.third_place?.number}</span>
-                      <span>{championshipPrediction.third_place?.team}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {!championshipDeadlinePassed && (
-                  <div className="mt-4 pt-4 border-t border-gray-800 text-right">
-                    <Link
-                      href="/championship"
-                      className="text-motogp-red hover:text-white font-bold uppercase text-sm tracking-wider transition-colors"
-                    >
-                      Update prediction →
-                    </Link>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Previous Races Section */}
         <div className="mb-12">
