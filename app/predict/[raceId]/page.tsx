@@ -43,7 +43,20 @@ export default async function PredictPage({
     .from('riders')
     .select('*')
     .eq('active', true)
+    .select('*')
+    .eq('active', true)
     .order('number', { ascending: true })
+
+  // Fetch Glorious 7 riders
+  const { data: gloriousData } = await supabase
+    .from('race_glorious_riders')
+    .select('rider_id, riders(*)')
+    .eq('race_id', raceId)
+    .order('display_order', { ascending: true })
+
+  // Transform to Rider[]
+  // @ts-ignore - Supabase type inference for joins can be tricky
+  const gloriousRiders = gloriousData?.map(d => d.riders).filter(Boolean) as Rider[] || []
 
   // Check for existing prediction
   const { data: existingPrediction } = await supabase
@@ -63,26 +76,26 @@ export default async function PredictPage({
           >
             ← Back to Pit Lane
           </Link>
-          
+
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end border-b-4 border-motogp-red pb-6 gap-4">
             <div>
-                <div className="flex items-center gap-2 mb-2">
-                    <span className="bg-white text-black text-xs font-bold uppercase px-2 py-1 rounded -skew-x-12">
-                        Round {race.round_number}
-                    </span>
-                </div>
-                <h1 className="text-5xl md:text-7xl font-display font-black italic tracking-tighter uppercase transform -skew-x-12 leading-none">
-                    {race.name}
-                </h1>
-                <p className="text-xl text-gray-400 mt-2 font-display font-bold tracking-widest uppercase pl-2">
-                    {race.circuit}, {race.country}
-                </p>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="bg-white text-black text-xs font-bold uppercase px-2 py-1 rounded -skew-x-12">
+                  Round {race.round_number}
+                </span>
+              </div>
+              <h1 className="text-5xl md:text-7xl font-display font-black italic tracking-tighter uppercase transform -skew-x-12 leading-none">
+                {race.name}
+              </h1>
+              <p className="text-xl text-gray-400 mt-2 font-display font-bold tracking-widest uppercase pl-2">
+                {race.circuit}, {race.country}
+              </p>
             </div>
             <div className="text-right hidden md:block">
-                <div className="text-xs text-gray-500 font-bold uppercase tracking-wider">Sprint</div>
-                <div className="text-lg font-mono font-bold text-gray-300 mb-2">{new Date(race.sprint_date).toLocaleDateString()}</div>
-                <div className="text-xs text-gray-500 font-bold uppercase tracking-wider">Race</div>
-                <div className="text-xl font-mono font-bold text-white">{new Date(race.race_date).toLocaleDateString()}</div>
+              <div className="text-xs text-gray-500 font-bold uppercase tracking-wider">Sprint</div>
+              <div className="text-lg font-mono font-bold text-gray-300 mb-2">{new Date(race.sprint_date).toLocaleDateString()}</div>
+              <div className="text-xs text-gray-500 font-bold uppercase tracking-wider">Race</div>
+              <div className="text-xl font-mono font-bold text-white">{new Date(race.race_date).toLocaleDateString()}</div>
             </div>
           </div>
         </div>
@@ -94,25 +107,26 @@ export default async function PredictPage({
           </div>
 
           <div className="relative z-10">
-              <h2 className="text-3xl font-display font-black italic uppercase mb-8 flex items-center gap-2">
-                <span className="w-1 h-8 bg-motogp-red skew-x-12 inline-block"></span>
-                {existingPrediction
+            <h2 className="text-3xl font-display font-black italic uppercase mb-8 flex items-center gap-2">
+              <span className="w-1 h-8 bg-motogp-red skew-x-12 inline-block"></span>
+              {existingPrediction
                 ? 'Update Your Strategy'
                 : 'Enter Your Strategy'}
             </h2>
 
             {riders && riders.length > 0 ? (
-                <PredictionForm
+              <PredictionForm
                 raceId={raceId}
                 raceName={race.name}
                 riders={riders}
+                gloriousRiders={gloriousRiders}
                 existingPrediction={existingPrediction}
                 deadlineAt={race.fp1_datetime}
-                />
+              />
             ) : (
-                <p className="text-gray-400 italic">
+              <p className="text-gray-400 italic">
                 No riders available for selection.
-                </p>
+              </p>
             )}
           </div>
         </div>

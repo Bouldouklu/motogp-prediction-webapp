@@ -170,7 +170,10 @@ const mockPrediction: RacePrediction = {
   race_2nd_id: 'rider3',
   race_3rd_id: 'rider6',
   // Glorious 7
-  glorious_7_id: 'rider7',
+  // Glorious 7
+  glorious_1st_id: 'rider7',
+  glorious_2nd_id: 'rider8',
+  glorious_3rd_id: 'rider9',
   submitted_at: '2026-03-01T10:00:00Z',
   is_late: false,
 }
@@ -185,10 +188,15 @@ const raceResults: RaceResult[] = [
   { id: 'rr1', race_id: 'race1', result_type: 'race', position: 1, rider_id: 'rider2' },
   { id: 'rr2', race_id: 'race1', result_type: 'race', position: 2, rider_id: 'rider3' },
   { id: 'rr3', race_id: 'race1', result_type: 'race', position: 3, rider_id: 'rider6' },
-  { id: 'rr4', race_id: 'race1', result_type: 'race', position: 7, rider_id: 'rider7' },
+  { id: 'rr4', race_id: 'race1', result_type: 'race', position: 7, rider_id: 'rider7' }, // relative 1st in glorious group?
+  { id: 'rr5', race_id: 'race1', result_type: 'race', position: 8, rider_id: 'rider8' }, // relative 2nd
+  { id: 'rr6', race_id: 'race1', result_type: 'race', position: 9, rider_id: 'rider9' }, // relative 3rd
+  // and other riders...
 ]
 
-const score = calculateRaceScore(mockPrediction, sprintResults, raceResults, 0)
+const gloriousRiderIds = ['rider7', 'rider8', 'rider9', 'rider10', 'rider11', 'rider12', 'rider13'];
+
+const score = calculateRaceScore(mockPrediction, sprintResults, raceResults, 0, gloriousRiderIds)
 
 // Test sprint top 3 predictions
 console.log(`Sprint 1st prediction: ${score.sprint_1st_points === 12 ? '✅' : '❌'} ${score.sprint_1st_points} points (expected 12)`)
@@ -199,7 +207,7 @@ console.log(`Race 1st prediction: ${score.race_1st_points === 12 ? '✅' : '❌'
 console.log(`Race 2nd prediction: ${score.race_2nd_points === 12 ? '✅' : '❌'} ${score.race_2nd_points} points (expected 12)`)
 console.log(`Race 3rd prediction: ${score.race_3rd_points === 12 ? '✅' : '❌'} ${score.race_3rd_points} points (expected 12)`)
 // Test glorious 7 and penalty
-console.log(`Glorious 7 prediction: ${score.glorious_7_points === 12 ? '✅' : '❌'} ${score.glorious_7_points} points (expected 12)`)
+console.log(`Glorious 7 points (Total): ${score.glorious_7_points === 36 ? '✅' : '❌'} ${score.glorious_7_points} points (expected 36)`)
 console.log(`Penalty: ${score.penalty_points === 0 ? '✅' : '❌'} ${score.penalty_points} points (expected 0)`)
 
 if (
@@ -209,11 +217,11 @@ if (
   score.race_1st_points === 12 &&
   score.race_2nd_points === 12 &&
   score.race_3rd_points === 12 &&
-  score.glorious_7_points === 12 &&
+  score.glorious_7_points === 36 &&
   score.penalty_points === 0
 ) {
   passed += 8
-  console.log('✅ Perfect predictions = 84 total points (6 positions × 12 + glorious 7)')
+  console.log('✅ Perfect predictions = 108 total points (9 positions × 12)')
 } else {
   failed += 8
   console.log(`❌ Score calculation failed`)
@@ -222,7 +230,7 @@ console.log()
 
 // Test with late submission
 const latePrediction = { ...mockPrediction, is_late: true }
-const lateScore = calculateRaceScore(latePrediction, sprintResults, raceResults, 0)
+const lateScore = calculateRaceScore(latePrediction, sprintResults, raceResults, 0, gloriousRiderIds)
 
 if (lateScore.penalty_points === 10) {
   passed++
@@ -286,9 +294,9 @@ console.log()
 // ============================================================================
 // Summary
 // ============================================================================
-console.log('=' .repeat(50))
+console.log('='.repeat(50))
 console.log(`Test Summary: ${passed} passed, ${failed} failed`)
-console.log('=' .repeat(50))
+console.log('='.repeat(50))
 
 if (failed === 0) {
   console.log('✅ All tests passed! Scoring engine is working correctly.')

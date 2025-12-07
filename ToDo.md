@@ -1,8 +1,5 @@
 ## TO IMPLEMENT ASAP: 
 
-### rider drop down menu
-And possibility to show only the riders typed by keys. without taking accent into consideration 
-
 ### race and riders info fetched from API
 before the race, the riders are fetched from the API, and the race information as well.  
 hours local austria  

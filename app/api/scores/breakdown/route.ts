@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { getRiderPosition, type ScoreBreakdown } from '@/lib/scoring';
+import { getRiderPosition, calculatePositionPoints, type ScoreBreakdown } from '@/lib/scoring';
 
 /**
  * GET /api/scores/breakdown?raceId=xxx&playerId=xxx
@@ -36,7 +36,9 @@ export async function GET(request: NextRequest) {
         race_1st:riders!race_predictions_race_1st_id_fkey(name, number),
         race_2nd:riders!race_predictions_race_2nd_id_fkey(name, number),
         race_3rd:riders!race_predictions_race_3rd_id_fkey(name, number),
-        glorious_7:riders!race_predictions_glorious_7_id_fkey(name, number)
+        glorious_1st:riders!race_predictions_glorious_1st_id_fkey(name, number),
+        glorious_2nd:riders!race_predictions_glorious_2nd_id_fkey(name, number),
+        glorious_3rd:riders!race_predictions_glorious_3rd_id_fkey(name, number)
       `)
       .eq('race_id', raceId);
 
@@ -97,6 +99,29 @@ export async function GET(request: NextRequest) {
       .eq('result_type', 'race')
       .order('position');
 
+    // Fetch glorious riders configuration
+    const { data: gloriousRidersData } = await supabase
+      .from('race_glorious_riders')
+      .select('rider_id')
+      .eq('race_id', raceId);
+
+    const gloriousRiderIds = gloriousRidersData?.map(r => r.rider_id) || [];
+
+    // Determine actual glorious positions (relative)
+    let actualGlorious1st: any, actualGlorious2nd: any, actualGlorious3rd: any;
+    let gloriousResults: any[] = [];
+
+    if (raceResults && gloriousRiderIds.length > 0) {
+      // Filter and sort race results to get mini-league
+      gloriousResults = raceResults
+        .filter((r: any) => gloriousRiderIds.includes(r.rider_id))
+        .sort((a: any, b: any) => a.position - b.position);
+
+      if (gloriousResults.length > 0) actualGlorious1st = gloriousResults[0];
+      if (gloriousResults.length > 1) actualGlorious2nd = gloriousResults[1];
+      if (gloriousResults.length > 2) actualGlorious3rd = gloriousResults[2];
+    }
+
     // Fetch scores
     let scoresQuery = supabase
       .from('player_scores')
@@ -127,7 +152,7 @@ export async function GET(request: NextRequest) {
     // Helper function to format actual result
     const formatActual = (result: any) => {
       if (!result?.rider?.name) return undefined;
-      return `${result.rider.name} (#${result.rider.number})`;
+      return `${result.rider.name} (#${result.rider.number}) - Finished P${result.position}`;
     };
 
     // Build breakdown for each prediction
@@ -141,7 +166,6 @@ export async function GET(request: NextRequest) {
       const actualRace1st = raceResults?.find((r: any) => r.position === 1);
       const actualRace2nd = raceResults?.find((r: any) => r.position === 2);
       const actualRace3rd = raceResults?.find((r: any) => r.position === 3);
-      const actualGlorious7 = raceResults?.find((r: any) => r.position === 7);
 
       return {
         player_id: prediction.player_id,
@@ -175,10 +199,45 @@ export async function GET(request: NextRequest) {
         race_3rd_actual: formatActual(actualRace3rd),
         race_3rd_points: playerScore?.race_3rd_points || 0,
 
-        // Glorious 7 predictions
-        glorious_7_prediction: formatRider(prediction.glorious_7, raceResults || [], prediction.glorious_7_id),
-        glorious_7_actual: formatActual(actualGlorious7),
-        glorious_7_points: playerScore?.glorious_7_points || 0,
+        // Glorious 7 (Mini-League) predictions
+        // Note: We need individual points for 1st/2nd/3rd here for breakdown, but `player_scores` only stores sum?
+        // Ah, `player_scores` schema: `glorious_7_points` is the SUM.
+        // If we want detailed breakdown points per pick, we need to recalculate them here or store them.
+        // We didn't add columns for glorious_1st_points etc in `player_scores`.
+        // So we can show the sum, OR we can recalculate on fly here for display.
+        // Let's recalculate for better UX using `calculatePositionPoints`.
+        // Wait, I can't easily import `calculatePositionPoints` inside this map if it's not async? simpler to just show total or mocked '?' for now?
+        // No, I should recalculate. Or just show the total.
+        // Let's modify `ScoreBreakdown` type in `lib/scoring.ts` earlier included fields for individual points.
+        // But `player_scores` DB table does NOT have them.
+        // I will just assign the total to one of them locally or leave them 0 and show total?
+        // Better: I will calculate them here since I have the data.
+
+        glorious_1st_prediction: formatRider(prediction.glorious_1st, raceResults || [], prediction.glorious_1st_id),
+        glorious_1st_actual: formatActual(actualGlorious1st),
+        glorious_1st_points: (() => {
+          if (!prediction.glorious_1st_id || !gloriousResults) return 0;
+          const pos = gloriousResults.findIndex((r: any) => r.rider_id === prediction.glorious_1st_id);
+          return pos !== -1 ? calculatePositionPoints(pos + 1, 1, 'winner') : 0;
+        })(),
+
+        glorious_2nd_prediction: formatRider(prediction.glorious_2nd, raceResults || [], prediction.glorious_2nd_id),
+        glorious_2nd_actual: formatActual(actualGlorious2nd),
+        glorious_2nd_points: (() => {
+          if (!prediction.glorious_2nd_id || !gloriousResults) return 0;
+          const pos = gloriousResults.findIndex((r: any) => r.rider_id === prediction.glorious_2nd_id);
+          return pos !== -1 ? calculatePositionPoints(pos + 1, 2, 'winner') : 0;
+        })(),
+
+        glorious_3rd_prediction: formatRider(prediction.glorious_3rd, raceResults || [], prediction.glorious_3rd_id),
+        glorious_3rd_actual: formatActual(actualGlorious3rd),
+        glorious_3rd_points: (() => {
+          if (!prediction.glorious_3rd_id || !gloriousResults) return 0;
+          const pos = gloriousResults.findIndex((r: any) => r.rider_id === prediction.glorious_3rd_id);
+          return pos !== -1 ? calculatePositionPoints(pos + 1, 3, 'winner') : 0;
+        })(),
+
+        glorious_points: playerScore?.glorious_7_points || 0, // Total
 
         // Penalties and totals
         penalty_points: playerScore?.penalty_points || 0,

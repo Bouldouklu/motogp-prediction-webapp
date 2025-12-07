@@ -66,9 +66,9 @@ export default function ScoreBreakdown({ raceId, playerId }: ScoreBreakdownProps
   }
 
   // Calculate sprint and race totals for display
-  const getSprintTotal = (b: ScoreBreakdownType) => 
+  const getSprintTotal = (b: ScoreBreakdownType) =>
     b.sprint_1st_points + b.sprint_2nd_points + b.sprint_3rd_points
-  const getRaceTotal = (b: ScoreBreakdownType) => 
+  const getRaceTotal = (b: ScoreBreakdownType) =>
     b.race_1st_points + b.race_2nd_points + b.race_3rd_points
 
   return (
@@ -172,18 +172,30 @@ export default function ScoreBreakdown({ raceId, playerId }: ScoreBreakdownProps
           <div className="mb-6">
             <div className="flex items-center justify-between mb-3">
               <h4 className="font-semibold text-blue-600 dark:text-blue-400">
-                7️⃣ Glorious 7th
+                7️⃣ Glorious 7 - Mini League
               </h4>
-              <span className={`font-bold ${getPointsColor(breakdown.glorious_7_points)}`}>
-                +{breakdown.glorious_7_points} pts
+              <span className={`font-bold ${getPointsColor(breakdown.glorious_points)}`}>
+                +{breakdown.glorious_points} pts
               </span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <PredictionCard
-                position="7th"
-                prediction={breakdown.glorious_7_prediction}
-                actual={breakdown.glorious_7_actual}
-                points={breakdown.glorious_7_points}
+                position="G7 1st"
+                prediction={breakdown.glorious_1st_prediction}
+                actual={breakdown.glorious_1st_actual}
+                points={breakdown.glorious_1st_points}
+              />
+              <PredictionCard
+                position="G7 2nd"
+                prediction={breakdown.glorious_2nd_prediction}
+                actual={breakdown.glorious_2nd_actual}
+                points={breakdown.glorious_2nd_points}
+              />
+              <PredictionCard
+                position="G7 3rd"
+                prediction={breakdown.glorious_3rd_prediction}
+                actual={breakdown.glorious_3rd_actual}
+                points={breakdown.glorious_3rd_points}
               />
             </div>
           </div>
@@ -203,7 +215,7 @@ export default function ScoreBreakdown({ raceId, playerId }: ScoreBreakdownProps
             <div className="flex items-center justify-between text-sm">
               <span className="text-gray-600 dark:text-gray-400">
                 Sprint ({getSprintTotal(breakdown)}) + Race ({getRaceTotal(breakdown)}) + Glorious 7 (
-                {breakdown.glorious_7_points})
+                {breakdown.glorious_points})
                 {breakdown.penalty_points > 0 && ` - Penalty (${breakdown.penalty_points})`}
               </span>
               <span className="font-semibold">= {breakdown.total_points} points</span>

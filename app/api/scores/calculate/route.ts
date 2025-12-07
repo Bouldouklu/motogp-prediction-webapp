@@ -146,12 +146,30 @@ export async function POST(request: NextRequest) {
       lateSubmissionCounts.set(prediction.player_id, count);
     });
 
+    // Fetch glorious 7 riders for this race
+    const { data: gloriousRidersData, error: gloriousError } = await supabase
+      .from('race_glorious_riders')
+      .select('rider_id')
+      .eq('race_id', raceId);
+
+    if (gloriousError) {
+      console.error('Error fetching glorious riders:', gloriousError);
+      // We could fail here, or warn. Let's fail as scoring will be wrong.
+      return NextResponse.json(
+        { error: 'Failed to fetch glorious riders configuration' },
+        { status: 500 }
+      );
+    }
+
+    const gloriousRiderIds = gloriousRidersData?.map(r => r.rider_id) || [];
+
     // Calculate scores for all predictions
     const scores = calculateAllRaceScores(
       predictions as RacePrediction[],
       sprintResults as RaceResult[],
       raceResults as RaceResult[],
-      lateSubmissionCounts
+      lateSubmissionCounts,
+      gloriousRiderIds
     );
 
     // Store scores in database (upsert to handle recalculation)

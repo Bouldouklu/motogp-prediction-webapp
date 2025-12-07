@@ -11,22 +11,25 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { 
-      raceId, 
-      sprint1stId, 
-      sprint2ndId, 
-      sprint3rdId, 
-      race1stId, 
-      race2ndId, 
-      race3rdId, 
-      glorious7Id 
+    const {
+      raceId,
+      sprint1stId,
+      sprint2ndId,
+      sprint3rdId,
+      race1stId,
+      race2ndId,
+      race3rdId,
+      glorious1stId,
+      glorious2ndId,
+      glorious3rdId,
     } = await request.json()
 
     // Validate all required fields
-    if (!raceId || !sprint1stId || !sprint2ndId || !sprint3rdId || 
-        !race1stId || !race2ndId || !race3rdId || !glorious7Id) {
+    if (!raceId || !sprint1stId || !sprint2ndId || !sprint3rdId ||
+      !race1stId || !race2ndId || !race3rdId ||
+      !glorious1stId || !glorious2ndId || !glorious3rdId) {
       return NextResponse.json(
-        { error: 'All predictions are required (top 3 for sprint, top 3 for race, and glorious 7)' },
+        { error: 'All predictions are required (top 3 for sprint, top 3 for race, and top 3 for glorious 7)' },
         { status: 400 }
       )
     }
@@ -67,7 +70,9 @@ export async function POST(request: NextRequest) {
         race_1st_id: race1stId,
         race_2nd_id: race2ndId,
         race_3rd_id: race3rdId,
-        glorious_7_id: glorious7Id,
+        glorious_1st_id: glorious1stId,
+        glorious_2nd_id: glorious2ndId,
+        glorious_3rd_id: glorious3rdId,
         is_late: late,
       })
       .select()
@@ -102,22 +107,25 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { 
-      raceId, 
-      sprint1stId, 
-      sprint2ndId, 
-      sprint3rdId, 
-      race1stId, 
-      race2ndId, 
-      race3rdId, 
-      glorious7Id 
+    const {
+      raceId,
+      sprint1stId,
+      sprint2ndId,
+      sprint3rdId,
+      race1stId,
+      race2ndId,
+      race3rdId,
+      glorious1stId,
+      glorious2ndId,
+      glorious3rdId,
     } = await request.json()
 
     // Validate all required fields
-    if (!raceId || !sprint1stId || !sprint2ndId || !sprint3rdId || 
-        !race1stId || !race2ndId || !race3rdId || !glorious7Id) {
+    if (!raceId || !sprint1stId || !sprint2ndId || !sprint3rdId ||
+      !race1stId || !race2ndId || !race3rdId ||
+      !glorious1stId || !glorious2ndId || !glorious3rdId) {
       return NextResponse.json(
-        { error: 'All predictions are required (top 3 for sprint, top 3 for race, and glorious 7)' },
+        { error: 'All predictions are required (top 3 for sprint, top 3 for race, and top 3 for glorious 7)' },
         { status: 400 }
       )
     }
@@ -156,7 +164,9 @@ export async function PUT(request: NextRequest) {
         race_1st_id: race1stId,
         race_2nd_id: race2ndId,
         race_3rd_id: race3rdId,
-        glorious_7_id: glorious7Id,
+        glorious_1st_id: glorious1stId,
+        glorious_2nd_id: glorious2ndId,
+        glorious_3rd_id: glorious3rdId,
         is_late: late,
         submitted_at: new Date().toISOString(),
       })

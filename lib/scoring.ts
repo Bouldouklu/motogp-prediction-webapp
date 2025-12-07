@@ -126,8 +126,10 @@ export interface RacePrediction {
   race_1st_id: string;
   race_2nd_id: string;
   race_3rd_id: string;
-  // Glorious 7th prediction
-  glorious_7_id: string;
+  // Glorious 7 prediction (Mini-League)
+  glorious_1st_id: string;
+  glorious_2nd_id: string;
+  glorious_3rd_id: string;
   submitted_at: string;
   is_late: boolean;
 }
@@ -181,10 +183,19 @@ export interface ScoreBreakdown {
   race_3rd_prediction?: string;
   race_3rd_actual?: string;
   race_3rd_points: number;
-  // Glorious 7
-  glorious_7_prediction?: string;
-  glorious_7_actual?: string;
-  glorious_7_points: number;
+  // Glorious 7 (Mini-League)
+  glorious_1st_prediction?: string;
+  glorious_1st_actual?: string;
+  glorious_1st_points: number;
+  glorious_2nd_prediction?: string;
+  glorious_2nd_actual?: string;
+  glorious_2nd_points: number;
+  glorious_3rd_prediction?: string;
+  glorious_3rd_actual?: string;
+  glorious_3rd_points: number;
+  // Total for glorious category to keep backward compatibility in DB sum if needed,
+  // typically we just sum them up into total_points
+  glorious_points: number;
   penalty_points: number;
   total_points: number;
   is_late: boolean;
@@ -195,14 +206,15 @@ export interface ScoreBreakdown {
  * @param prediction Player's race prediction (top 3 for sprint and race)
  * @param sprintResults Sprint race results (array of positions)
  * @param raceResults Main race results (array of positions)
- * @param lateSubmissionCount Number of previous late submissions by this player
+ * @param gloriousRiderIds IDs of the 7 riders selected for Glorious 7
  * @returns Calculated score breakdown
  */
 export function calculateRaceScore(
   prediction: RacePrediction,
   sprintResults: RaceResult[],
   raceResults: RaceResult[],
-  lateSubmissionCount: number = 0
+  lateSubmissionCount: number = 0,
+  gloriousRiderIds: string[] = []
 ): PlayerScore {
   let sprint1stPoints = 0;
   let sprint2ndPoints = 0;
@@ -210,7 +222,7 @@ export function calculateRaceScore(
   let race1stPoints = 0;
   let race2ndPoints = 0;
   let race3rdPoints = 0;
-  let glorious7Points = 0;
+  let gloriousPoints = 0;
   let penaltyPoints = 0;
 
   // Calculate sprint 1st place prediction points
@@ -261,12 +273,37 @@ export function calculateRaceScore(
     race3rdPoints = calculatePositionPoints(race3rdPosition, 3, 'winner');
   }
 
-  // Calculate glorious 7 points (from main race results)
-  const glorious7Position = raceResults.find(
-    (r) => r.rider_id === prediction.glorious_7_id
-  )?.position;
-  if (glorious7Position !== undefined) {
-    glorious7Points = calculatePositionPoints(glorious7Position, 7, 'glorious7');
+  // Calculate Glorious 7 Mini-League points
+  // 1. Filter race results to only include the 7 selected riders
+  const gloriousResults = raceResults
+    .filter(r => gloriousRiderIds.includes(r.rider_id))
+    .sort((a, b) => a.position - b.position);
+
+  // 2. Determine relative positions (1st, 2nd, 3rd among the 7)
+  // We only care about the top 3 of this mini-league
+
+  // Helper to find relative position of a predicted rider
+  const getRelativePosition = (riderId: string): number | undefined => {
+    const index = gloriousResults.findIndex(r => r.rider_id === riderId);
+    return index !== -1 ? index + 1 : undefined; // 1-based relative position
+  };
+
+  // Score Glorious 1st
+  const g1Pos = getRelativePosition(prediction.glorious_1st_id);
+  if (g1Pos !== undefined) {
+    gloriousPoints += calculatePositionPoints(g1Pos, 1, 'winner');
+  }
+
+  // Score Glorious 2nd
+  const g2Pos = getRelativePosition(prediction.glorious_2nd_id);
+  if (g2Pos !== undefined) {
+    gloriousPoints += calculatePositionPoints(g2Pos, 2, 'winner');
+  }
+
+  // Score Glorious 3rd
+  const g3Pos = getRelativePosition(prediction.glorious_3rd_id);
+  if (g3Pos !== undefined) {
+    gloriousPoints += calculatePositionPoints(g3Pos, 3, 'winner');
   }
 
   // Calculate penalty for late submission
@@ -283,7 +320,7 @@ export function calculateRaceScore(
     race_1st_points: race1stPoints,
     race_2nd_points: race2ndPoints,
     race_3rd_points: race3rdPoints,
-    glorious_7_points: glorious7Points,
+    glorious_7_points: gloriousPoints,
     penalty_points: penaltyPoints,
   };
 }
@@ -294,17 +331,19 @@ export function calculateRaceScore(
  * @param sprintResults Sprint race results
  * @param raceResults Main race results
  * @param playerLateSubmissionCounts Map of player_id to their late submission count
+ * @param gloriousRiderIds IDs of the 7 riders selected for Glorious 7
  * @returns Array of calculated scores
  */
 export function calculateAllRaceScores(
   predictions: RacePrediction[],
   sprintResults: RaceResult[],
   raceResults: RaceResult[],
-  playerLateSubmissionCounts: Map<string, number>
+  playerLateSubmissionCounts: Map<string, number>,
+  gloriousRiderIds: string[] = []
 ): PlayerScore[] {
   return predictions.map((prediction) => {
     const lateCount = playerLateSubmissionCounts.get(prediction.player_id) || 0;
-    return calculateRaceScore(prediction, sprintResults, raceResults, lateCount);
+    return calculateRaceScore(prediction, sprintResults, raceResults, lateCount, gloriousRiderIds);
   });
 }
 

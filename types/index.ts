@@ -45,8 +45,10 @@ export interface RacePrediction {
   race_1st_id: string;
   race_2nd_id: string;
   race_3rd_id: string;
-  // Glorious 7th prediction
-  glorious_7_id: string;
+  // Glorious 7 prediction (Mini-League)
+  glorious_1st_id: string;
+  glorious_2nd_id: string;
+  glorious_3rd_id: string;
   submitted_at: string;
   is_late: boolean;
 }
