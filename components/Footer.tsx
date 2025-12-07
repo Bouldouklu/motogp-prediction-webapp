@@ -1,4 +1,5 @@
 import Link from 'next/link';
+// Footer component
 
 export default function Footer() {
     return (
