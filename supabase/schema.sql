@@ -18,7 +18,8 @@ CREATE TABLE IF NOT EXISTS riders (
   name VARCHAR(100) NOT NULL,
   number INT UNIQUE NOT NULL,
   team VARCHAR(100),
-  active BOOLEAN DEFAULT true
+  active BOOLEAN DEFAULT true,
+  external_id VARCHAR(100)
 );
 
 -- Races table
@@ -31,7 +32,8 @@ CREATE TABLE IF NOT EXISTS races (
   race_date DATE NOT NULL,
   sprint_date DATE NOT NULL,
   fp1_datetime TIMESTAMPTZ NOT NULL,
-  status VARCHAR(20) DEFAULT 'upcoming' CHECK (status IN ('upcoming', 'in_progress', 'completed'))
+  status VARCHAR(20) DEFAULT 'upcoming' CHECK (status IN ('upcoming', 'in_progress', 'completed')),
+  external_id VARCHAR(100)
 );
 
 -- Race Results (actual results from MotoGP)
