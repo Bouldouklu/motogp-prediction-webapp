@@ -5,14 +5,14 @@ This document outlines the scoring system for the MotoGP prediction league. The 
 
 ## 1. Season Championship Predictions
 **Goal:** Predict the final top 3 riders of the season.
-**Significance:** This long-term prediction is weighted to be roughly equivalent to two perfect race weekends, emphasizing its importance and difficulty.
+**Significance:** This long-term prediction is weighted to be roughly equivalent to **two perfect race weekends** (225 × 2 = 450), emphasizing its importance and difficulty.
 
 | Position Correct | Points |
 |------------------|--------|
-| **1st Place** | **100** |
-| **2nd Place** | **50** |
-| **3rd Place** | **50** |
-| **Total Max** | **200** |
+| **1st Place** | **250** |
+| **2nd Place** | **100** |
+| **3rd Place** | **100** |
+| **Total Max** | **450** |
 
 ---
 
@@ -40,6 +40,8 @@ Points are awarded for each rider in the predicted Top 3 based on their actual f
 *   **Race:** 75 points (3 × 25)
 *   **Glorious 7:** 75 points (3 × 25)
 *   **Total Weekend Max:** **225 points**
+
+*(Two perfect weekends = 450 points, matching the Championship Max)*
 
 ### Example Scenarios
 *   **Perfect Prediction:** You predict Rider A for 1st, and they finish 1st.

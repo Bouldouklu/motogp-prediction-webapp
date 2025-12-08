@@ -9,8 +9,6 @@ shutdown pronos for fp1 + 5 mins
 ### Race card
 Hourly schedule to add to race card
 
-### point and scoring system to review and update 
-
 ## NICE TO HAVE: 
 typing for the surname of the riders.  
 start after login with final poduim to fill and then show the dashboard  

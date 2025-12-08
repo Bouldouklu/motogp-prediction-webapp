@@ -20,7 +20,7 @@ export default function Footer() {
                         </a>
                         <div className="hidden md:block w-1 h-1 bg-gray-700 rounded-full"></div>
                         <Link
-                            href="https://github.com/Start-Z-One/motogp-prediction-webapp"
+                            href="https://github.com/Bouldouklu/motogp-prediction-webapp"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-2 hover:text-white transition-colors"
