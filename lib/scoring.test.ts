@@ -23,24 +23,24 @@ describe('Scoring Engine Tests', () => {
   // ============================================================================
 
   describe('calculatePositionPoints - Winner predictions', () => {
-    test('Exact winner prediction (position 1) should give 12 points', () => {
-      expect(calculatePositionPoints(1, 1, 'winner')).toBe(12)
+    test('Exact winner prediction (position 1) should give 25 points', () => {
+      expect(calculatePositionPoints(1, 1, 'winner')).toBe(25)
     })
 
-    test('Off by 1 position should give 9 points', () => {
-      expect(calculatePositionPoints(2, 1, 'winner')).toBe(9)
+    test('Off by 1 position should give 18 points', () => {
+      expect(calculatePositionPoints(2, 1, 'winner')).toBe(18)
     })
 
-    test('Off by 2 positions should give 7 points', () => {
-      expect(calculatePositionPoints(3, 1, 'winner')).toBe(7)
+    test('Off by 2 positions should give 15 points', () => {
+      expect(calculatePositionPoints(3, 1, 'winner')).toBe(15)
     })
 
-    test('Off by 3 positions should give 5 points', () => {
-      expect(calculatePositionPoints(4, 1, 'winner')).toBe(5)
+    test('Off by 3 positions should give 10 points', () => {
+      expect(calculatePositionPoints(4, 1, 'winner')).toBe(10)
     })
 
-    test('Off by 4 positions should give 4 points', () => {
-      expect(calculatePositionPoints(5, 1, 'winner')).toBe(4)
+    test('Off by 4 positions should give 6 points', () => {
+      expect(calculatePositionPoints(5, 1, 'winner')).toBe(6)
     })
 
     test('Off by 5 positions should give 2 points', () => {
@@ -55,28 +55,28 @@ describe('Scoring Engine Tests', () => {
   })
 
   describe('calculatePositionPoints - Glorious 7 predictions', () => {
-    test('Exact 7th place prediction should give 12 points', () => {
-      expect(calculatePositionPoints(7, 7, 'glorious7')).toBe(12)
+    test('Exact 7th place prediction should give 25 points', () => {
+      expect(calculatePositionPoints(7, 7, 'glorious7')).toBe(25)
     })
 
-    test('Off by 1 position should give 9 points', () => {
-      expect(calculatePositionPoints(6, 7, 'glorious7')).toBe(9)
-      expect(calculatePositionPoints(8, 7, 'glorious7')).toBe(9)
+    test('Off by 1 position should give 18 points', () => {
+      expect(calculatePositionPoints(6, 7, 'glorious7')).toBe(18)
+      expect(calculatePositionPoints(8, 7, 'glorious7')).toBe(18)
     })
 
-    test('Off by 2 positions should give 7 points', () => {
-      expect(calculatePositionPoints(5, 7, 'glorious7')).toBe(7)
-      expect(calculatePositionPoints(9, 7, 'glorious7')).toBe(7)
+    test('Off by 2 positions should give 15 points', () => {
+      expect(calculatePositionPoints(5, 7, 'glorious7')).toBe(15)
+      expect(calculatePositionPoints(9, 7, 'glorious7')).toBe(15)
     })
 
-    test('Off by 3 positions should give 5 points', () => {
-      expect(calculatePositionPoints(4, 7, 'glorious7')).toBe(5)
-      expect(calculatePositionPoints(10, 7, 'glorious7')).toBe(5)
+    test('Off by 3 positions should give 10 points', () => {
+      expect(calculatePositionPoints(4, 7, 'glorious7')).toBe(10)
+      expect(calculatePositionPoints(10, 7, 'glorious7')).toBe(10)
     })
 
-    test('Off by 4 positions should give 4 points', () => {
-      expect(calculatePositionPoints(3, 7, 'glorious7')).toBe(4)
-      expect(calculatePositionPoints(11, 7, 'glorious7')).toBe(4)
+    test('Off by 4 positions should give 6 points', () => {
+      expect(calculatePositionPoints(3, 7, 'glorious7')).toBe(6)
+      expect(calculatePositionPoints(11, 7, 'glorious7')).toBe(6)
     })
 
     test('Off by 5+ positions should give 0 points', () => {
@@ -113,28 +113,28 @@ describe('Scoring Engine Tests', () => {
   // ============================================================================
 
   describe('calculateChampionshipPoints', () => {
-    test('All correct predictions should give 87 points (37+25+25)', () => {
+    test('All correct predictions should give 450 points (250+100+100)', () => {
       const predictions = { first: 'rider1', second: 'rider2', third: 'rider3' }
       const results = { first: 'rider1', second: 'rider2', third: 'rider3' }
-      expect(calculateChampionshipPoints(predictions, results)).toBe(87)
+      expect(calculateChampionshipPoints(predictions, results)).toBe(450)
     })
 
-    test('Only first place correct should give 37 points', () => {
+    test('Only first place correct should give 250 points', () => {
       const predictions = { first: 'rider1', second: 'rider2', third: 'rider3' }
       const results = { first: 'rider1', second: 'rider4', third: 'rider5' }
-      expect(calculateChampionshipPoints(predictions, results)).toBe(37)
+      expect(calculateChampionshipPoints(predictions, results)).toBe(250)
     })
 
-    test('Only second place correct should give 25 points', () => {
+    test('Only second place correct should give 100 points', () => {
       const predictions = { first: 'rider1', second: 'rider2', third: 'rider3' }
       const results = { first: 'rider4', second: 'rider2', third: 'rider5' }
-      expect(calculateChampionshipPoints(predictions, results)).toBe(25)
+      expect(calculateChampionshipPoints(predictions, results)).toBe(100)
     })
 
-    test('Only third place correct should give 25 points', () => {
+    test('Only third place correct should give 100 points', () => {
       const predictions = { first: 'rider1', second: 'rider2', third: 'rider3' }
       const results = { first: 'rider4', second: 'rider5', third: 'rider3' }
-      expect(calculateChampionshipPoints(predictions, results)).toBe(25)
+      expect(calculateChampionshipPoints(predictions, results)).toBe(100)
     })
 
     test('No correct predictions should give 0 points', () => {
@@ -191,9 +191,9 @@ describe('Scoring Engine Tests', () => {
       // Step 161 (test file): `expect(score.sprint_points).toBe(12)`
       // This implies the TEST FILE was using outdated properties too! The type check failure likely would flag this too.
       // I should update the assertions to `score.sprint_1st_points` etc.
-      expect(score.sprint_1st_points).toBe(12)
-      expect(score.race_1st_points).toBe(12)
-      expect(score.glorious_7_points).toBe(36) // 12 * 3
+      expect(score.sprint_1st_points).toBe(25)
+      expect(score.race_1st_points).toBe(25)
+      expect(score.glorious_7_points).toBe(75) // 25 * 3
       expect(score.penalty_points).toBe(0)
     })
 
@@ -401,10 +401,10 @@ describe('Scoring Engine Tests', () => {
       // rider6 is relative 1st, rider7 is relative 2nd!
       // So Player 1 prediction: rider7 (relative 2nd) for 1st place => wrong. 0 points? Or partial?
       // relative pos 2, predicted 1. Diff 1. Points 9.
-      expect(scores[0].glorious_7_points).toBe(9)
+      expect(scores[0].glorious_7_points).toBe(18)
 
       // Player 2: rider6 (relative 1st) for 1st place => correct. Points 12.
-      expect(scores[1].glorious_7_points).toBe(12)
+      expect(scores[1].glorious_7_points).toBe(25)
     })
   })
 })

@@ -15,11 +15,11 @@ export function calculatePositionPoints(
   if (type === 'winner') {
     // For Sprint/Race winner predictions
     const pointsMap: Record<number, number> = {
-      0: 12, // Exact match
-      1: 9,  // Off by 1
-      2: 7,  // Off by 2
-      3: 5,  // Off by 3
-      4: 4,  // Off by 4
+      0: 25, // Exact match
+      1: 18, // Off by 1
+      2: 15, // Off by 2
+      3: 10, // Off by 3
+      4: 6,  // Off by 4
       5: 2,  // Off by 5
     };
     return pointsMap[diff] ?? 0; // 6+ positions = 0 points
@@ -28,13 +28,14 @@ export function calculatePositionPoints(
   if (type === 'glorious7') {
     // For 7th place prediction
     const pointsMap: Record<number, number> = {
-      0: 12, // Exact 7th place
-      1: 9,  // Off by 1
-      2: 7,  // Off by 2
-      3: 5,  // Off by 3
-      4: 4,  // Off by 4
+      0: 25, // Exact 7th place
+      1: 18, // Off by 1
+      2: 15, // Off by 2
+      3: 10, // Off by 3
+      4: 6,  // Off by 4
+      5: 2,  // Off by 5
     };
-    return pointsMap[diff] ?? 0; // 5+ positions = 0 points
+    return pointsMap[diff] ?? 0; // 6+ positions = 0 points
   }
 
   return 0;
@@ -62,9 +63,9 @@ export function calculateChampionshipPoints(
   results: { first: string; second: string; third: string }
 ): number {
   let points = 0;
-  if (predictions.first === results.first) points += 37;
-  if (predictions.second === results.second) points += 25;
-  if (predictions.third === results.third) points += 25;
+  if (predictions.first === results.first) points += 250;
+  if (predictions.second === results.second) points += 100;
+  if (predictions.third === results.third) points += 100;
   return points;
 }
 

@@ -43,31 +43,31 @@ Gil, Maxime, Ben, Marcello, Willi, Danny, Reno, Stefan, Jacques, (potentially mo
 #### Race Predictions (Sprint & Race Winner)
 | Prediction Accuracy | Points |
 |---------------------|--------|
-| Exact (1st place) | 12 |
-| Off by 1 position | 9 |
-| Off by 2 positions | 7 |
-| Off by 3 positions | 5 |
-| Off by 4 positions | 4 |
+| Exact (1st place) | 25 |
+| Off by 1 position | 18 |
+| Off by 2 positions | 15 |
+| Off by 3 positions | 10 |
+| Off by 4 positions | 6 |
 | Off by 5 positions | 2 |
 | Off by 6+ positions | 0 |
 
 #### Glorious 7 (7th Place Prediction)
 | Prediction Accuracy | Points |
 |---------------------|--------|
-| Exact 7th place | 12 |
-| Off by 1 position | 9 |
-| Off by 2 positions | 7 |
-| Off by 3 positions | 5 |
-| Off by 4 positions | 4 |
+| Exact 7th place | 25 |
+| Off by 1 position | 18 |
+| Off by 2 positions | 15 |
+| Off by 3 positions | 10 |
+| Off by 4 positions | 6 |
 | Off by 5+ positions | 0 |
 
 #### Championship Podium
 | Prediction | Points |
 |------------|--------|
-| 1st place correct | 37 |
-| 2nd place correct | 25 |
-| 3rd place correct | 25 |
-| **Max total** | **87** |
+| 1st place correct | 250 |
+| 2nd place correct | 100 |
+| 3rd place correct | 100 |
+| **Max total** | **450** |
 
 #### Late Submission Penalties
 | Offense | Penalty |

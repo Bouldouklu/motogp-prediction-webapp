@@ -28,11 +28,11 @@ Points are awarded based on how close the predicted rider finishes to the predic
 
 | Accuracy | Points |
 |----------|--------|
-| Exact match | 12 |
-| Off by 1 position | 9 |
-| Off by 2 positions | 7 |
-| Off by 3 positions | 5 |
-| Off by 4 positions | 4 |
+| Exact match | 25 |
+| Off by 1 position | 18 |
+| Off by 2 positions | 15 |
+| Off by 3 positions | 10 |
+| Off by 4 positions | 6 |
 | Off by 5 positions | 2 |
 | Off by 6+ positions | 0 |
 
@@ -44,11 +44,11 @@ Points are awarded based on how close the predicted rider finishes to 7th place:
 
 | Accuracy | Points |
 |----------|--------|
-| Exact 7th place | 12 |
-| Off by 1 position (6th or 8th) | 9 |
-| Off by 2 positions (5th or 9th) | 7 |
-| Off by 3 positions (4th or 10th) | 5 |
-| Off by 4 positions (3rd or 11th) | 4 |
+| Exact 7th place | 25 |
+| Off by 1 position (6th or 8th) | 18 |
+| Off by 2 positions (5th or 9th) | 15 |
+| Off by 3 positions (4th or 10th) | 10 |
+| Off by 4 positions (3rd or 11th) | 6 |
 | Off by 5+ positions | 0 |
 
 ### Late Submission Penalties
@@ -67,10 +67,10 @@ End-of-season points for predicting the final championship standings:
 
 | Position Correct | Points |
 |------------------|--------|
-| 1st place correct | 37 |
-| 2nd place correct | 25 |
-| 3rd place correct | 25 |
-| **Maximum Total** | **87** |
+| 1st place correct | 250 |
+| 2nd place correct | 100 |
+| 3rd place correct | 100 |
+| **Maximum Total** | **450** |
 
 ## Architecture
 

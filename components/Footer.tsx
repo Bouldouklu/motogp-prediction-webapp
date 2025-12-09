@@ -20,6 +20,13 @@ export default function Footer() {
                         </a>
                         <div className="hidden md:block w-1 h-1 bg-gray-700 rounded-full"></div>
                         <Link
+                            href="/scoring"
+                            className="hover:text-white transition-colors"
+                        >
+                            Scoring
+                        </Link>
+                        <div className="hidden md:block w-1 h-1 bg-gray-700 rounded-full"></div>
+                        <Link
                             href="https://github.com/Bouldouklu/motogp-prediction-webapp"
                             target="_blank"
                             rel="noopener noreferrer"
