@@ -65,7 +65,7 @@ export default async function Home() {
   const nextRace = upcomingRaces?.[0] || null
 
   return (
-    <main className="min-h-screen p-4 md:p-8 font-sans text-white">
+    <div className="flex-1 p-4 md:p-8 font-sans text-white">
       {/* Hero Header */}
       <div className="max-w-7xl mx-auto mb-12">
         <div className="flex flex-col md:flex-row justify-between items-end border-b-4 border-motogp-red pb-6">
@@ -245,6 +245,6 @@ export default async function Home() {
         </div>
 
       </div>
-    </main>
+    </div>
   );
 }

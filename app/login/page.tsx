@@ -48,7 +48,7 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-6 font-sans text-white">
+    <div className="flex-1 w-full flex flex-col items-center justify-center p-6 font-sans text-white">
       <div className="w-full max-w-md">
         <div className="text-center mb-12">
           <h1 className="text-5xl md:text-6xl font-display font-black italic tracking-tighter uppercase transform -skew-x-12 leading-none mb-4">
@@ -129,6 +129,6 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
-    </main>
+    </div>
   )
 }

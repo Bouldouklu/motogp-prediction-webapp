@@ -44,7 +44,7 @@ export default function RootLayout({
       <body className="bg-carbon-black text-white min-h-screen antialiased selection:bg-motogp-red selection:text-white flex flex-col">
         <div className="fixed inset-0 z-[-1] opacity-20 pointer-events-none bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-gray-800 via-black to-black"></div>
         <div className="fixed top-0 left-0 w-full h-1 bg-gradient-to-r from-motogp-red via-white to-motogp-red z-50"></div>
-        <main className="flex-1">
+        <main className="flex-1 flex flex-col">
           {children}
         </main>
         <Footer />
