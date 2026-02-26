@@ -224,18 +224,24 @@ export class SyncService {
     /**
      * Mark riders with known external_ids that are NOT in the provided list as inactive.
      * Riders without an external_id are left untouched (manually added entries).
+     * Fetches all tracked riders first and filters in application code to avoid
+     * fragile PostgREST UUID list syntax.
      */
     private static async deactivateRidersNotIn(activeExternalIds: string[]): Promise<number> {
         if (activeExternalIds.length === 0) return 0
 
-        const { data: toDeactivate } = await supabase
+        const activeSet = new Set(activeExternalIds)
+
+        // Fetch all active riders that have an external_id (i.e. tracked via API)
+        const { data: trackedRiders } = await supabase
             .from('riders')
-            .select('id, name')
+            .select('id, name, external_id')
             .eq('active', true)
             .not('external_id', 'is', null)
-            .not('external_id', 'in', `(${activeExternalIds.join(',')})`)
 
-        if (!toDeactivate || toDeactivate.length === 0) return 0
+        if (!trackedRiders || trackedRiders.length === 0) return 0
+
+        const toDeactivate = trackedRiders.filter(r => !activeSet.has(r.external_id))
 
         for (const rider of toDeactivate) {
             console.log(`Marking ${rider.name} as inactive (not in current classification)`)
