@@ -9,6 +9,7 @@ export async function GET(request: NextRequest) {
     }
 
     const searchParams = request.nextUrl.searchParams;
+    // action: 'all' | 'riders' | 'races' | 'session-times'
     const action = searchParams.get('action') || 'all';
     const yearParam = searchParams.get('year');
 
@@ -22,19 +23,20 @@ export async function GET(request: NextRequest) {
             year = currentSeason.year;
         }
 
-        const results = {
-            riders: 'skipped',
-            races: 'skipped',
-        };
+        const results: Record<string, unknown> = {};
 
         if (action === 'all' || action === 'riders') {
-            await SyncService.syncRiders(year);
-            results.riders = 'synced';
+            results.riders = await SyncService.syncRiders(year);
         }
 
         if (action === 'all' || action === 'races') {
             await SyncService.syncRaces(year);
             results.races = 'synced';
+        }
+
+        // Sync exact FP1 times from sessions API (runs after races so rows exist)
+        if (action === 'all' || action === 'races' || action === 'session-times') {
+            results.sessionTimes = await SyncService.syncSessionTimes(year);
         }
 
         return NextResponse.json({ success: true, year, results });
