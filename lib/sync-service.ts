@@ -179,7 +179,11 @@ export class SyncService {
                 .single()
 
             if (existing) {
-                await supabase.from('riders').update(riderData).eq('id', existing.id)
+                const { error } = await supabase.from('riders').update(riderData).eq('id', existing.id)
+                if (error) {
+                    console.error(`Failed to update rider ${entry.rider.full_name}:`, error)
+                    continue
+                }
             } else {
                 // Also try matching by rider number in case the row exists without external_id
                 const { data: byNumber } = await supabase
@@ -190,9 +194,17 @@ export class SyncService {
                     .single()
 
                 if (byNumber) {
-                    await supabase.from('riders').update(riderData).eq('id', byNumber.id)
+                    const { error } = await supabase.from('riders').update(riderData).eq('id', byNumber.id)
+                    if (error) {
+                        console.error(`Failed to update rider ${entry.rider.full_name} by number:`, error)
+                        continue
+                    }
                 } else {
-                    await supabase.from('riders').insert(riderData)
+                    const { error } = await supabase.from('riders').insert(riderData)
+                    if (error) {
+                        console.error(`Failed to insert rider ${entry.rider.full_name}:`, error)
+                        continue
+                    }
                 }
             }
             upserted++
@@ -221,7 +233,7 @@ export class SyncService {
             .select('id, name')
             .eq('active', true)
             .not('external_id', 'is', null)
-            .not('external_id', 'in', `(${activeExternalIds.map(id => `"${id}"`).join(',')})`)
+            .not('external_id', 'in', `(${activeExternalIds.join(',')})`)
 
         if (!toDeactivate || toDeactivate.length === 0) return 0
 
