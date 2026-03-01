@@ -59,10 +59,11 @@ export default async function LeaderboardPage() {
     };
   });
 
-  // 2. Prepare Trend Data (Cumulative)
-  const completedRaces = safeRaces  // all races; already ordered by round_number
+  // 2. Prepare Trend Data (Cumulative) — only races that have scores
+  const completedRaces = safeRaces  // all races for the points table
+  const racesWithScores = safeRaces.filter(r => safeScores.some(s => s.race_id === r.id))
 
-  const trendData = completedRaces.map(race => {
+  const trendData = racesWithScores.map(race => {
     const point: any = { race: race.circuit } // Use circuit name for X-axis
 
     safePlayers.forEach(player => {
@@ -178,7 +179,7 @@ export default async function LeaderboardPage() {
                 Points per Race
               </h2>
               <div className="overflow-x-auto bg-track-gray rounded-xl border border-gray-800">
-                <table className="w-full text-sm text-left">
+                <table className="min-w-full text-sm text-left">
                   <thead className="text-xs text-gray-400 uppercase bg-black/40 border-b border-gray-800">
                     <tr>
                       <th className="px-6 py-4 font-bold sticky left-0 bg-[#1a1a1a] z-10">Player</th>
@@ -190,7 +191,7 @@ export default async function LeaderboardPage() {
                           </div>
                         </th>
                       ))}
-                      <th className="px-6 py-4 text-right font-bold text-white">Total</th>
+                      <th className="px-6 py-4 text-right font-bold text-white sticky right-0 bg-[#1a1a1a] z-10 border-l border-gray-800">Total</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-800">
@@ -207,7 +208,7 @@ export default async function LeaderboardPage() {
                             </td>
                           )
                         })}
-                        <td className="px-6 py-4 font-black italic text-right text-motogp-red border-l border-gray-800">
+                        <td className="px-6 py-4 font-black italic text-right text-motogp-red sticky right-0 bg-track-gray border-l border-gray-800">
                           {player.totalPoints}
                         </td>
                       </tr>
