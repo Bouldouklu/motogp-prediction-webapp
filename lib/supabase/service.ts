@@ -5,8 +5,7 @@ import { createClient as createSupabaseClient } from '@supabase/supabase-js'
  * Use ONLY in admin API routes that have already verified admin auth.
  */
 export function createServiceClient() {
-  return createSupabaseClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
+  const key =
+    process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.SERVICE_ROLE_KEY!
+  return createSupabaseClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, key)
 }
