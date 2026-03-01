@@ -18,8 +18,12 @@ interface ScoreCalculationPanelProps {
 interface PlayerScore {
   player_id: string
   race_id: string
-  sprint_points: number
-  race_points: number
+  sprint_1st_points: number
+  sprint_2nd_points: number
+  sprint_3rd_points: number
+  race_1st_points: number
+  race_2nd_points: number
+  race_3rd_points: number
   glorious_7_points: number
   penalty_points: number
 }
@@ -149,7 +153,7 @@ export default function ScoreCalculationPanel({ races, raceIdsWithResults }: Sco
       {previewScores && previewScores.length > 0 && (
         <div className="border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-gray-100 dark:bg-gray-700">
+            <thead className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
               <tr>
                 <th className="px-3 py-2 text-left">Player</th>
                 <th className="px-3 py-2 text-center">Sprint</th>
@@ -161,21 +165,19 @@ export default function ScoreCalculationPanel({ races, raceIdsWithResults }: Sco
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               {previewScores.map((score, idx) => {
-                const total =
-                  score.sprint_points +
-                  score.race_points +
-                  score.glorious_7_points -
-                  score.penalty_points
+                const sprintTotal = score.sprint_1st_points + score.sprint_2nd_points + score.sprint_3rd_points
+                const raceTotal = score.race_1st_points + score.race_2nd_points + score.race_3rd_points
+                const total = sprintTotal + raceTotal + score.glorious_7_points - score.penalty_points
                 return (
                   <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-gray-800">
-                    <td className="px-3 py-2">Player {idx + 1}</td>
-                    <td className="px-3 py-2 text-center">{score.sprint_points}</td>
-                    <td className="px-3 py-2 text-center">{score.race_points}</td>
-                    <td className="px-3 py-2 text-center">{score.glorious_7_points}</td>
+                    <td className="px-3 py-2 text-gray-900 dark:text-gray-100">Player {idx + 1}</td>
+                    <td className="px-3 py-2 text-center text-gray-900 dark:text-gray-100">{sprintTotal}</td>
+                    <td className="px-3 py-2 text-center text-gray-900 dark:text-gray-100">{raceTotal}</td>
+                    <td className="px-3 py-2 text-center text-gray-900 dark:text-gray-100">{score.glorious_7_points}</td>
                     <td className="px-3 py-2 text-center text-red-600 dark:text-red-400">
                       {score.penalty_points > 0 ? `-${score.penalty_points}` : '-'}
                     </td>
-                    <td className="px-3 py-2 text-center font-bold">{total}</td>
+                    <td className="px-3 py-2 text-center font-bold text-gray-900 dark:text-gray-100">{total}</td>
                   </tr>
                 )
               })}
