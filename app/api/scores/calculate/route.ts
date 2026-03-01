@@ -214,6 +214,16 @@ export async function POST(request: NextRequest) {
         };
       });
 
+    // Delete existing penalties for this race before inserting to prevent duplicates on recalculation
+    const { error: deletePenaltyError } = await supabase
+      .from('penalties')
+      .delete()
+      .eq('race_id', raceId);
+
+    if (deletePenaltyError) {
+      console.error('Error deleting existing penalties:', deletePenaltyError);
+    }
+
     if (penaltyRecords.length > 0) {
       const { error: penaltyError } = await supabase
         .from('penalties')

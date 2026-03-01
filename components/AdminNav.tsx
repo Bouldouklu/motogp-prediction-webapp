@@ -29,8 +29,6 @@ export default function AdminNav({ currentPage }: AdminNavProps) {
 
   const navItems = [
     { href: '/admin', label: 'Dashboard', key: 'dashboard' },
-    { href: '/admin/results', label: 'Results Entry', key: 'results' },
-    { href: '/admin/players', label: 'Player Management', key: 'players' },
   ]
 
   return (

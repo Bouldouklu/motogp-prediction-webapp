@@ -129,7 +129,7 @@ export default function ScoreCalculationPanel({ races, raceIdsWithResults }: Sco
 
       {/* Race selector */}
       <div>
-        <label className="block text-sm font-medium mb-2">Select Race</label>
+        <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-100">Select Race</label>
         <select
           value={selectedRaceId}
           onChange={(e) => {
@@ -138,7 +138,7 @@ export default function ScoreCalculationPanel({ races, raceIdsWithResults }: Sco
             setPreviewScores(null)
           }}
           disabled={loading || previewing}
-          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
+          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
         >
           <option value="">Choose a race...</option>
           {completedRaces.map((race) => (
