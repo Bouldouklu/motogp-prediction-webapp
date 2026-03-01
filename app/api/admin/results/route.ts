@@ -200,6 +200,7 @@ export async function POST(request: NextRequest) {
     const hasSprint = allResults?.some((r) => r.result_type === 'sprint')
     const hasRace = allResults?.some((r) => r.result_type === 'race')
 
+    let statusUpdateFailed = false
     if (hasSprint && hasRace) {
       const { error: updateError } = await supabase
         .from('races')
@@ -207,8 +208,8 @@ export async function POST(request: NextRequest) {
         .eq('id', raceId)
 
       if (updateError) {
-        console.error('Error updating race status:', updateError)
-        // Don't fail the entire operation if status update fails
+        console.error('Error updating race status to completed:', updateError)
+        statusUpdateFailed = true
       }
     }
 
@@ -217,6 +218,7 @@ export async function POST(request: NextRequest) {
       message: 'Race results saved successfully',
       sprintResultsCount: sprintCount,
       raceResultsCount: raceCount,
+      ...(statusUpdateFailed && { statusUpdateFailed: true }),
     })
   } catch (error) {
     console.error('Unexpected error in results API:', error)

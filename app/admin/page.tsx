@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import ScoreCalculationPanel from '@/components/ScoreCalculationPanel'
 import ChampionshipResultsForm from '@/components/ChampionshipResultsForm'
+import MarkRaceCompletedButton from '@/components/MarkRaceCompletedButton'
 
 export default async function AdminDashboard() {
   const supabase = await createClient()
@@ -59,7 +60,7 @@ export default async function AdminDashboard() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold mb-2">Admin Dashboard</h1>
+        <h1 className="text-3xl font-bold mb-2 text-gray-900 dark:text-gray-100">Admin Dashboard</h1>
         <p className="text-gray-600 dark:text-gray-400">
           Manage race results, calculate scores, and administer players
         </p>
@@ -95,34 +96,42 @@ export default async function AdminDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Enter Results */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-xl font-semibold mb-4">Enter Race Results</h2>
+          <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Enter Race Results</h2>
 
           {racesNeedingResults && racesNeedingResults.length > 0 ? (
             <div className="space-y-3">
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
                 Races needing results:
               </p>
-              {racesNeedingResults.map((race: any) => (
-                <Link
-                  key={race.id}
-                  href={`/admin/results/${race.id}`}
-                  className="block p-4 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="font-medium">
-                        Round {race.round_number}: {race.name}
+              {racesNeedingResults.map((race: any) => {
+                const hasResults = raceIdsWithResults.includes(race.id)
+                return (
+                  <div
+                    key={race.id}
+                    className="p-4 border border-gray-300 dark:border-gray-600 rounded-lg"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="min-w-0 flex-1">
+                        <div className="font-medium text-gray-900 dark:text-gray-100">
+                          Round {race.round_number}: {race.name}
+                        </div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400">
+                          {race.country} • {new Date(race.race_date).toLocaleDateString()}
+                        </div>
                       </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400">
-                        {race.country} • {new Date(race.race_date).toLocaleDateString()}
+                      <div className="flex items-center gap-2 shrink-0">
+                        {hasResults && <MarkRaceCompletedButton raceId={race.id} />}
+                        <Link
+                          href={`/admin/results/${race.id}`}
+                          className="text-blue-600 dark:text-blue-400 text-sm font-medium hover:underline"
+                        >
+                          Enter →
+                        </Link>
                       </div>
                     </div>
-                    <span className="text-blue-600 dark:text-blue-400 text-sm font-medium">
-                      Enter →
-                    </span>
                   </div>
-                </Link>
-              ))}
+                )
+              })}
             </div>
           ) : (
             <p className="text-gray-600 dark:text-gray-400">
@@ -133,20 +142,20 @@ export default async function AdminDashboard() {
 
         {/* Score Calculation */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-xl font-semibold mb-4">Calculate Scores</h2>
+          <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Calculate Scores</h2>
           <ScoreCalculationPanel races={allRaces || []} raceIdsWithResults={raceIdsWithResults} />
         </div>
       </div>
 
       {/* Championship Results */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-6">
-        <h2 className="text-xl font-semibold mb-4">Championship Results (End of Season)</h2>
+        <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Championship Results (End of Season)</h2>
         <ChampionshipResultsForm riders={riders || []} seasonYear={2026} />
       </div>
 
       {/* Recent Activity */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-6">
-        <h2 className="text-xl font-semibold mb-4">Recently Completed Races</h2>
+        <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Recently Completed Races</h2>
 
         {completedRaces && completedRaces.length > 0 ? (
           <div className="space-y-3">
@@ -157,7 +166,7 @@ export default async function AdminDashboard() {
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-medium">
+                    <div className="font-medium text-gray-900 dark:text-gray-100">
                       Round {race.round_number}: {race.name}
                     </div>
                     <div className="text-sm text-gray-600 dark:text-gray-400">
@@ -182,7 +191,7 @@ export default async function AdminDashboard() {
           href="/admin/players"
           className="block p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-colors"
         >
-          <h3 className="text-lg font-semibold mb-2">Player Management</h3>
+          <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">Player Management</h3>
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Create players, reset passphrases, and apply penalties
           </p>
@@ -192,7 +201,7 @@ export default async function AdminDashboard() {
           href="/"
           className="block p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-colors"
         >
-          <h3 className="text-lg font-semibold mb-2">View Leaderboard</h3>
+          <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">View Leaderboard</h3>
           <p className="text-sm text-gray-600 dark:text-gray-400">
             See current standings and player predictions
           </p>

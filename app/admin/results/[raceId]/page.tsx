@@ -49,7 +49,7 @@ export default async function RaceResultsEntryPage({
     <div className="space-y-6">
       {/* Header */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-6">
-        <h1 className="text-3xl font-bold mb-2">Race Results Entry</h1>
+        <h1 className="text-3xl font-bold mb-2 text-gray-900 dark:text-gray-100">Race Results Entry</h1>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h2 className="text-xl font-semibold text-blue-600 dark:text-blue-400">
