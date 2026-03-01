@@ -191,8 +191,16 @@ export async function POST(request: NextRequest) {
       raceCount = raceData.length
     }
 
-    // Update race status to completed if both sprint and race results are saved
-    if (sprintCount > 0 && raceCount > 0) {
+    // Update race status to completed if both sprint and race results now exist in DB
+    const { data: allResults } = await supabase
+      .from('race_results')
+      .select('result_type')
+      .eq('race_id', raceId)
+
+    const hasSprint = allResults?.some((r) => r.result_type === 'sprint')
+    const hasRace = allResults?.some((r) => r.result_type === 'race')
+
+    if (hasSprint && hasRace) {
       const { error: updateError } = await supabase
         .from('races')
         .update({ status: 'completed' })

@@ -28,6 +28,13 @@ export default async function AdminDashboard() {
     .select('*')
     .order('round_number', { ascending: true })
 
+  // Fetch race IDs that have results entered (to show in score calculation even if status isn't 'completed')
+  const { data: racesWithResults } = await supabase
+    .from('race_results')
+    .select('race_id')
+
+  const raceIdsWithResults = [...new Set((racesWithResults || []).map((r: { race_id: string }) => r.race_id))]
+
   // Fetch all riders for championship results
   const { data: riders } = await supabase
     .from('riders')
@@ -127,7 +134,7 @@ export default async function AdminDashboard() {
         {/* Score Calculation */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-6">
           <h2 className="text-xl font-semibold mb-4">Calculate Scores</h2>
-          <ScoreCalculationPanel races={allRaces || []} />
+          <ScoreCalculationPanel races={allRaces || []} raceIdsWithResults={raceIdsWithResults} />
         </div>
       </div>
 

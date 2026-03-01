@@ -12,6 +12,7 @@ interface Race {
 
 interface ScoreCalculationPanelProps {
   races: Race[]
+  raceIdsWithResults?: string[]
 }
 
 interface PlayerScore {
@@ -23,7 +24,7 @@ interface PlayerScore {
   penalty_points: number
 }
 
-export default function ScoreCalculationPanel({ races }: ScoreCalculationPanelProps) {
+export default function ScoreCalculationPanel({ races, raceIdsWithResults }: ScoreCalculationPanelProps) {
   const [selectedRaceId, setSelectedRaceId] = useState('')
   const [loading, setLoading] = useState(false)
   const [previewing, setPreviewing] = useState(false)
@@ -33,7 +34,9 @@ export default function ScoreCalculationPanel({ races }: ScoreCalculationPanelPr
     text: string
   } | null>(null)
 
-  const completedRaces = races.filter((r) => r.status === 'completed')
+  const completedRaces = races.filter(
+    (r) => r.status === 'completed' || raceIdsWithResults?.includes(r.id)
+  )
 
   const handlePreview = async () => {
     if (!selectedRaceId) {
