@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 import { requireAdmin } from '@/lib/auth'
 import { validateRaceResults, type RaceResult } from '@/lib/scoring'
 
@@ -202,7 +203,8 @@ export async function POST(request: NextRequest) {
 
     let statusUpdateFailed = false
     if (hasSprint && hasRace) {
-      const { error: updateError } = await supabase
+      const serviceClient = createServiceClient()
+      const { error: updateError } = await serviceClient
         .from('races')
         .update({ status: 'completed' })
         .eq('id', raceId)
