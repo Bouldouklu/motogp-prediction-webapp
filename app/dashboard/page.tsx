@@ -81,6 +81,22 @@ export default async function DashboardPage() {
     .limit(1)
     .single()
 
+  // Fetch leaderboard top 3
+  const { data: allPlayersData } = await supabase.from('players').select('id, name')
+  const { data: leaderboardScoresData } = await supabase.from('player_scores').select('player_id, total_points')
+
+  const top3 = (allPlayersData || [])
+    .filter(p => p.name.toLowerCase() !== 'admin')
+    .map(p => ({
+      id: p.id,
+      name: p.name,
+      totalPoints: (leaderboardScoresData || [])
+        .filter(s => s.player_id === p.id)
+        .reduce((sum, s) => sum + (s.total_points || 0), 0)
+    }))
+    .sort((a, b) => b.totalPoints - a.totalPoints)
+    .slice(0, 3)
+
   const championshipDeadline = new Date(firstRace?.fp1_datetime || '2026-03-01T00:00:00Z')
   const championshipDeadlinePassed = championshipDeadline < new Date()
 
@@ -225,15 +241,23 @@ export default async function DashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-12">
           <Link
             href="/leaderboard"
-            className="group p-6 bg-track-gray rounded-xl border border-gray-800 hover:border-motogp-red transition-all duration-200 relative overflow-hidden"
+            className="group col-span-full p-6 bg-track-gray rounded-xl border border-gray-800 hover:border-motogp-red transition-all duration-200 relative overflow-hidden"
           >
             <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
               <span className="text-6xl">🏆</span>
             </div>
             <h3 className="text-lg font-display font-bold uppercase italic mb-2 group-hover:text-motogp-red transition-colors">Leaderboard</h3>
-            <p className="text-sm text-gray-400">
-              View standings →
-            </p>
+            <div className="mt-3 space-y-2">
+              {top3.map((p, i) => (
+                <div key={p.id} className="flex justify-between items-center text-sm">
+                  <span className={i === 0 ? 'text-yellow-400 font-bold' : i === 1 ? 'text-gray-300' : 'text-amber-600'}>
+                    {i + 1}. {p.name}
+                  </span>
+                  <span className="font-mono text-gray-400">{p.totalPoints} pts</span>
+                </div>
+              ))}
+            </div>
+            <p className="text-xs text-gray-500 mt-3">View full standings →</p>
           </Link>
 
           {/* Championship Prediction CTA - Before deadline, not submitted */}

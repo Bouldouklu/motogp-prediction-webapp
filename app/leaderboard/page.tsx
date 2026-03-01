@@ -29,7 +29,7 @@ export default async function LeaderboardPage() {
     supabase.from('player_scores').select('*')
   ])
 
-  const safePlayers = players || []
+  const safePlayers = (players || []).filter(p => p.name.toLowerCase() !== 'admin')
   const safeRaces = races || []
   const safeScores = scores || []
 
@@ -60,9 +60,7 @@ export default async function LeaderboardPage() {
   });
 
   // 2. Prepare Trend Data (Cumulative)
-  const completedRaces = safeRaces.filter(r =>
-    safeScores.some(s => s.race_id === r.id)
-  )
+  const completedRaces = safeRaces  // all races; already ordered by round_number
 
   const trendData = completedRaces.map(race => {
     const point: any = { race: race.circuit } // Use circuit name for X-axis
@@ -205,7 +203,7 @@ export default async function LeaderboardPage() {
                           const score = safeScores.find(s => s.race_id === race.id && s.player_id === player.id)
                           return (
                             <td key={race.id} className="px-6 py-4 font-mono text-gray-300 text-center">
-                              {score?.total_points || '-'}
+                              {score ? score.total_points : 0}
                             </td>
                           )
                         })}
@@ -216,7 +214,7 @@ export default async function LeaderboardPage() {
                     ))}
                   </tbody>
                 </table>
-                {completedRaces.length === 0 && (
+                {safeRaces.length === 0 && (
                   <div className="p-8 text-center text-gray-500 italic">
                     No races completed yet.
                   </div>
