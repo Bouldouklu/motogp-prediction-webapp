@@ -479,47 +479,35 @@ export default async function DashboardPage() {
           {upcomingRaces && upcomingRaces.length > 0 ? (
             <div className="space-y-4">
               {upcomingRaces.map((race) => (
-                <div
+                <Link
                   key={race.id}
-                  className="group p-6 bg-track-gray rounded-xl border border-gray-800 hover:border-gray-600 transition-all duration-200"
+                  href={`/predict/${race.id}`}
+                  className="group block relative p-6 bg-track-gray rounded-xl border border-gray-800 hover:border-gray-600 transition-all duration-200 overflow-hidden"
                 >
-                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div>
-                      <div className="flex items-center gap-3 mb-1">
-                        <span className="bg-gray-800 text-gray-300 text-xs font-bold uppercase px-2 py-0.5 rounded">Round {race.round_number}</span>
+                  {/* Decorative round number */}
+                  <div className="absolute top-0 right-4 font-display font-black italic text-[6rem] leading-none text-white opacity-[0.04] select-none pointer-events-none group-hover:opacity-[0.07] transition-opacity">
+                    {race.round_number}
+                  </div>
+                  <div className="relative z-10">
+                    <h3 className="text-3xl font-display font-black italic uppercase text-white mb-1 group-hover:text-motogp-red transition-colors">
+                      {race.name}
+                    </h3>
+                    <p className="text-sm text-gray-400 mb-2 font-medium">
+                      {race.circuit} • {race.country}
+                    </p>
+                    <div className="flex flex-wrap gap-4 text-sm text-gray-500 mt-2">
+                      <div>
+                        <span className="text-motogp-red font-bold">RACE:</span> {new Date(race.race_date).toLocaleDateString()}
                       </div>
-                      <h3 className="text-2xl font-display font-black italic uppercase text-white">
-                        {race.name}
-                      </h3>
-                      <p className="text-sm text-gray-400 mb-2 font-medium">
-                        {race.circuit} • {race.country}
-                      </p>
-                      <div className="flex gap-4 text-sm text-gray-500 mt-2">
-                        <div>
-                          <span className="text-motogp-red font-bold">RACE:</span> {new Date(race.race_date).toLocaleDateString()}
-                        </div>
-                        <div>
-                          <span className="text-motogp-red font-bold">DEADLINE:</span> {new Date(race.fp1_datetime).toLocaleString()}
-                        </div>
+                      <div>
+                        <span className="text-motogp-red font-bold">DEADLINE:</span> {new Date(race.fp1_datetime).toLocaleString()}
                       </div>
                     </div>
-                    {predictedRaceIds.has(race.id) ? (
-                      <Link
-                        href={`/predict/${race.id}`}
-                        className="w-full md:w-auto px-6 py-3 bg-green-600/20 border border-green-600 hover:bg-green-600 text-green-500 hover:text-white font-black uppercase italic tracking-wider rounded transform -skew-x-12 transition-all text-center"
-                      >
-                        <span className="inline-block skew-x-12">✓ Edit</span>
-                      </Link>
-                    ) : (
-                      <Link
-                        href={`/predict/${race.id}`}
-                        className="w-full md:w-auto px-6 py-3 bg-motogp-red hover:bg-white text-white hover:text-black font-black uppercase italic tracking-wider rounded shadow-lg shadow-red-900/20 transform -skew-x-12 transition-all text-center"
-                      >
-                        <span className="inline-block skew-x-12">Predict</span>
-                      </Link>
+                    {predictedRaceIds.has(race.id) && (
+                      <div className="mt-3 text-xs text-green-500 font-bold uppercase tracking-wider">✓ Prediction submitted</div>
                     )}
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           ) : (
