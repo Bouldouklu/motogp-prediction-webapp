@@ -44,7 +44,7 @@ Je ne sais pas encore, tu peux me redonner les autres option que AI avait propos
 ###### **Main page**
 
 * If possible to get images of the tracks in the block corresponding that would be great (similar to the GP or F1 websites), maybe just the one coming up? We can also use the images currently on the MotoGP website for the previous season
-* Can we have the riders photos (from the GP website) once the podium selections are done both for the championship and the race? but very optional
+* ~~Can we have the riders photos (from the GP website) once the podium selections are done both for the championship and the race? but very optional~~ ✅ Done — rider portraits loaded from MotoGP CDN via external_id; small circular photo in the locked championship row; faded full portrait in the championship grid cards; circular photos + last name in the Next Up hero card when prediction is submitted; falls back gracefully if image unavailable
 * ~~Removing the line "round X" from each race element to make the rest of the text bigger. And maybe making the number a bigger low opacity element in the block~~ ✅ Done — "Round X" badge removed; large faint round number now sits as a decorative background element top-right of each card
 * ~~Do we need the "predict now" and "predict" buttons? maybe just clicking on the race element brings us to the prediction screen?~~ ✅ Done — entire card is now a clickable link; Predict/Edit buttons removed; predicted races show a small green "✓ Prediction submitted" line instead
 
