@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import LogoutButton from '@/components/LogoutButton'
 import CollapsibleSection from '@/components/CollapsibleSection'
+import RiderPhoto from '@/components/RiderPhoto'
 
 export default async function DashboardPage() {
   const user = await getCurrentUser()
@@ -164,12 +165,10 @@ export default async function DashboardPage() {
                       {i > 0 && <span className="text-gray-700 hidden sm:inline mr-2">·</span>}
                       <span>{medal}</span>
                       {getRiderPhotoUrl((place as any)?.external_id) && (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
+                        <RiderPhoto
                           src={getRiderPhotoUrl((place as any)?.external_id)!}
                           alt={(place as any)?.name || ''}
                           className="w-6 h-6 rounded-full object-cover object-top bg-gray-800"
-                          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
                         />
                       )}
                       <span className={`font-display font-black italic uppercase ${nameClass}`}>{(place as any)?.name}</span>
@@ -185,12 +184,10 @@ export default async function DashboardPage() {
                     <div className="p-4 bg-gradient-to-br from-gray-900 to-black border border-yellow-500/30 rounded-lg relative overflow-hidden">
                       <div className="absolute top-2 right-2 text-4xl opacity-20">🥇</div>
                       {getRiderPhotoUrl((championshipPrediction.first_place as any)?.external_id) && (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
+                        <RiderPhoto
                           src={getRiderPhotoUrl((championshipPrediction.first_place as any)?.external_id)!}
                           alt={championshipPrediction.first_place?.name || ''}
                           className="absolute bottom-0 right-0 h-24 w-auto object-cover object-top opacity-30 pointer-events-none"
-                          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
                         />
                       )}
                       <div className="text-xs text-yellow-500 font-bold uppercase tracking-wider mb-1">Winner</div>
@@ -204,12 +201,10 @@ export default async function DashboardPage() {
                     <div className="p-4 bg-gradient-to-br from-gray-900 to-black border border-gray-700 rounded-lg relative overflow-hidden">
                       <div className="absolute top-2 right-2 text-4xl opacity-20">🥈</div>
                       {getRiderPhotoUrl((championshipPrediction.second_place as any)?.external_id) && (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
+                        <RiderPhoto
                           src={getRiderPhotoUrl((championshipPrediction.second_place as any)?.external_id)!}
                           alt={championshipPrediction.second_place?.name || ''}
                           className="absolute bottom-0 right-0 h-24 w-auto object-cover object-top opacity-30 pointer-events-none"
-                          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
                         />
                       )}
                       <div className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">Runner Up</div>
@@ -223,12 +218,10 @@ export default async function DashboardPage() {
                     <div className="p-4 bg-gradient-to-br from-gray-900 to-black border border-orange-700/30 rounded-lg relative overflow-hidden">
                       <div className="absolute top-2 right-2 text-4xl opacity-20">🥉</div>
                       {getRiderPhotoUrl((championshipPrediction.third_place as any)?.external_id) && (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
+                        <RiderPhoto
                           src={getRiderPhotoUrl((championshipPrediction.third_place as any)?.external_id)!}
                           alt={championshipPrediction.third_place?.name || ''}
                           className="absolute bottom-0 right-0 h-24 w-auto object-cover object-top opacity-30 pointer-events-none"
-                          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
                         />
                       )}
                       <div className="text-xs text-orange-500 font-bold uppercase tracking-wider mb-1">Third</div>
@@ -306,12 +299,10 @@ export default async function DashboardPage() {
                                   <div key={rider.id} className="flex items-center gap-1.5">
                                     <span className="text-[10px] text-gray-600 font-mono">{i + 1}.</span>
                                     {photoUrl ? (
-                                      // eslint-disable-next-line @next/next/no-img-element
-                                      <img
+                                      <RiderPhoto
                                         src={photoUrl}
                                         alt={rider.name}
                                         className="w-7 h-7 rounded-full object-cover object-top bg-gray-800 border border-gray-700"
-                                        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
                                       />
                                     ) : (
                                       <div className="w-7 h-7 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center text-[10px] font-mono text-gray-500">
