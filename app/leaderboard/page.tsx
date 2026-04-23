@@ -124,7 +124,8 @@ export default async function LeaderboardPage() {
                   <div className="col-span-4 md:col-span-4">Rider</div>
                   <div className="hidden md:block col-span-2 text-center text-[10px] md:text-xs">Diff Leader</div>
                   <div className="hidden md:block col-span-2 text-center text-[10px] md:text-xs">Diff Prev</div>
-                  <div className="col-span-6 md:col-span-3 text-right pr-4">Total Points</div>
+                  <div className="hidden md:block col-span-1 text-center text-[10px] md:text-xs text-red-500">Penalties</div>
+                  <div className="col-span-6 md:col-span-2 text-right pr-4">Total Points</div>
                 </div>
 
                 <div className="divide-y divide-gray-800">
@@ -148,7 +149,12 @@ export default async function LeaderboardPage() {
                       <div className="hidden md:block col-span-2 text-center">
                         <div className="font-mono text-gray-500">{index === 0 ? '-' : `-${entry.diffToPrev}`}</div>
                       </div>
-                      <div className="col-span-6 md:col-span-3 text-right pr-4">
+                      <div className="hidden md:block col-span-1 text-center">
+                        <div className={`font-mono text-sm ${entry.totalPenalties > 0 ? 'text-red-500 font-bold' : 'text-gray-700'}`}>
+                          {entry.totalPenalties > 0 ? `-${entry.totalPenalties}` : '—'}
+                        </div>
+                      </div>
+                      <div className="col-span-6 md:col-span-2 text-right pr-4">
                         <div className="font-display font-black italic text-3xl text-motogp-red">{entry.totalPoints}</div>
                       </div>
                     </div>
