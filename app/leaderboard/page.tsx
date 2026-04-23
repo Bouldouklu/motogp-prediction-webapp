@@ -210,7 +210,14 @@ export default async function LeaderboardPage() {
                           const score = safeScores.find(s => s.race_id === race.id && s.player_id === player.id)
                           return (
                             <td key={race.id} className="px-6 py-4 font-mono text-gray-300 text-center">
-                              {score ? score.total_points : 0}
+                              <div className="flex flex-col items-center gap-0.5">
+                                <span>{score ? score.total_points : 0}</span>
+                                {score && score.penalty_points > 0 && (
+                                  <span className="text-[10px] font-bold text-red-500 leading-none">
+                                    -{score.penalty_points}
+                                  </span>
+                                )}
+                              </div>
                             </td>
                           )
                         })}
