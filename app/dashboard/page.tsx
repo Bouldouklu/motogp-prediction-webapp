@@ -3,6 +3,7 @@ import { getCurrentUser } from '@/lib/auth'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import LogoutButton from '@/components/LogoutButton'
+import CollapsibleSection from '@/components/CollapsibleSection'
 
 export default async function DashboardPage() {
   const user = await getCurrentUser()
@@ -309,11 +310,10 @@ export default async function DashboardPage() {
 
 
         {/* Previous Races Section */}
-        <div className="mb-12">
-          <h2 className="text-3xl font-display font-black italic uppercase mb-6 flex items-center gap-2">
-            <span className="w-1 h-8 bg-gray-600 skew-x-12 inline-block"></span>
-            Previous Races
-          </h2>
+        <CollapsibleSection
+          title="Previous Races"
+          count={previousRaces?.length ?? 0}
+        >
           {previousRaces && previousRaces.length > 0 ? (
             <div className="space-y-4">
               {previousRaces.map((race) => {
@@ -513,7 +513,7 @@ export default async function DashboardPage() {
               No previous races.
             </p>
           )}
-        </div>
+        </CollapsibleSection>
 
         <div>
           <h2 className="text-3xl font-display font-black italic uppercase mb-6 flex items-center gap-2">
