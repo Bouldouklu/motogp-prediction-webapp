@@ -93,9 +93,17 @@ export default async function PredictPage({
             </div>
             <div className="text-right hidden md:block">
               <div className="text-xs text-gray-500 font-bold uppercase tracking-wider">Sprint</div>
-              <div className="text-lg font-mono font-bold text-gray-300 mb-2">{new Date(race.sprint_date).toLocaleDateString()}</div>
+              <div className="text-lg font-mono font-bold text-gray-300 mb-2">
+                {race.sprint_datetime
+                  ? new Date(race.sprint_datetime).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+                  : new Date(race.sprint_date).toLocaleDateString()}
+              </div>
               <div className="text-xs text-gray-500 font-bold uppercase tracking-wider">Race</div>
-              <div className="text-xl font-mono font-bold text-white">{new Date(race.race_date).toLocaleDateString()}</div>
+              <div className="text-xl font-mono font-bold text-white">
+                {race.race_datetime
+                  ? new Date(race.race_datetime).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+                  : new Date(race.race_date).toLocaleDateString()}
+              </div>
             </div>
           </div>
         </div>
