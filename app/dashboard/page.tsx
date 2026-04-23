@@ -61,14 +61,37 @@ export default async function DashboardPage() {
   // Create a Set of race IDs that have predictions for quick lookup (for upcoming races)
   const predictedRaceIds = new Set(userPredictions?.map(p => p.race_id) || [])
 
+  // Fetch rider details for Next Up prediction display
+  const nextRacePrediction = userPredictions?.find(p => p.race_id === upcomingRaces?.[0]?.id)
+  const nextRacePredictedRiderIds = nextRacePrediction ? [
+    nextRacePrediction.sprint_1st_id,
+    nextRacePrediction.sprint_2nd_id,
+    nextRacePrediction.sprint_3rd_id,
+    nextRacePrediction.race_1st_id,
+    nextRacePrediction.race_2nd_id,
+    nextRacePrediction.race_3rd_id,
+  ].filter(Boolean) as string[] : []
+
+  const { data: nextRacePredictedRiders } = nextRacePredictedRiderIds.length > 0
+    ? await supabase
+        .from('riders')
+        .select('id, name, number, external_id')
+        .in('id', nextRacePredictedRiderIds)
+    : { data: [] as { id: string; name: string; number: number; external_id: string | null }[] }
+
+  // Build lookup map: rider_id -> rider
+  const predictedRiderMap = Object.fromEntries(
+    (nextRacePredictedRiders || []).map(r => [r.id, r])
+  )
+
   // Fetch championship prediction status with rider details
   const { data: championshipPrediction } = await supabase
     .from('championship_predictions')
     .select(`
       *,
-      first_place:riders!championship_predictions_first_place_id_fkey(name, number, team),
-      second_place:riders!championship_predictions_second_place_id_fkey(name, number, team),
-      third_place:riders!championship_predictions_third_place_id_fkey(name, number, team)
+      first_place:riders!championship_predictions_first_place_id_fkey(name, number, team, external_id),
+      second_place:riders!championship_predictions_second_place_id_fkey(name, number, team, external_id),
+      third_place:riders!championship_predictions_third_place_id_fkey(name, number, team, external_id)
     `)
     .eq('player_id', user.id)
     .eq('season_year', 2026)
@@ -90,6 +113,9 @@ export default async function DashboardPage() {
   if (!championshipPrediction && !championshipDeadlinePassed) {
     redirect('/championship?welcome=true')
   }
+
+  const getRiderPhotoUrl = (externalId: string | null | undefined) =>
+    externalId ? `https://resources.motogp.com/files/results/2026/riders/${externalId}/portrait.png` : null
 
   return (
     <main className="min-h-screen p-6 text-white font-sans">
@@ -129,23 +155,27 @@ export default async function DashboardPage() {
                     🔒 Locked
                   </span>
                   <span className="text-gray-700 hidden sm:inline">|</span>
-                  <span className="flex items-center gap-2 text-sm">
-                    <span>🥇</span>
-                    <span className="font-display font-black italic uppercase text-white">{championshipPrediction.first_place?.name}</span>
-                    <span className="font-mono text-gray-500 text-xs">#{championshipPrediction.first_place?.number}</span>
-                  </span>
-                  <span className="text-gray-700 hidden sm:inline">·</span>
-                  <span className="flex items-center gap-2 text-sm">
-                    <span>🥈</span>
-                    <span className="font-display font-black italic uppercase text-gray-300">{championshipPrediction.second_place?.name}</span>
-                    <span className="font-mono text-gray-500 text-xs">#{championshipPrediction.second_place?.number}</span>
-                  </span>
-                  <span className="text-gray-700 hidden sm:inline">·</span>
-                  <span className="flex items-center gap-2 text-sm">
-                    <span>🥉</span>
-                    <span className="font-display font-black italic uppercase text-gray-400">{championshipPrediction.third_place?.name}</span>
-                    <span className="font-mono text-gray-500 text-xs">#{championshipPrediction.third_place?.number}</span>
-                  </span>
+                  {([
+                    { place: championshipPrediction.first_place, medal: '🥇', nameClass: 'text-white' },
+                    { place: championshipPrediction.second_place, medal: '🥈', nameClass: 'text-gray-300' },
+                    { place: championshipPrediction.third_place, medal: '🥉', nameClass: 'text-gray-400' },
+                  ] as const).map(({ place, medal, nameClass }, i) => (
+                    <span key={medal} className="flex items-center gap-2 text-sm">
+                      {i > 0 && <span className="text-gray-700 hidden sm:inline mr-2">·</span>}
+                      <span>{medal}</span>
+                      {getRiderPhotoUrl((place as any)?.external_id) && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={getRiderPhotoUrl((place as any)?.external_id)!}
+                          alt={(place as any)?.name || ''}
+                          className="w-6 h-6 rounded-full object-cover object-top bg-gray-800"
+                          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                        />
+                      )}
+                      <span className={`font-display font-black italic uppercase ${nameClass}`}>{(place as any)?.name}</span>
+                      <span className="font-mono text-gray-500 text-xs">#{(place as any)?.number}</span>
+                    </span>
+                  ))}
                 </div>
               ) : (
                 /* Full grid view — before deadline */
@@ -154,6 +184,15 @@ export default async function DashboardPage() {
                     {/* 1st Place */}
                     <div className="p-4 bg-gradient-to-br from-gray-900 to-black border border-yellow-500/30 rounded-lg relative overflow-hidden">
                       <div className="absolute top-2 right-2 text-4xl opacity-20">🥇</div>
+                      {getRiderPhotoUrl((championshipPrediction.first_place as any)?.external_id) && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={getRiderPhotoUrl((championshipPrediction.first_place as any)?.external_id)!}
+                          alt={championshipPrediction.first_place?.name || ''}
+                          className="absolute bottom-0 right-0 h-24 w-auto object-cover object-top opacity-30 pointer-events-none"
+                          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                        />
+                      )}
                       <div className="text-xs text-yellow-500 font-bold uppercase tracking-wider mb-1">Winner</div>
                       <div className="text-xl font-display font-black italic uppercase">{championshipPrediction.first_place?.name}</div>
                       <div className="flex items-center gap-2 text-sm text-gray-400">
@@ -164,6 +203,15 @@ export default async function DashboardPage() {
                     {/* 2nd Place */}
                     <div className="p-4 bg-gradient-to-br from-gray-900 to-black border border-gray-700 rounded-lg relative overflow-hidden">
                       <div className="absolute top-2 right-2 text-4xl opacity-20">🥈</div>
+                      {getRiderPhotoUrl((championshipPrediction.second_place as any)?.external_id) && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={getRiderPhotoUrl((championshipPrediction.second_place as any)?.external_id)!}
+                          alt={championshipPrediction.second_place?.name || ''}
+                          className="absolute bottom-0 right-0 h-24 w-auto object-cover object-top opacity-30 pointer-events-none"
+                          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                        />
+                      )}
                       <div className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">Runner Up</div>
                       <div className="text-xl font-display font-black italic uppercase">{championshipPrediction.second_place?.name}</div>
                       <div className="flex items-center gap-2 text-sm text-gray-400">
@@ -174,6 +222,15 @@ export default async function DashboardPage() {
                     {/* 3rd Place */}
                     <div className="p-4 bg-gradient-to-br from-gray-900 to-black border border-orange-700/30 rounded-lg relative overflow-hidden">
                       <div className="absolute top-2 right-2 text-4xl opacity-20">🥉</div>
+                      {getRiderPhotoUrl((championshipPrediction.third_place as any)?.external_id) && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={getRiderPhotoUrl((championshipPrediction.third_place as any)?.external_id)!}
+                          alt={championshipPrediction.third_place?.name || ''}
+                          className="absolute bottom-0 right-0 h-24 w-auto object-cover object-top opacity-30 pointer-events-none"
+                          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                        />
+                      )}
                       <div className="text-xs text-orange-500 font-bold uppercase tracking-wider mb-1">Third</div>
                       <div className="text-xl font-display font-black italic uppercase">{championshipPrediction.third_place?.name}</div>
                       <div className="flex items-center gap-2 text-sm text-gray-400">
@@ -225,6 +282,55 @@ export default async function DashboardPage() {
                   <span>⏰ Deadline:</span>
                   <span className="text-white">{new Date(upcomingRaces[0].fp1_datetime).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
                 </div>
+
+                {nextRacePrediction && nextRacePredictedRiders && nextRacePredictedRiders.length > 0 && (
+                  <div className="mt-4 pt-4 border-t border-gray-700/50">
+                    <div className="flex flex-col sm:flex-row gap-4">
+                      {(['sprint', 'race'] as const).map(type => {
+                        const ids = [
+                          nextRacePrediction[`${type}_1st_id` as keyof typeof nextRacePrediction] as string,
+                          nextRacePrediction[`${type}_2nd_id` as keyof typeof nextRacePrediction] as string,
+                          nextRacePrediction[`${type}_3rd_id` as keyof typeof nextRacePrediction] as string,
+                        ]
+                        const riders = ids.map(id => predictedRiderMap[id]).filter(Boolean)
+                        if (riders.length === 0) return null
+                        return (
+                          <div key={type}>
+                            <div className="text-[10px] text-gray-600 font-bold uppercase tracking-widest mb-2">
+                              {type === 'sprint' ? 'Sprint' : 'Race'}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {riders.map((rider: any, i: number) => {
+                                const photoUrl = getRiderPhotoUrl(rider.external_id)
+                                return (
+                                  <div key={rider.id} className="flex items-center gap-1.5">
+                                    <span className="text-[10px] text-gray-600 font-mono">{i + 1}.</span>
+                                    {photoUrl ? (
+                                      // eslint-disable-next-line @next/next/no-img-element
+                                      <img
+                                        src={photoUrl}
+                                        alt={rider.name}
+                                        className="w-7 h-7 rounded-full object-cover object-top bg-gray-800 border border-gray-700"
+                                        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                                      />
+                                    ) : (
+                                      <div className="w-7 h-7 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center text-[10px] font-mono text-gray-500">
+                                        {rider.number}
+                                      </div>
+                                    )}
+                                    <span className="text-xs font-display font-bold italic uppercase text-gray-400 hidden sm:inline">
+                                      {rider.name.split(' ').pop()}
+                                    </span>
+                                  </div>
+                                )
+                              })}
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {predictedRaceIds.has(upcomingRaces[0].id) ? (
