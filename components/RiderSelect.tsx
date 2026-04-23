@@ -34,7 +34,7 @@ export default function RiderSelect({
     const displayName = lastName ? `${lastName} ${firstName}` : rider.name
     return {
       displayName,
-      fullText: `#${rider.number} ${displayName}`,
+      fullText: `${rider.number}_${displayName}`,
     }
   }
 
