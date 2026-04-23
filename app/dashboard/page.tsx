@@ -291,20 +291,6 @@ export default async function DashboardPage() {
             </Link>
           )}
 
-          {/* Championship Prediction - Already submitted */}
-          {!championshipDeadlinePassed && championshipPrediction && (
-            <Link
-              href="/championship"
-              className="p-6 bg-track-gray rounded-xl border-2 border-green-600 hover:border-green-500 transition-colors"
-            >
-              <h3 className="text-lg font-display font-black italic uppercase mb-2 text-green-500">
-                ✓ Submitted
-              </h3>
-              <p className="text-sm text-gray-400">
-                Update before deadline →
-              </p>
-            </Link>
-          )}
         </div>
 
 
