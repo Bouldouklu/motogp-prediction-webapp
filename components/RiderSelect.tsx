@@ -196,14 +196,14 @@ export default function RiderSelect({
                       key={rider.id}
                       onClick={() => handleSelect(rider)}
                       onMouseEnter={() => setHighlightedIndex(index)}
-                      className={`px-4 py-2 cursor-pointer transition-colors flex items-center justify-between ${isHighlighted
+                      className={`px-3 py-2 cursor-pointer transition-colors flex items-center justify-between ${isHighlighted
                         ? 'bg-motogp-red text-white'
                         : 'text-gray-300 hover:bg-gray-800'
                         } ${isSelected ? 'bg-gray-800 border-l-2 border-motogp-red' : ''}`}
                     >
-                      <span className="font-bold uppercase">{fullText}</span>
+                      <span className="font-bold uppercase truncate min-w-0">{fullText}</span>
                       {isSelected && (
-                        <span className="text-xs font-black italic">SELECTED</span>
+                        <span className="text-xs font-black italic shrink-0 ml-2">✓</span>
                       )}
                     </li>
                   )
