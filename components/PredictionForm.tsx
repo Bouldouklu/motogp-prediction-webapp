@@ -182,11 +182,11 @@ export default function PredictionForm({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Sprint Race Top 3 */}
           <div className="md:col-span-2">
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-4">
               <span className="w-8 h-8 flex items-center justify-center bg-orange-500 text-black font-black italic rounded skew-x-12">S</span>
               <h3 className="text-xl font-display italic font-bold uppercase">Sprint Race - Top 3</h3>
+              <p className="text-sm text-gray-500 italic">Predict the top 3 finishers of the Sprint Race.</p>
             </div>
-            <p className="text-sm text-gray-500 mb-4 italic">Predict the top 3 finishers of the Sprint Race.</p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <RiderSelect
                 label="1st Place"
@@ -214,11 +214,11 @@ export default function PredictionForm({
 
           {/* Grand Prix Race Top 3 */}
           <div className="md:col-span-2 border-t border-gray-800 pt-6">
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-4">
               <span className="w-8 h-8 flex items-center justify-center bg-motogp-red text-white font-black italic rounded skew-x-12">R</span>
               <h3 className="text-xl font-display italic font-bold uppercase">Grand Prix Race - Top 3</h3>
+              <p className="text-sm text-gray-500 italic">Predict the top 3 finishers of the Main Race.</p>
             </div>
-            <p className="text-sm text-gray-500 mb-4 italic">Predict the top 3 finishers of the Main Race.</p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <RiderSelect
                 label="1st Place"
@@ -246,15 +246,15 @@ export default function PredictionForm({
 
           {/* Glorious 7 (Mini-League) */}
           <div className="md:col-span-2 border-t border-gray-800 pt-6">
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-4">
               <span className="w-8 h-8 flex items-center justify-center bg-blue-600 text-white font-black italic rounded skew-x-12">G7</span>
               <h3 className="text-xl font-display italic font-bold uppercase">Glorious 7 - Mini League</h3>
+              <p className="text-sm text-gray-400 italic">
+                {gloriousRiders.length > 0
+                  ? "Predict the top 3 finishers among these 7 selected riders."
+                  : "The Glorious 7 riders have not been selected for this race yet."}
+              </p>
             </div>
-            <p className="text-sm text-gray-400 mb-4 italic">
-              {gloriousRiders.length > 0
-                ? "Predict the top 3 finishers among these 7 selected riders."
-                : "The Glorious 7 riders have not been selected for this race yet."}
-            </p>
 
             {gloriousRiders.length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
