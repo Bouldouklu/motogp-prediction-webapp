@@ -208,10 +208,18 @@ export default async function LeaderboardPage() {
                         </td>
                         {completedRaces.map(race => {
                           const score = safeScores.find(s => s.race_id === race.id && s.player_id === player.id)
+                          const sprintTotal = score ? (score.sprint_1st_points + score.sprint_2nd_points + score.sprint_3rd_points) : 0
+                          const raceTotal = score ? (score.race_1st_points + score.race_2nd_points + score.race_3rd_points) : 0
+                          const gloriousTotal = score ? score.glorious_7_points : 0
                           return (
-                            <td key={race.id} className="px-6 py-4 font-mono text-gray-300 text-center">
-                              <div className="flex flex-col items-center gap-0.5">
+                            <td key={race.id} className="px-6 py-3 font-mono text-gray-300 text-center">
+                              <div className="flex flex-col items-center gap-1">
                                 <span>{score ? score.total_points : 0}</span>
+                                {score && (
+                                  <span className="text-[10px] text-gray-600 leading-none whitespace-nowrap">
+                                    S:{sprintTotal} R:{raceTotal} G:{gloriousTotal}
+                                  </span>
+                                )}
                                 {score && score.penalty_points > 0 && (
                                   <span className="text-[10px] font-bold text-red-500 leading-none">
                                     -{score.penalty_points}
