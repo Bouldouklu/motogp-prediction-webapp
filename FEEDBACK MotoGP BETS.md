@@ -30,7 +30,7 @@ If possible to get images of the tracks in the block corresponding that would be
 
 Can we have the riders photos (from the GP website) once the podium selections are done both for the championship and the race? but very optional — ⚠️ Partially done / blocked: UI is wired up (circular photos in championship row, faded portraits in grid cards, Next Up hero card). However photos are not displaying — only a grey placeholder appears. The MotoGP CDN URL pattern (`resources.motogp.com/files/results/2026/riders/{external\_id}/portrait.png`) may be wrong or require authentication. Needs investigation: verify the correct CDN URL format for 2026 rider portraits.
 
-More clarity on the **race results in the "previous race" card**: 
+More clarity on the **race results in the "previous race" card**: — ✅ Done: each completed race now shows 3 panels (Sprint / Race / Glorious 7). Each panel has a "Your Bets" sub-section (🥇🥈🥉 with rider name + per-slot points earned) and a "Results" sub-section (actual top-5 finishers, green-highlighted if you predicted them). Glorious 7 shows relative rank among the 7-rider pool plus the actual race position. A "Weekend Total" footer shows the combined points (with penalty if applicable).
 
 * showing all 3 podiums
 * Showing the inputed bets as priority
