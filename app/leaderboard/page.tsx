@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import LeaderboardTrendChart from '@/components/LeaderboardTrendChart'
 import BetsTable from '@/components/BetsTable'
+import PointsMatrixTable from '@/components/PointsMatrixTable'
 
 const PLAYER_COLORS = [
   "#EF4444", // Red
@@ -200,64 +201,11 @@ export default async function LeaderboardPage() {
                 <span className="w-1 h-6 bg-green-500 skew-x-12 inline-block"></span>
                 Points per Race
               </h2>
-              <div className="overflow-x-auto bg-track-gray rounded-xl border border-gray-800">
-                <table className="min-w-full text-sm text-left">
-                  <thead className="text-xs text-gray-400 uppercase bg-black/40 border-b border-gray-800">
-                    <tr>
-                      <th className="px-6 py-4 font-bold sticky left-0 bg-[#1a1a1a] z-10">Player</th>
-                      {completedRaces.map(race => (
-                        <th key={race.id} className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex flex-col">
-                            <span>{race.circuit}</span>
-                            <span className="text-[10px] text-gray-600">Round {race.round_number}</span>
-                          </div>
-                        </th>
-                      ))}
-                      <th className="px-6 py-4 text-right font-bold text-white sticky right-0 bg-[#1a1a1a] z-10 border-l border-gray-800">Total</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-800">
-                    {playerStats.map(player => (
-                      <tr key={player.id} className="hover:bg-white/5 transition-colors">
-                        <td className="px-6 py-4 font-bold text-white sticky left-0 bg-track-gray border-r border-gray-800">
-                          {player.name}
-                        </td>
-                        {completedRaces.map(race => {
-                          const score = safeScores.find(s => s.race_id === race.id && s.player_id === player.id)
-                          const sprintTotal = score ? (score.sprint_1st_points + score.sprint_2nd_points + score.sprint_3rd_points) : 0
-                          const raceTotal = score ? (score.race_1st_points + score.race_2nd_points + score.race_3rd_points) : 0
-                          const gloriousTotal = score ? score.glorious_7_points : 0
-                          return (
-                            <td key={race.id} className="px-6 py-3 font-mono text-gray-300 text-center">
-                              <div className="flex flex-col items-center gap-1">
-                                <span>{score ? score.total_points : 0}</span>
-                                {score && (
-                                  <span className="text-[10px] text-gray-600 leading-none whitespace-nowrap">
-                                    S:{sprintTotal} R:{raceTotal} G:{gloriousTotal}
-                                  </span>
-                                )}
-                                {score && score.penalty_points > 0 && (
-                                  <span className="text-[10px] font-bold text-red-500 leading-none">
-                                    -{score.penalty_points}
-                                  </span>
-                                )}
-                              </div>
-                            </td>
-                          )
-                        })}
-                        <td className="px-6 py-4 font-black italic text-right text-motogp-red sticky right-0 bg-track-gray border-l border-gray-800">
-                          {player.totalPoints}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                {safeRaces.length === 0 && (
-                  <div className="p-8 text-center text-gray-500 italic">
-                    No races completed yet.
-                  </div>
-                )}
-              </div>
+              <PointsMatrixTable
+                playerStats={playerStats}
+                races={completedRaces}
+                scores={safeScores}
+              />
             </div>
 
             {/* Weekend Bets Section — visible after cut-off */}
