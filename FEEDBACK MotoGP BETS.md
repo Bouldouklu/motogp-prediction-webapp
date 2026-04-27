@@ -116,25 +116,25 @@ To be checked after the next cutoff if the bets are visible to everybody
 
 
 
-## **-> Main page**
+## **-> Main page** ✅
 
-Can we make the top red/white/red strip solid red? It looks like a loading status bar and tricks my eyes, I feel like it is moving even though it is not!
-
-
-
-## **-> Scoring info page**
-
-for the championship and weekend point explaination the correct column should all have the same green color, then off by one the yellow and the off by 2 the orange (same as the previous race bets)
+~~Can we make the top red/white/red strip solid red? It looks like a loading status bar and tricks my eyes, I feel like it is moving even though it is not!~~
 
 
 
-Use the same formating to show the champioonship and the race weekend maximum points
+## **-> Scoring info page** ✅
+
+~~for the championship and weekend point explaination the correct column should all have the same green color, then off by one the yellow and the off by 2 the orange (same as the previous race bets)~~
 
 
 
-For the late penalties add more detail for the system with the on time / late/ locked and respective timings.
+~~Use the same formating to show the champioonship and the race weekend maximum points~~
 
-Also for the offense cards, the colors of the name is not contrasted enough, only the deducted points are readable.
+
+
+~~For the late penalties add more detail for the system with the on time / late/ locked and respective timings.~~
+
+~~Also for the offense cards, the colors of the name is not contrasted enough, only the deducted points are readable.~~
 
 
 
