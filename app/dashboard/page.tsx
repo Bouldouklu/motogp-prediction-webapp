@@ -182,6 +182,11 @@ export default async function DashboardPage() {
   const isInPenaltyWindow = fp1Start != null && fp1End != null && now >= fp1Start && now < fp1End
   const isHardLocked = fp1End != null && now >= fp1End
 
+  const nextRacePred = userPredictions?.find(p => p.race_id === upcomingRaces?.[0]?.id)
+  const nextRaceG7Missing = nextRacePred != null && (
+    !nextRacePred.glorious_1st_id || !nextRacePred.glorious_2nd_id || !nextRacePred.glorious_3rd_id
+  )
+
   return (
     <main className="min-h-screen p-6 text-white font-sans">
       <div className="max-w-6xl mx-auto">
@@ -368,6 +373,13 @@ export default async function DashboardPage() {
                   className="w-full md:w-auto px-8 py-5 bg-amber-500/10 border-2 border-amber-500 hover:bg-amber-500/20 text-amber-400 font-black uppercase italic tracking-wider rounded-xl transform -skew-x-6 transition-all shadow-[0_0_20px_rgba(245,158,11,0.2)] hover:shadow-[0_0_40px_rgba(245,158,11,0.3)] group-hover:scale-[1.02] text-center"
                 >
                   <span className="inline-block skew-x-6 text-xl">⚠ Late — Penalty Applies</span>
+                </Link>
+              ) : predictedRaceIds.has(upcomingRaces[0].id) && nextRaceG7Missing ? (
+                <Link
+                  href={`/predict/${upcomingRaces[0].id}`}
+                  className="w-full md:w-auto px-8 py-5 bg-amber-500/10 border-2 border-amber-500 hover:bg-amber-500/20 text-amber-400 font-black uppercase italic tracking-wider rounded-xl transform -skew-x-6 transition-all shadow-[0_0_20px_rgba(245,158,11,0.2)] hover:shadow-[0_0_40px_rgba(245,158,11,0.3)] group-hover:scale-[1.02] text-center"
+                >
+                  <span className="inline-block skew-x-6 text-xl">⚠ Add G7 Picks</span>
                 </Link>
               ) : predictedRaceIds.has(upcomingRaces[0].id) ? (
                 <Link
@@ -682,9 +694,17 @@ export default async function DashboardPage() {
                         <span className="text-motogp-red font-bold">DEADLINE:</span> {new Date(race.fp1_datetime).toLocaleString()}
                       </div>
                     </div>
-                    {predictedRaceIds.has(race.id) && (
-                      <div className="mt-3 text-xs text-green-500 font-bold uppercase tracking-wider">✓ Prediction submitted</div>
-                    )}
+                    {predictedRaceIds.has(race.id) && (() => {
+                      const pred = userPredictions?.find(p => p.race_id === race.id)
+                      const g7Missing = pred && (!pred.glorious_1st_id || !pred.glorious_2nd_id || !pred.glorious_3rd_id)
+                      return g7Missing ? (
+                        <div className="mt-3 text-xs text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                          <span>⚠</span> Sprint &amp; Race saved — G7 picks missing
+                        </div>
+                      ) : (
+                        <div className="mt-3 text-xs text-green-500 font-bold uppercase tracking-wider">✓ Full prediction submitted</div>
+                      )
+                    })()}
                   </div>
                 </Link>
               ))}

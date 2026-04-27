@@ -84,6 +84,9 @@ export default function PredictionForm({
   const raceIds = [race1stId, race2ndId, race3rdId]
   const gloriousIds = [glorious1stId, glorious2ndId, glorious3rdId]
 
+  const g7Complete = glorious1stId !== '' && glorious2ndId !== '' && glorious3rdId !== ''
+  const g7Available = gloriousRiders.length > 0
+
   const hasDuplicate = (ids: string[], id: string) =>
     id !== '' && ids.filter(x => x === id).length > 1
 
@@ -114,7 +117,12 @@ export default function PredictionForm({
     const gloriousSelections = [glorious1stId, glorious2ndId, glorious3rdId].filter(Boolean)
     const uniqueGloriousRiders = new Set(gloriousSelections)
     if (uniqueGloriousRiders.size !== gloriousSelections.length) {
-      setError('You cannot select the same rider for multiple glorious positions')
+      setError('You cannot select the same rider for multiple Glorious 7 positions')
+      setLoading(false)
+      return
+    }
+    if (gloriousSelections.length > 0 && gloriousSelections.length < 3) {
+      setError('Either fill all 3 Glorious 7 picks or leave all empty')
       setLoading(false)
       return
     }
@@ -268,11 +276,16 @@ export default function PredictionForm({
           <div className="md:col-span-2 border-t border-gray-800 pt-6">
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-4">
               <span className="w-8 h-8 flex items-center justify-center bg-blue-600 text-white font-black italic rounded skew-x-12">G7</span>
-              <h3 className="text-xl font-display italic font-bold uppercase">Glorious 7 - Mini League</h3>
+              <div className="flex items-center gap-2">
+                <h3 className="text-xl font-display italic font-bold uppercase">Glorious 7 - Mini League</h3>
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border border-amber-500/50 text-amber-400 bg-amber-500/10">
+                  Optional
+                </span>
+              </div>
               <p className="text-sm text-gray-400 italic">
                 {gloriousRiders.length > 0
-                  ? "Predict the top 3 finishers among these 7 selected riders."
-                  : "The Glorious 7 riders have not been selected for this race yet."}
+                  ? "Predict the top 3 finishers among these 7 selected riders. You can save now and come back to fill this before FP1."
+                  : "The Glorious 7 riders have not been selected for this race yet. You can still submit your Sprint & Race predictions."}
               </p>
             </div>
 
@@ -311,8 +324,13 @@ export default function PredictionForm({
         )}
 
         {success && (
-          <div className="p-4 bg-green-900/20 border border-green-800 text-green-400 rounded font-bold">
-            ✅ Prediction saved successfully! Redirecting...
+          <div className="p-4 bg-green-900/20 border border-green-800 text-green-400 rounded font-bold space-y-1">
+            <div>✅ Prediction saved! Redirecting...</div>
+            {g7Available && !g7Complete && (
+              <div className="text-amber-400 text-sm font-medium">
+                ⚠ Remember to come back and fill your Glorious 7 picks before FP1!
+              </div>
+            )}
           </div>
         )}
 
@@ -328,7 +346,9 @@ export default function PredictionForm({
                 ? 'Submit Late (Penalty Applies)'
                 : existingPrediction
                   ? 'Update Prediction'
-                  : 'Submit Prediction'}
+                  : g7Available && !g7Complete
+                    ? 'Submit (G7 incomplete)'
+                    : 'Submit Prediction'}
           </span>
         </button>
       </form>

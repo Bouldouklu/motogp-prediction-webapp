@@ -24,12 +24,19 @@ export async function POST(request: NextRequest) {
       glorious3rdId,
     } = await request.json()
 
-    // Validate all required fields
+    // Validate required fields — Sprint + Race top 3 are mandatory, G7 is optional
     if (!raceId || !sprint1stId || !sprint2ndId || !sprint3rdId ||
-      !race1stId || !race2ndId || !race3rdId ||
-      !glorious1stId || !glorious2ndId || !glorious3rdId) {
+      !race1stId || !race2ndId || !race3rdId) {
       return NextResponse.json(
-        { error: 'All predictions are required (top 3 for sprint, top 3 for race, and top 3 for glorious 7)' },
+        { error: 'Sprint and Race top 3 predictions are required' },
+        { status: 400 }
+      )
+    }
+
+    const gloriousFilled = [glorious1stId, glorious2ndId, glorious3rdId].filter(Boolean)
+    if (gloriousFilled.length > 0 && gloriousFilled.length < 3) {
+      return NextResponse.json(
+        { error: 'Either fill all 3 Glorious 7 picks or leave all empty' },
         { status: 400 }
       )
     }
@@ -73,9 +80,9 @@ export async function POST(request: NextRequest) {
         race_1st_id: race1stId,
         race_2nd_id: race2ndId,
         race_3rd_id: race3rdId,
-        glorious_1st_id: glorious1stId,
-        glorious_2nd_id: glorious2ndId,
-        glorious_3rd_id: glorious3rdId,
+        glorious_1st_id: glorious1stId || null,
+        glorious_2nd_id: glorious2ndId || null,
+        glorious_3rd_id: glorious3rdId || null,
         is_late: late,
       })
       .select()
@@ -123,12 +130,19 @@ export async function PUT(request: NextRequest) {
       glorious3rdId,
     } = await request.json()
 
-    // Validate all required fields
+    // Validate required fields — Sprint + Race top 3 are mandatory, G7 is optional
     if (!raceId || !sprint1stId || !sprint2ndId || !sprint3rdId ||
-      !race1stId || !race2ndId || !race3rdId ||
-      !glorious1stId || !glorious2ndId || !glorious3rdId) {
+      !race1stId || !race2ndId || !race3rdId) {
       return NextResponse.json(
-        { error: 'All predictions are required (top 3 for sprint, top 3 for race, and top 3 for glorious 7)' },
+        { error: 'Sprint and Race top 3 predictions are required' },
+        { status: 400 }
+      )
+    }
+
+    const gloriousFilled = [glorious1stId, glorious2ndId, glorious3rdId].filter(Boolean)
+    if (gloriousFilled.length > 0 && gloriousFilled.length < 3) {
+      return NextResponse.json(
+        { error: 'Either fill all 3 Glorious 7 picks or leave all empty' },
         { status: 400 }
       )
     }
@@ -170,9 +184,9 @@ export async function PUT(request: NextRequest) {
         race_1st_id: race1stId,
         race_2nd_id: race2ndId,
         race_3rd_id: race3rdId,
-        glorious_1st_id: glorious1stId,
-        glorious_2nd_id: glorious2ndId,
-        glorious_3rd_id: glorious3rdId,
+        glorious_1st_id: glorious1stId || null,
+        glorious_2nd_id: glorious2ndId || null,
+        glorious_3rd_id: glorious3rdId || null,
         is_late: late,
         submitted_at: new Date().toISOString(),
       })
