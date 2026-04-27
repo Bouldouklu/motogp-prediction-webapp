@@ -29,31 +29,42 @@ export default function ScoringPage() {
                                 <thead className="bg-muted/50">
                                     <tr>
                                         <th className="px-4 py-3 font-medium">Prediction</th>
-                                        <th className="px-4 py-3 font-medium text-right">Points</th>
+                                        <th className="px-4 py-3 font-medium text-right">Correct</th>
+                                        <th className="px-4 py-3 font-medium text-center">Off by 1</th>
+                                        <th className="px-4 py-3 font-medium text-center">Off by 2</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y">
                                     <tr>
-                                        <td className="px-4 py-3">Correct 1st Place</td>
-                                        <td className="px-4 py-3 text-right font-bold text-green-600">250 pts</td>
+                                        <th className="px-4 py-2 font-medium bg-muted/30 text-left" colSpan={4}>Correct prediction</th>
                                     </tr>
                                     <tr>
-                                        <td className="px-4 py-3">Correct 2nd Place</td>
-                                        <td className="px-4 py-3 text-right font-bold text-blue-600">100 pts</td>
+                                        <td className="px-4 py-3 font-semibold">🥇 1st Place</td>
+                                        <td className="px-4 py-3 text-right font-bold text-green-600">130 pts</td>
+                                        <td className="px-4 py-3 text-center font-medium">104 pts</td>
+                                        <td className="px-4 py-3 text-center font-medium">78 pts</td>
                                     </tr>
                                     <tr>
-                                        <td className="px-4 py-3">Correct 3rd Place</td>
+                                        <td className="px-4 py-3 font-semibold">🥈 2nd Place</td>
+                                        <td className="px-4 py-3 text-right font-bold text-blue-600">120 pts</td>
+                                        <td className="px-4 py-3 text-center font-medium">96 pts</td>
+                                        <td className="px-4 py-3 text-center font-medium">72 pts</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="px-4 py-3 font-semibold">🥉 3rd Place</td>
                                         <td className="px-4 py-3 text-right font-bold text-blue-600">100 pts</td>
+                                        <td className="px-4 py-3 text-center font-medium">80 pts</td>
+                                        <td className="px-4 py-3 text-center font-medium">60 pts</td>
                                     </tr>
                                     <tr className="bg-muted/20">
                                         <td className="px-4 py-3 font-medium">Total Maximum</td>
-                                        <td className="px-4 py-3 text-right font-bold">450 pts</td>
+                                        <td className="px-4 py-3 text-right font-bold" colSpan={3}>350 pts</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                         <p className="text-xs text-muted-foreground text-center">
-                            (Equivalent to 2 perfect race weekends)
+                            350 pts total ≈ 2.3 perfect race weekends
                         </p>
                     </CardContent>
                 </Card>
@@ -67,79 +78,55 @@ export default function ScoringPage() {
                     </CardHeader>
                     <CardContent className="space-y-6">
                         <p className="text-muted-foreground">
-                            For every race weekend, you predict the <strong>Top 3</strong> for the Sprint, the Main Race, and the "Glorious 7" mini-league.
+                            For every race weekend, you predict the <strong>Top 3</strong> for the Sprint, the Main Race, and the "Glorious 7" mini-league. Points depend on which slot you predicted — winning predictions pay more.
                         </p>
 
-                        <div className="grid md:grid-cols-2 gap-8">
-                            <div>
-                                <h3 className="font-semibold mb-3">Points Per Rider</h3>
-                                <div className="border rounded-lg overflow-hidden">
-                                    <table className="w-full text-sm text-left">
-                                        <thead className="bg-muted/50">
-                                            <tr>
-                                                <th className="px-4 py-2 font-medium">Accuracy</th>
-                                                <th className="px-4 py-2 font-medium text-right">Points</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y">
-                                            <tr>
-                                                <td className="px-4 py-2 flex items-center gap-2">
-                                                    <span className="text-green-600 font-bold">🎯 Exact</span>
-                                                </td>
-                                                <td className="px-4 py-2 text-right font-bold text-green-600">25</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="px-4 py-2">Off by 1 position</td>
-                                                <td className="px-4 py-2 text-right font-medium">18</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="px-4 py-2">Off by 2 positions</td>
-                                                <td className="px-4 py-2 text-right font-medium">15</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="px-4 py-2">Off by 3 positions</td>
-                                                <td className="px-4 py-2 text-right text-muted-foreground">10</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="px-4 py-2">Off by 4 positions</td>
-                                                <td className="px-4 py-2 text-right text-muted-foreground">6</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="px-4 py-2">Off by 5 positions</td>
-                                                <td className="px-4 py-2 text-right text-muted-foreground">2</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-
-                            <div>
-                                <h3 className="font-semibold mb-3">Example Scenarios</h3>
-                                <ul className="space-y-4 text-sm text-muted-foreground">
-                                    <li className="bg-muted/30 p-3 rounded-md">
-                                        <div className="font-medium text-foreground mb-1">Perfect Prediction</div>
-                                        You predict Pecco for 1st, he finishes 1st.
-                                        <div className="text-green-600 font-bold mt-1">25 Points</div>
-                                    </li>
-                                    <li className="bg-muted/30 p-3 rounded-md">
-                                        <div className="font-medium text-foreground mb-1">Right Rider, Wrong Order</div>
-                                        You predict Pecco for 1st, he finishes 2nd.
-                                        <div className="mt-1">Off by 1 = <span className="font-bold text-foreground">18 Points</span></div>
-                                    </li>
-                                    <li className="bg-muted/30 p-3 rounded-md">
-                                        <div className="font-medium text-foreground mb-1">Still on Podium</div>
-                                        You predict Pecco for 1st, he finishes 3rd.
-                                        <div className="mt-1">Off by 2 = <span className="font-bold text-foreground">15 Points</span></div>
-                                    </li>
-                                </ul>
-                            </div>
+                        <div className="border rounded-lg overflow-hidden">
+                            <table className="w-full text-sm text-left">
+                                <thead className="bg-muted/50">
+                                    <tr>
+                                        <th className="px-4 py-3 font-medium">Predicted slot</th>
+                                        <th className="px-4 py-3 font-medium text-center">🎯 Exact</th>
+                                        <th className="px-4 py-3 font-medium text-center">Off by 1</th>
+                                        <th className="px-4 py-3 font-medium text-center">Off by 2</th>
+                                        <th className="px-4 py-3 font-medium text-center text-muted-foreground">Off by 3+</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y">
+                                    <tr>
+                                        <td className="px-4 py-3 font-semibold">🥇 1st Place</td>
+                                        <td className="px-4 py-3 text-center font-bold text-green-600">20</td>
+                                        <td className="px-4 py-3 text-center font-medium">16</td>
+                                        <td className="px-4 py-3 text-center font-medium">12</td>
+                                        <td className="px-4 py-3 text-center text-muted-foreground">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="px-4 py-3 font-semibold">🥈 2nd Place</td>
+                                        <td className="px-4 py-3 text-center font-bold text-green-600">16</td>
+                                        <td className="px-4 py-3 text-center font-medium">12</td>
+                                        <td className="px-4 py-3 text-center font-medium">8</td>
+                                        <td className="px-4 py-3 text-center text-muted-foreground">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="px-4 py-3 font-semibold">🥉 3rd Place</td>
+                                        <td className="px-4 py-3 text-center font-bold text-green-600">14</td>
+                                        <td className="px-4 py-3 text-center font-medium">10</td>
+                                        <td className="px-4 py-3 text-center font-medium">6</td>
+                                        <td className="px-4 py-3 text-center text-muted-foreground">0</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
+
+                        <p className="text-xs text-muted-foreground">
+                            Only the top 5 finishers are considered — if your pick finishes outside P5, it scores 0. Same table applies to Sprint, Race, and Glorious 7.
+                        </p>
 
                         <div className="bg-muted p-4 rounded-lg mt-4 text-center">
                             <div className="text-sm font-medium mb-1">Maximum Weekend Score</div>
-                            <div className="text-3xl font-bold tracking-tight text-primary">225 pts</div>
+                            <div className="text-3xl font-bold tracking-tight text-primary">150 pts</div>
                             <div className="text-xs text-muted-foreground mt-1">
-                                75 Sprint + 75 Race + 75 Glorious 7
+                                50 Sprint + 50 Race + 50 Glorious 7
                             </div>
                         </div>
                     </CardContent>
@@ -159,15 +146,15 @@ export default function ScoringPage() {
                         <div className="grid grid-cols-3 gap-4 text-center">
                             <div className="p-4 bg-red-50 dark:bg-red-950/20 rounded-lg">
                                 <div className="text-sm font-medium mb-1">1st Offense</div>
-                                <div className="text-xl font-bold text-red-600">-10 pts</div>
+                                <div className="text-xl font-bold text-red-600">-35 pts</div>
                             </div>
                             <div className="p-4 bg-red-50 dark:bg-red-950/20 rounded-lg">
                                 <div className="text-sm font-medium mb-1">2nd Offense</div>
-                                <div className="text-xl font-bold text-red-600">-25 pts</div>
+                                <div className="text-xl font-bold text-red-600">-55 pts</div>
                             </div>
                             <div className="p-4 bg-red-50 dark:bg-red-950/20 rounded-lg">
                                 <div className="text-sm font-medium mb-1">3rd+ Offense</div>
-                                <div className="text-xl font-bold text-red-600">-50 pts</div>
+                                <div className="text-xl font-bold text-red-600">-75 pts</div>
                             </div>
                         </div>
 

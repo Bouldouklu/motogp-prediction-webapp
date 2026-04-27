@@ -5,40 +5,21 @@
  * @param type Type of prediction ('winner' or 'glorious7')
  * @returns Points earned for the prediction
  */
+// Points awarded per predicted slot (1/2/3) and accuracy (off by 0/1/2).
+// Off by 3+ always scores 0. Applies to Sprint, Race, and Glorious 7 alike.
+const POSITION_POINTS: Record<number, Record<number, number>> = {
+  1: { 0: 20, 1: 16, 2: 12 },
+  2: { 0: 16, 1: 12, 2: 8 },
+  3: { 0: 14, 1: 10, 2: 6 },
+};
+
 export function calculatePositionPoints(
-  predictedPosition: number,
   actualPosition: number,
-  type: 'winner' | 'glorious7'
+  predictedSlot: number,
+  _type: 'winner' | 'glorious7'
 ): number {
-  const diff = Math.abs(predictedPosition - actualPosition);
-
-  if (type === 'winner') {
-    // For Sprint/Race winner predictions
-    const pointsMap: Record<number, number> = {
-      0: 25, // Exact match
-      1: 18, // Off by 1
-      2: 15, // Off by 2
-      3: 10, // Off by 3
-      4: 6,  // Off by 4
-      5: 2,  // Off by 5
-    };
-    return pointsMap[diff] ?? 0; // 6+ positions = 0 points
-  }
-
-  if (type === 'glorious7') {
-    // For 7th place prediction
-    const pointsMap: Record<number, number> = {
-      0: 25, // Exact 7th place
-      1: 18, // Off by 1
-      2: 15, // Off by 2
-      3: 10, // Off by 3
-      4: 6,  // Off by 4
-      5: 2,  // Off by 5
-    };
-    return pointsMap[diff] ?? 0; // 6+ positions = 0 points
-  }
-
-  return 0;
+  const diff = Math.abs(actualPosition - predictedSlot);
+  return POSITION_POINTS[predictedSlot]?.[diff] ?? 0;
 }
 
 /**
@@ -47,9 +28,9 @@ export function calculatePositionPoints(
  * @returns Penalty points to deduct
  */
 export function calculatePenalty(offenseNumber: number): number {
-  if (offenseNumber === 1) return 10;
-  if (offenseNumber === 2) return 25;
-  return 50; // 3rd and beyond
+  if (offenseNumber === 1) return 35;
+  if (offenseNumber === 2) return 55;
+  return 75; // 3rd and beyond
 }
 
 /**
@@ -62,10 +43,23 @@ export function calculateChampionshipPoints(
   predictions: { first: string; second: string; third: string },
   results: { first: string; second: string; third: string }
 ): number {
+  // Option 1 — 350 pts total for a perfect prediction
+  const resultOrder = [results.first, results.second, results.third];
+
+  const slotPoints: Record<number, Record<number, number>> = {
+    0: { 0: 130, 1: 104, 2: 78 },
+    1: { 0: 120, 1: 96,  2: 72 },
+    2: { 0: 100, 1: 80,  2: 60 },
+  };
+
   let points = 0;
-  if (predictions.first === results.first) points += 250;
-  if (predictions.second === results.second) points += 100;
-  if (predictions.third === results.third) points += 100;
+  const predArray = [predictions.first, predictions.second, predictions.third];
+  predArray.forEach((riderName, slot) => {
+    const actualPos = resultOrder.indexOf(riderName);
+    if (actualPos === -1) return;
+    const diff = Math.abs(actualPos - slot);
+    points += slotPoints[slot]?.[diff] ?? 0;
+  });
   return points;
 }
 
