@@ -135,6 +135,9 @@ export default function RiderSelect({
       }
     } else if (e.key === 'Escape') {
       setIsOpen(false)
+      const selectedRider = riders.find((r) => r.id === value)
+      if (selectedRider) setSearchQuery(getDisplayRider(selectedRider).displayName)
+      else setSearchQuery('')
       inputRef.current?.blur()
     }
   }
@@ -160,7 +163,14 @@ export default function RiderSelect({
             setHighlightedIndex(0)
           }}
           onFocus={() => {
+            setSearchQuery('')
             setIsOpen(true)
+            setHighlightedIndex(0)
+          }}
+          onClick={() => {
+            setSearchQuery('')
+            setIsOpen(true)
+            setHighlightedIndex(0)
           }}
           onKeyDown={handleKeyDown}
           placeholder="Select a rider..."
