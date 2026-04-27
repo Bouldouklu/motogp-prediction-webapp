@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { ScoreBreakdown } from '@/lib/scoring'
 
 interface PlayerStat { id: string; name: string; totalPoints: number }
-interface RaceRow { id: string; circuit: string; round_number: number; name: string }
+interface RaceRow { id: string; circuit: string; country: string; round_number: number; name: string }
 interface ScoreRow {
   player_id: string; race_id: string; total_points: number
   sprint_1st_points: number; sprint_2nd_points: number; sprint_3rd_points: number
@@ -16,9 +16,10 @@ interface PointsMatrixTableProps {
   playerStats: PlayerStat[]
   races: RaceRow[]
   scores: ScoreRow[]
+  currentPlayerId: string | null
 }
 
-export default function PointsMatrixTable({ playerStats, races, scores }: PointsMatrixTableProps) {
+export default function PointsMatrixTable({ playerStats, races, scores, currentPlayerId }: PointsMatrixTableProps) {
   const [modal, setModal] = useState<{ raceId: string; playerId: string; raceName: string; playerName: string } | null>(null)
   const [breakdown, setBreakdown] = useState<ScoreBreakdown | null>(null)
   const [loadingCell, setLoadingCell] = useState<string | null>(null)
@@ -52,10 +53,10 @@ export default function PointsMatrixTable({ playerStats, races, scores }: Points
             <tr>
               <th className="px-6 py-4 font-bold sticky left-0 bg-[#1a1a1a] z-10">Player</th>
               {races.map(race => (
-                <th key={race.id} className="px-6 py-4 whitespace-nowrap">
+                <th key={race.id} className="px-4 py-4 whitespace-nowrap">
                   <div className="flex flex-col">
-                    <span>{race.circuit}</span>
-                    <span className="text-[10px] text-gray-600">Round {race.round_number}</span>
+                    <span>{race.country}</span>
+                    <span className="text-[10px] text-gray-600">Rd {race.round_number}</span>
                   </div>
                 </th>
               ))}
@@ -64,8 +65,8 @@ export default function PointsMatrixTable({ playerStats, races, scores }: Points
           </thead>
           <tbody className="divide-y divide-gray-800">
             {playerStats.map(player => (
-              <tr key={player.id} className="hover:bg-white/5 transition-colors">
-                <td className="px-6 py-4 font-bold text-white sticky left-0 bg-track-gray border-r border-gray-800">
+              <tr key={player.id} className={`transition-colors ${player.id === currentPlayerId ? 'bg-blue-950/40 border-l-2 border-blue-500' : 'hover:bg-white/5'}`}>
+                <td className={`px-6 py-4 font-bold sticky left-0 border-r border-gray-800 ${player.id === currentPlayerId ? 'text-blue-400 bg-blue-950/60' : 'text-white bg-track-gray'}`}>
                   {player.name}
                 </td>
                 {races.map(race => {

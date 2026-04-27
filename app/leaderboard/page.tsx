@@ -3,6 +3,7 @@ import Link from 'next/link'
 import LeaderboardTrendChart from '@/components/LeaderboardTrendChart'
 import BetsTable from '@/components/BetsTable'
 import PointsMatrixTable from '@/components/PointsMatrixTable'
+import { getCurrentUser } from '@/lib/auth'
 
 const PLAYER_COLORS = [
   "#EF4444", // Red
@@ -45,6 +46,9 @@ export default async function LeaderboardPage() {
     `)
   ])
 
+  const currentUser = await getCurrentUser()
+  const currentPlayerId = currentUser?.id ?? null
+
   const safePlayers = (players || []).filter(p => p.name.toLowerCase() !== 'admin')
   const safeRaces = races || []
   const safeScores = scores || []
@@ -81,7 +85,7 @@ export default async function LeaderboardPage() {
   const racesWithScores = safeRaces.filter(r => safeScores.some(s => s.race_id === r.id))
 
   const trendData = racesWithScores.map(race => {
-    const point: any = { race: race.circuit } // Use circuit name for X-axis
+    const point: any = { race: race.country }
 
     safePlayers.forEach(player => {
       // Calculate cumulative score up to this race
@@ -136,43 +140,47 @@ export default async function LeaderboardPage() {
               </div>
 
               <div className="relative z-10">
-                <div className="grid grid-cols-12 gap-4 p-4 bg-black/40 text-xs uppercase text-gray-500 font-bold tracking-wider border-b border-gray-800">
-                  <div className="col-span-2 md:col-span-1 text-center">Pos</div>
-                  <div className="col-span-4 md:col-span-4">Rider</div>
-                  <div className="hidden md:block col-span-2 text-center text-[10px] md:text-xs">Diff Leader</div>
-                  <div className="hidden md:block col-span-2 text-center text-[10px] md:text-xs">Diff Prev</div>
-                  <div className="hidden md:block col-span-1 text-center text-[10px] md:text-xs text-red-500">Penalties</div>
-                  <div className="col-span-6 md:col-span-2 text-right pr-4">Total Points</div>
+                <div className="grid grid-cols-12 gap-2 p-3 bg-black/40 text-[10px] uppercase text-gray-500 font-bold tracking-wider border-b border-gray-800">
+                  <div className="col-span-1 text-center">Pos</div>
+                  <div className="col-span-3">Rider</div>
+                  <div className="col-span-2 text-center">Diff Ldr</div>
+                  <div className="col-span-2 text-center">Diff Prv</div>
+                  <div className="col-span-1 text-center text-red-500">Pen</div>
+                  <div className="col-span-3 text-right pr-2">Pts</div>
                 </div>
 
                 <div className="divide-y divide-gray-800">
                   {playerStatsWithDiffs.map((entry, index) => (
-                    <div key={entry.id} className={`grid grid-cols-12 gap-4 p-4 items-center hover:bg-white/5 transition-colors ${index < 3 ? 'bg-gradient-to-r from-white/5 to-transparent' : ''}`}>
-                      <div className="col-span-2 md:col-span-1 text-center">
-                        <span className={`font-display font-black italic text-2xl md:text-3xl ${index === 0 ? 'text-yellow-400' :
-                            index === 1 ? 'text-gray-400' :
-                              index === 2 ? 'text-amber-700' : 'text-gray-600'
-                          }`}>
+                    <div key={entry.id} className={`grid grid-cols-12 gap-2 p-3 items-center transition-colors
+                      ${index < 3 ? 'bg-gradient-to-r from-white/5 to-transparent' : ''}
+                      ${entry.id === currentPlayerId ? 'bg-blue-950/40 border-l-2 border-blue-500' : 'hover:bg-white/5'}
+                    `}>
+                      <div className="col-span-1 text-center">
+                        <span className={`font-display font-black italic text-lg ${
+                          index === 0 ? 'text-yellow-400' :
+                          index === 1 ? 'text-gray-400' :
+                          index === 2 ? 'text-amber-700' : 'text-gray-600'
+                        }`}>
                           {index + 1}
                         </span>
                       </div>
-                      <div className="col-span-4 md:col-span-4">
-                        <div className="font-bold uppercase text-lg md:text-xl truncate">{entry.name}</div>
-                        {index === 0 && <div className="text-xs text-yellow-500 font-bold uppercase tracking-wider">Current Leader</div>}
+                      <div className="col-span-3 min-w-0">
+                        <div className={`font-bold uppercase text-sm truncate ${entry.id === currentPlayerId ? 'text-blue-400' : ''}`}>{entry.name}</div>
+                        {index === 0 && <div className="text-[10px] text-yellow-500 font-bold uppercase tracking-wider">Leader</div>}
                       </div>
-                      <div className="hidden md:block col-span-2 text-center">
-                        <div className="font-mono text-gray-400">{index === 0 ? '-' : `-${entry.diffToLeader}`}</div>
+                      <div className="col-span-2 text-center">
+                        <div className="font-mono text-[11px] text-gray-400">{index === 0 ? '—' : `-${entry.diffToLeader}`}</div>
                       </div>
-                      <div className="hidden md:block col-span-2 text-center">
-                        <div className="font-mono text-gray-500">{index === 0 ? '-' : `-${entry.diffToPrev}`}</div>
+                      <div className="col-span-2 text-center">
+                        <div className="font-mono text-[11px] text-gray-500">{index === 0 ? '—' : `-${entry.diffToPrev}`}</div>
                       </div>
-                      <div className="hidden md:block col-span-1 text-center">
-                        <div className={`font-mono text-sm ${entry.totalPenalties > 0 ? 'text-red-500 font-bold' : 'text-gray-700'}`}>
+                      <div className="col-span-1 text-center">
+                        <div className={`font-mono text-[11px] ${entry.totalPenalties > 0 ? 'text-red-500 font-bold' : 'text-gray-700'}`}>
                           {entry.totalPenalties > 0 ? `-${entry.totalPenalties}` : '—'}
                         </div>
                       </div>
-                      <div className="col-span-6 md:col-span-2 text-right pr-4">
-                        <div className="font-display font-black italic text-3xl text-motogp-red">{entry.totalPoints}</div>
+                      <div className="col-span-3 text-right pr-2">
+                        <div className="font-display font-black italic text-xl text-motogp-red">{entry.totalPoints}</div>
                       </div>
                     </div>
                   ))}
@@ -205,6 +213,7 @@ export default async function LeaderboardPage() {
                 playerStats={playerStats}
                 races={completedRaces}
                 scores={safeScores}
+                currentPlayerId={currentPlayerId}
               />
             </div>
 
@@ -244,7 +253,7 @@ export default async function LeaderboardPage() {
                 }),
               }))
 
-              return <BetsTable races={betsData} />
+              return <BetsTable races={betsData} currentPlayerId={currentPlayerId} />
             })()}
 
           </div>

@@ -25,6 +25,7 @@ interface RaceBets {
 
 interface BetsTableProps {
   races: RaceBets[]
+  currentPlayerId: string | null
 }
 
 const medals = ['🥇', '🥈', '🥉']
@@ -39,7 +40,7 @@ function riderCell(rider: RiderCell | null) {
   )
 }
 
-function RaceBlock({ raceBets }: { raceBets: RaceBets }) {
+function RaceBlock({ raceBets, currentPlayerId }: { raceBets: RaceBets; currentPlayerId: string | null }) {
   const [open, setOpen] = useState(false)
 
   return (
@@ -93,8 +94,8 @@ function RaceBlock({ raceBets }: { raceBets: RaceBets }) {
             </thead>
             <tbody className="divide-y divide-gray-800">
               {raceBets.players.map(player => (
-                <tr key={player.playerId} className="hover:bg-white/5 transition-colors">
-                  <td className="px-4 py-3 font-bold text-white sticky left-0 bg-track-gray border-r border-gray-800 text-sm whitespace-nowrap">
+                <tr key={player.playerId} className={`transition-colors ${player.playerId === currentPlayerId ? 'bg-blue-950/40 border-l-2 border-blue-500' : 'hover:bg-white/5'}`}>
+                  <td className={`px-4 py-3 font-bold sticky left-0 border-r border-gray-800 text-sm whitespace-nowrap ${player.playerId === currentPlayerId ? 'text-blue-400 bg-blue-950/60' : 'text-white bg-track-gray'}`}>
                     {player.playerName}
                   </td>
                   {([player.sprint, player.race, player.glorious] as ((RiderCell | null)[] | null)[]).flatMap((group, gIdx) =>
@@ -114,7 +115,7 @@ function RaceBlock({ raceBets }: { raceBets: RaceBets }) {
   )
 }
 
-export default function BetsTable({ races }: BetsTableProps) {
+export default function BetsTable({ races, currentPlayerId }: BetsTableProps) {
   return (
     <div>
       <h2 className="text-2xl font-display font-black italic uppercase mb-6 flex items-center gap-2">
@@ -123,7 +124,7 @@ export default function BetsTable({ races }: BetsTableProps) {
       </h2>
       <div className="space-y-3">
         {races.map(race => (
-          <RaceBlock key={race.raceId} raceBets={race} />
+          <RaceBlock key={race.raceId} raceBets={race} currentPlayerId={currentPlayerId} />
         ))}
       </div>
     </div>
