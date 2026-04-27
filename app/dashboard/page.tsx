@@ -296,7 +296,7 @@ export default async function DashboardPage() {
             <div className="absolute inset-0 bg-gradient-to-r from-motogp-red/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
             <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">
-              <div className="w-full md:w-auto">
+              <div className="w-full md:flex-1">
                 <div className="flex items-center gap-3 mb-3">
                   <span className="relative flex h-3 w-3">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-motogp-red opacity-75"></span>
@@ -320,7 +320,7 @@ export default async function DashboardPage() {
                 {nextRacePrediction && nextRacePredictedRiders && nextRacePredictedRiders.length > 0 && (
                   <div className="mt-5 pt-5 border-t border-gray-700/50">
                     <div className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-3">Your Bets</div>
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="grid grid-cols-3 gap-3 md:gap-4">
                       {([
                         { label: 'Sprint', prefix: 'sprint' },
                         { label: 'Race', prefix: 'race' },
@@ -333,7 +333,7 @@ export default async function DashboardPage() {
                         ]
                         const riders = ids.map(id => predictedRiderMap[id]).filter(Boolean)
                         return (
-                          <div key={prefix} className="bg-black/30 rounded-lg border border-gray-800 p-3">
+                          <div key={prefix} className="bg-black/30 rounded-lg border border-gray-800 p-3 md:p-4">
                             <div className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-2">{label}</div>
                             {riders.length === 0 ? (
                               <div className="text-xs text-gray-700 italic">—</div>
@@ -345,7 +345,7 @@ export default async function DashboardPage() {
                                     <div key={rider.id} className="flex items-center gap-2">
                                       <span className="text-sm leading-none">{medals[i]}</span>
                                       <div className="min-w-0">
-                                        <div className="text-xs font-display font-black italic uppercase text-white truncate leading-tight">
+                                        <div className="text-xs font-sans font-semibold uppercase text-white leading-tight truncate pr-0.5">
                                           {rider.name.split(' ').pop()}
                                         </div>
                                         <div className="text-[10px] font-mono text-gray-600">#{rider.number}</div>

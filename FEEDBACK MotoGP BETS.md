@@ -1,103 +1,157 @@
 # **FEEDBACK MotoGP BETS**
 
-## **Functional**
-
-### **Race prediction**
-
-Being able to cancel a name in one click to allow for some shuffling around — ✅ Done: clear (✕) button appears on each RiderSelect when a rider is selected; clicking it calls onChange('') and clears the slot instantly.
-
-Still show the complete list once a name is selected to allow for easy change — ✅ Done: removed excludeIds filtering from the dropdown; all riders are always visible in the list.
-
-Not blocking an already selected rider name to allow for some shuffling, but maybe making the whole podium card go "ALERT" when a name is inputed twice — ✅ Done: duplicate detection per category (Sprint / Race / Glorious 7); any slot sharing a rider with another slot in the same category shows an amber "⚠ Duplicate rider — check your podium" banner and amber ring. Cross-category duplicates (e.g. same rider in Sprint 1st and Race 1st) are intentionally allowed.
-
-Change (edit prediction) button to locked or something once the cut-off is reached. And also add a penalty margin: end of FP1 as the latest time. — ✅ Done: 3 states — open (before FP1) → amber "⚠ Late — Penalty Applies" link (FP1 start to FP1+45min) → grey "🔒 Locked" badge (after FP1+45min). API accepts late submissions during the window (marks is_late=true) and hard-blocks after. PredictionForm shows amber warning banner + "Submit Late (Penalty Applies)" button during the window; grey lock screen after.
-
-Surname option when typing if possible, but definitely not prio
 
 
-### **Glorious 7**
+## **-> Glorious 7**
 
-TBD
+How to get an automatic list drawn for each race based on what riders are actually riding that event, which riders are most likely in the middle of the final ranking, and general diversity?
 
+## **-> Penalties:**
+1st offence: 25pts
+2nd offence: 45pts
+all following offences: 60pts
 
-## **Aesthetics**
-
-### **player Main page**
-
-Being able to see the weekend bets in the player home page after prediction done to avoid having to go into edit mode to check — ✅ Done: "Your Bets" 3-column panel (Sprint / Race / Glorious 7) now appears in the Next Up card once a prediction is submitted.
-
-If possible to get images of the tracks in the block corresponding that would be great (similar to the GP or F1 websites), maybe just the one coming up? We can also use the images currently on the MotoGP website for the previous season
-
-Can we have the riders photos (from the GP website) once the podium selections are done both for the championship and the race? but very optional — ❌ Removed: MotoGP CDN requires authentication (AccessDenied on direct URLs, website proxies/signs requests). Photo UI elements removed to keep the app clean. Can revisit later with manual Supabase Storage upload if desired.
-
-More clarity on the **race results in the "previous race" card**: — ✅ Done: each completed race now shows 3 panels (Sprint / Race / Glorious 7). Each panel has a "Your Bets" sub-section (🥇🥈🥉 with rider name + per-slot points earned) and a "Results" sub-section (actual top-5 finishers, green-highlighted if you predicted them). Glorious 7 shows relative rank among the 7-rider pool plus the actual race position. A "Weekend Total" footer shows the combined points (with penalty if applicable).
-* showing all 3 podiums
-* Showing the inputed bets as priority
-* showing the actual results (top 5 each time)
-* Showing the points earned
+Maybe we change that 
 
 
 
-### **Leaderboard:**
+## **-> Current race bets (main page)** ✅
 
-Being able to see everyone's bet after the cut-off -> extra table in the leaderboard to show that to avoid clutter? — ✅ Done: "Weekend Bets" collapsible section added at the bottom of the leaderboard. One row per past race; expanding it shows all players' Sprint / Race / Glorious 7 picks in a table. Only visible for races past their cut-off.
+~~The prediction for the current race card are not super readable: The riders names should not have the title font, but a thinner, easier to read font at this scale. Also there is a weird vertical cut at the end of the names, the last letter gets cut as it is in italic.~~
 
-Detailed points for each weekend with the break down of each contestant's podium (on hover or when clicking on it?). — ✅ Done: each scored cell in the "Points per Race" matrix is now clickable. Clicking opens a dark modal showing Sprint / Grand Prix / Glorious 7 breakdowns (Pick vs Real result, colour-coded points per slot, penalty bar if applicable, and a S+R+G summary line).
-
-
-
-## **Scoring:** ✅ Done
-
-For race/sprint/glorious 7, reduce the total amount for 2nd and 3rd position to put a bit more focus on the winner
-Reduce total amount of points maybe? to balance with final podium value
-
-1:
-Correct:20pts
-Off by 1:16pts
-Off by 2:12pts
+~~Those bets can be wider on desktop (on phone, there is no more space)~~
 
 
 
-2:
-Correct:16pts
-Off by 1:12pts
-Off by 2:8pts
+## **-> Current race bets (input page)**
+
+When inputing the bets can we format the riders names in the dropdown list as such: 
+
+\##\_**NOM Prenom** (race number and underscore in normal weight, then last name in bold CAPS and first name in bold First letter caps)
 
 
 
-3:
-Correct:14pts
-Off by 1:10pts
-Off by 2:6pts
+49\_Di Giannantonio Fabio: the last name is missing the first part (Di)
 
 
 
-Not going all the way to "off by 5", stop at "off by 2" -> considering then the top 5 to determine the points — ✅ Implemented: off-by-3+ scores 0, position-aware tables in engine.
+on mobile the countdown is awkwardly on 2 lines, it should be on 1 ideally
+
+
+
+The optional note next to glorious 7 should be removed (it is optional to save bets, but bot really if winning the championship is the target ^^)
 
 
 
 
 
-**Penalties:** ✅ Done
-1st offence: 35pts
-2nd offence: 55pts
-all following offences: 75pts
+## **-> Previous race cards**
+
+They can have a slightly stronger animation when hover, like the country going red like on the upcoming one, but keeping all the rest desaturated.
+
+
+
+## **-> Previous race bets**
+
+Same problem as for the current bets when it comes to readability, and chopped last letter (but the number after the name on the same line, is easier to read than with the number below the name like on the current race bets)
+
+
+
+The glorious 7 does not show points the same way as the sprint or the race (it should: not just the total, but also how many points per position)
+
+
+
+The sprint and race should also have a total on top of the per position breakdown.
+
+
+
+The highlighted line/rider when bets are correct should stay green, but should become yellow when off by one position, and orange when off by 2 positions.
 
 
 
 
 
+## **-> Leaderboard**
+
+For all tables in that section, the current users line should every time (except graph) have a slight different color to contrast and allow quicker readability
 
 
-**Final championship** ✅ Done — Option 1 chosen (350 pts total ≈ 2.3 perfect race weekends)
 
-option 1 (CHOSEN): 350 TOTAL
+**Main ranking**
 
-1: 130 pts (correct) / 104 pts (off by 1) / 78 pts (off by 2)
-2: 120 pts (correct) / 96 pts (off by 1) / 72 pts (off by 2)
-3: 100 pts (correct) / 80 pts (off by 1) / 60 pts (off by 2)
+On mobile, the table does not show the diff leader, the diff previous and the penalties: The rest of the test should be smaller to have space for that information
 
-⚠️ After deploying, run "Calculate Scores" in /admin for every completed race to refresh stored scores in Supabase.
+No issues on desktop
+
+
+
+**Trend**
+
+On mobile, the table is unreadable, the pop up on hover overview block any subsequent interaction
+
+
+
+on desktop it is not much better
+
+
+
+changes to do: 
+
+* The pop up on hover should ideally re-order the list per points on each event to match the actualgraph behind
+* the scale need t be adapted a bit to have slightly more gaps (even though the ones that only  inputed the first race a fucking up the scale with their super low scores)
+* the track names should only be the country (same as the upcoming race cards), no need for the track name, that should make the graph narrower and help with readability when more races are in
+* clicking on a contestant name in the bottom list should reduce the opacity of the other curves in the graph
+* maybe several contestants can be selected at the same time (sort of a filter to follow only the desired contestants)
+* all colors should be different (now only 8 colors for 14 contestants)
+* removing or reducing the points on the curves, they overlap each other a bit too much
+
+
+
+**Points per race**
+
+for the racer names, same as for the trend, country only (same as the upcoming race cards), no need for the track: each column is narrower making it better, especially on mobile
+
+
+
+The font size for the points and the breakdown can also be a bit bigger for readability, maybe the color also for a bit more contrast
+
+
+
+**Weekend bets**
+
+To be checked after the next cutoff if the bets are visible to everybody
+
+
+
+Formatting is nore readable: similar font problem than for the current race bets on the main page (current race cards once the bets are inputed)
+
+To make it easier on mobile too, each race podium should be vertical and without medal icon, just simple last name + number: that would make the whole table narrower (3 races hsould fit on mobile as currently 3 columns are fitting), and just create morevertical scroll which is better on mobile.
+
+
+
+The contestant list should also follow the live ranking as all the lists on the leaderboard page should
+
+
+
+## **-> Main page**
+
+Can we make the top red/white/red strip solid red? It looks like a loading status bar and tricks my eyes, I feel like it is moving even though it is not!
+
+
+
+## **-> Scoring info page**
+
+for the championship and weekend point explaination the correct column should all have the same green color, then off by one the yellow and the off by 2 the orange (same as the previous race bets)
+
+
+
+Use the same formating to show the champioonship and the race weekend maximum points
+
+
+
+For the late penalties add more detail for the system with the on time / late/ locked and respective timings.
+
+Also for the offense cards, the colors of the name is not contrasted enough, only the deducted points are readable.
 
 
 
