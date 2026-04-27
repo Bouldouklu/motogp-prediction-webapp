@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import LeaderboardTrendChart from '@/components/LeaderboardTrendChart'
+import BetsTable from '@/components/BetsTable'
 
 const PLAYER_COLORS = [
   "#EF4444", // Red
@@ -22,16 +23,31 @@ export default async function LeaderboardPage() {
   const [
     { data: players },
     { data: races },
-    { data: scores }
+    { data: scores },
+    { data: predictions }
   ] = await Promise.all([
     supabase.from('players').select('id, name'),
     supabase.from('races').select('*').order('round_number'),
-    supabase.from('player_scores').select('*')
+    supabase.from('player_scores').select('*'),
+    supabase.from('race_predictions').select(`
+      player_id,
+      race_id,
+      sprint_1st:riders!race_predictions_sprint_1st_id_fkey(name, number),
+      sprint_2nd:riders!race_predictions_sprint_2nd_id_fkey(name, number),
+      sprint_3rd:riders!race_predictions_sprint_3rd_id_fkey(name, number),
+      race_1st:riders!race_predictions_race_1st_id_fkey(name, number),
+      race_2nd:riders!race_predictions_race_2nd_id_fkey(name, number),
+      race_3rd:riders!race_predictions_race_3rd_id_fkey(name, number),
+      glorious_1st:riders!race_predictions_glorious_1st_id_fkey(name, number),
+      glorious_2nd:riders!race_predictions_glorious_2nd_id_fkey(name, number),
+      glorious_3rd:riders!race_predictions_glorious_3rd_id_fkey(name, number)
+    `)
   ])
 
   const safePlayers = (players || []).filter(p => p.name.toLowerCase() !== 'admin')
   const safeRaces = races || []
   const safeScores = scores || []
+  const safePredictions = predictions || []
 
   // 1. Calculate Leaderboard Stats
   const playerStats = safePlayers.map(player => {
@@ -243,6 +259,45 @@ export default async function LeaderboardPage() {
                 )}
               </div>
             </div>
+
+            {/* Weekend Bets Section — visible after cut-off */}
+            {(() => {
+              const pastRaces = safeRaces.filter(r => r.status !== 'upcoming')
+              if (pastRaces.length === 0) return null
+
+              const betsData = pastRaces.map(race => ({
+                raceId: race.id,
+                raceName: race.name,
+                circuit: race.circuit,
+                roundNumber: race.round_number,
+                players: safePlayers.map(player => {
+                  const pred = safePredictions.find(
+                    p => p.race_id === race.id && p.player_id === player.id
+                  )
+                  return {
+                    playerId: player.id,
+                    playerName: player.name,
+                    sprint: pred ? [
+                      pred.sprint_1st as any,
+                      pred.sprint_2nd as any,
+                      pred.sprint_3rd as any,
+                    ] : null,
+                    race: pred ? [
+                      pred.race_1st as any,
+                      pred.race_2nd as any,
+                      pred.race_3rd as any,
+                    ] : null,
+                    glorious: pred ? [
+                      pred.glorious_1st as any,
+                      pred.glorious_2nd as any,
+                      pred.glorious_3rd as any,
+                    ] : null,
+                  }
+                }),
+              }))
+
+              return <BetsTable races={betsData} />
+            })()}
 
           </div>
         ) : (
