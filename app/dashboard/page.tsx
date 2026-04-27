@@ -45,8 +45,25 @@ export default async function DashboardPage() {
       )
     `)
     .in('race_id', previousRaceIds)
-    .lte('position', 3)
+    .lte('position', 5)
     .order('position', { ascending: true })
+
+  // Fetch Glorious 7 rider pools for previous races
+  const { data: gloriousRiders } = previousRaceIds.length > 0
+    ? await supabase
+        .from('race_glorious_riders')
+        .select('race_id, rider_id')
+        .in('race_id', previousRaceIds)
+    : { data: [] as { race_id: string; rider_id: string }[] }
+
+  // Fetch player scores for previous races
+  const { data: userScores } = previousRaceIds.length > 0
+    ? await supabase
+        .from('player_scores')
+        .select('race_id, sprint_1st_points, sprint_2nd_points, sprint_3rd_points, race_1st_points, race_2nd_points, race_3rd_points, glorious_7_points, penalty_points, total_points')
+        .eq('player_id', user.id)
+        .in('race_id', previousRaceIds)
+    : { data: [] as { race_id: string; sprint_1st_points: number; sprint_2nd_points: number; sprint_3rd_points: number; race_1st_points: number; race_2nd_points: number; race_3rd_points: number; glorious_7_points: number; penalty_points: number; total_points: number }[] }
 
   // Fetch user's predictions for upcoming races to check which ones are already done
   // AND for previous races to show the badges
@@ -83,9 +100,48 @@ export default async function DashboardPage() {
         .in('id', nextRacePredictedRiderIds)
     : { data: [] as { id: string; name: string; number: number; external_id: string | null }[] }
 
-  // Build lookup map: rider_id -> rider
+  // Build lookup map: rider_id -> rider (for next-race "Your Bets" display)
   const predictedRiderMap = Object.fromEntries(
     (nextRacePredictedRiders || []).map(r => [r.id, r])
+  )
+
+  // Collect all rider IDs predicted in previous races
+  const previousPredictionRiderIds = [
+    ...(userPredictions
+      ?.filter(p => previousRaceIds.includes(p.race_id))
+      .flatMap(p => [
+        p.sprint_1st_id, p.sprint_2nd_id, p.sprint_3rd_id,
+        p.race_1st_id, p.race_2nd_id, p.race_3rd_id,
+        p.glorious_1st_id, p.glorious_2nd_id, p.glorious_3rd_id,
+      ])
+      .filter(Boolean) as string[]),
+  ]
+  const uniquePreviousPredictionRiderIds = [...new Set(previousPredictionRiderIds)]
+
+  const { data: previousPredictedRiders } = uniquePreviousPredictionRiderIds.length > 0
+    ? await supabase
+        .from('riders')
+        .select('id, name, number')
+        .in('id', uniquePreviousPredictionRiderIds)
+    : { data: [] as { id: string; name: string; number: number }[] }
+
+  const previousPredictedRiderMap = Object.fromEntries(
+    (previousPredictedRiders || []).map(r => [r.id, r])
+  )
+
+  // Lookup: race_id -> player_scores row
+  const userScoresMap = Object.fromEntries(
+    (userScores || []).map(s => [s.race_id, s])
+  )
+
+  // Lookup: race_id -> Set of glorious rider_ids
+  const gloriousRidersByRace = (gloriousRiders || []).reduce<Record<string, Set<string>>>(
+    (acc, row) => {
+      if (!acc[row.race_id]) acc[row.race_id] = new Set()
+      acc[row.race_id].add(row.rider_id)
+      return acc
+    },
+    {}
   )
 
   // Fetch championship prediction status with rider details
@@ -384,51 +440,69 @@ export default async function DashboardPage() {
             <div className="space-y-4">
               {previousRaces.map((race) => {
                 const raceSpecificResults = raceResults?.filter((r) => r.race_id === race.id) || []
-
-                // Get user prediction for this race
                 const prediction = userPredictions?.find(p => p.race_id === race.id)
+                const scoreRow = userScoresMap[race.id]
+                const gloriousPool = gloriousRidersByRace[race.id] || new Set<string>()
 
-                const sprintPodium = raceSpecificResults
-                  .filter((r) => r.result_type === 'sprint')
+                const sprintResults = raceSpecificResults
+                  .filter(r => r.result_type === 'sprint')
                   .sort((a, b) => a.position - b.position)
-                const racePodium = raceSpecificResults
-                  .filter((r) => r.result_type === 'race')
+                const raceFullResults = raceSpecificResults
+                  .filter(r => r.result_type === 'race')
                   .sort((a, b) => a.position - b.position)
+                const gloriousResults = raceFullResults
+                  .filter((r: any) => r.rider?.id && gloriousPool.has(r.rider.id))
+                  .slice(0, 5)
 
-                // Helper to check prediction status
-                const getPredictionStatus = (type: 'sprint' | 'race', actualRiderId: string, actualPosition: number) => {
-                  if (!prediction) return null
+                const medals = ['🥇', '🥈', '🥉']
+                const getPredRider = (id: string | null | undefined) =>
+                  id ? previousPredictedRiderMap[id] : null
+                const surname = (name: string) => name.split(' ').pop() ?? name
+                const ptsCls = (pts: number) =>
+                  pts > 0 ? 'text-green-400' : 'text-gray-600'
+                const posColor = (pos: number) =>
+                  pos === 1 ? 'text-yellow-500' : pos === 2 ? 'text-gray-400' : pos === 3 ? 'text-orange-700' : 'text-gray-600'
 
-                  // Map position to field name
-                  const fieldPrefix = type === 'sprint' ? 'sprint' : 'race'
-                  const suffix = actualPosition === 1 ? '1st_id' : actualPosition === 2 ? '2nd_id' : '3rd_id'
-                  const predictedRiderId = prediction[`${fieldPrefix}_${suffix}` as keyof typeof prediction]
+                const panels = [
+                  {
+                    label: 'Sprint',
+                    bets: [
+                      { riderId: (prediction as any)?.sprint_1st_id, pts: scoreRow?.sprint_1st_points ?? 0 },
+                      { riderId: (prediction as any)?.sprint_2nd_id, pts: scoreRow?.sprint_2nd_points ?? 0 },
+                      { riderId: (prediction as any)?.sprint_3rd_id, pts: scoreRow?.sprint_3rd_points ?? 0 },
+                    ],
+                    results: sprintResults.slice(0, 5),
+                    predictedIds: new Set([(prediction as any)?.sprint_1st_id, (prediction as any)?.sprint_2nd_id, (prediction as any)?.sprint_3rd_id].filter(Boolean)),
+                    isGlorious: false,
+                    gloriousTotalPts: 0,
+                  },
+                  {
+                    label: 'Race',
+                    bets: [
+                      { riderId: (prediction as any)?.race_1st_id, pts: scoreRow?.race_1st_points ?? 0 },
+                      { riderId: (prediction as any)?.race_2nd_id, pts: scoreRow?.race_2nd_points ?? 0 },
+                      { riderId: (prediction as any)?.race_3rd_id, pts: scoreRow?.race_3rd_points ?? 0 },
+                    ],
+                    results: raceFullResults.slice(0, 5),
+                    predictedIds: new Set([(prediction as any)?.race_1st_id, (prediction as any)?.race_2nd_id, (prediction as any)?.race_3rd_id].filter(Boolean)),
+                    isGlorious: false,
+                    gloriousTotalPts: 0,
+                  },
+                  {
+                    label: 'Glorious 7',
+                    bets: [
+                      { riderId: (prediction as any)?.glorious_1st_id, pts: 0 },
+                      { riderId: (prediction as any)?.glorious_2nd_id, pts: 0 },
+                      { riderId: (prediction as any)?.glorious_3rd_id, pts: 0 },
+                    ],
+                    results: gloriousResults.map((r: any, idx: number) => ({ ...r, relativePos: idx + 1 })),
+                    predictedIds: new Set([(prediction as any)?.glorious_1st_id, (prediction as any)?.glorious_2nd_id, (prediction as any)?.glorious_3rd_id].filter(Boolean)),
+                    isGlorious: true,
+                    gloriousTotalPts: scoreRow?.glorious_7_points ?? 0,
+                  },
+                ]
 
-                  // Check exact match
-                  if (predictedRiderId === actualRiderId) {
-                    return { status: 'exact', label: '✓' }
-                  }
-
-                  // Check if rider was predicted elsewhere in the podium for this type
-                  const p1 = prediction[`${fieldPrefix}_1st_id` as keyof typeof prediction]
-                  const p2 = prediction[`${fieldPrefix}_2nd_id` as keyof typeof prediction]
-                  const p3 = prediction[`${fieldPrefix}_3rd_id` as keyof typeof prediction]
-
-                  if ((p1 === actualRiderId && actualPosition !== 1) ||
-                    (p2 === actualRiderId && actualPosition !== 2) ||
-                    (p3 === actualRiderId && actualPosition !== 3)) {
-
-                    // Find where they predicted them instead
-                    let predictedPos = 0
-                    if (p1 === actualRiderId) predictedPos = 1
-                    else if (p2 === actualRiderId) predictedPos = 2
-                    else if (p3 === actualRiderId) predictedPos = 3
-
-                    return { status: 'podium', label: `P${predictedPos}` }
-                  }
-
-                  return null
-                }
+                const hasAnyData = sprintResults.length > 0 || raceFullResults.length > 0 || gloriousResults.length > 0
 
                 return (
                   <div
@@ -460,114 +534,108 @@ export default async function DashboardPage() {
                       </div>
                     </div>
 
-                    {/* Results Display */}
-                    {(sprintPodium.length > 0 || racePodium.length > 0) && (
-                      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-gray-700/50">
-                        {/* Sprint Results */}
-                        {sprintPodium.length > 0 && (
-                          <div>
-                            <h4 className="text-xs font-bold uppercase tracking-widest text-motogp-red mb-3 flex items-center gap-2">
-                              <span className="w-1.5 h-1.5 rounded-full bg-motogp-red"></span>
-                              Sprint Podium
+                    {/* Results Display — 3 panels */}
+                    {hasAnyData && (
+                      <div className="mt-6 pt-6 border-t border-gray-700/50 grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {panels.map((panel) => (
+                          <div key={panel.label} className="space-y-3">
+                            <h4 className="text-xs font-bold uppercase tracking-widest text-motogp-red flex items-center gap-2">
+                              <span className="w-1.5 h-1.5 rounded-full bg-motogp-red shrink-0"></span>
+                              {panel.label}
                             </h4>
-                            <div className="space-y-2">
-                              {sprintPodium.map((result: any) => {
-                                const status = getPredictionStatus('sprint', result.rider?.id, result.position)
-                                return (
-                                  <div
-                                    key={result.position}
-                                    className="flex items-center justify-between text-sm bg-gray-900/30 p-2 rounded border border-gray-800/50"
-                                  >
-                                    <div className="flex items-center gap-3">
-                                      <span
-                                        className={`font-mono font-bold w-4 text-center ${result.position === 1
-                                          ? 'text-yellow-500'
-                                          : result.position === 2
-                                            ? 'text-gray-400'
-                                            : 'text-orange-700'
-                                          }`}
-                                      >
-                                        {result.position}
-                                      </span>
-                                      <span className="font-display font-bold italic uppercase text-gray-300">
-                                        {result.rider?.name || 'Unknown'}
-                                      </span>
-                                      {status && (
-                                        <div
-                                          className={`flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold border ${status.status === 'exact'
-                                            ? 'bg-green-500/20 text-green-500 border-green-500/50'
-                                            : 'bg-orange-500/20 text-orange-500 border-orange-500/50'
-                                            }`}
-                                          title={status.status === 'exact' ? 'Exact Match!' : `You predicted this rider to finish ${status.label}`}
-                                        >
-                                          {status.label}
-                                        </div>
-                                      )}
-                                    </div>
-                                    <div className="flex items-center gap-3">
-                                      <span className="text-xs text-gray-600 font-mono">
-                                        #{result.rider?.number}
-                                      </span>
-                                    </div>
-                                  </div>
-                                )
-                              })}
-                            </div>
-                          </div>
-                        )}
 
-                        {/* Race Results */}
-                        {racePodium.length > 0 && (
-                          <div>
-                            <h4 className="text-xs font-bold uppercase tracking-widest text-motogp-red mb-3 flex items-center gap-2">
-                              <span className="w-1.5 h-1.5 rounded-full bg-motogp-red"></span>
-                              Race Podium
-                            </h4>
-                            <div className="space-y-2">
-                              {racePodium.map((result: any) => {
-                                const status = getPredictionStatus('race', result.rider?.id, result.position)
-                                return (
-                                  <div
-                                    key={result.position}
-                                    className="flex items-center justify-between text-sm bg-gray-900/30 p-2 rounded border border-gray-800/50"
-                                  >
-                                    <div className="flex items-center gap-3">
-                                      <span
-                                        className={`font-mono font-bold w-4 text-center ${result.position === 1
-                                          ? 'text-yellow-500'
-                                          : result.position === 2
-                                            ? 'text-gray-400'
-                                            : 'text-orange-700'
-                                          }`}
-                                      >
-                                        {result.position}
-                                      </span>
-                                      <span className="font-display font-bold italic uppercase text-gray-300">
-                                        {result.rider?.name || 'Unknown'}
-                                      </span>
-                                      {status && (
-                                        <div
-                                          className={`flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold border ${status.status === 'exact'
-                                            ? 'bg-green-500/20 text-green-500 border-green-500/50'
-                                            : 'bg-orange-500/20 text-orange-500 border-orange-500/50'
-                                            }`}
-                                          title={status.status === 'exact' ? 'Exact Match!' : `You predicted this rider to finish ${status.label}`}
-                                        >
-                                          {status.label}
+                            {/* Your Bets */}
+                            <div className="bg-gray-900/50 rounded-lg border border-gray-800 p-3">
+                              <div className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-2">Your Bets</div>
+                              {!prediction ? (
+                                <div className="text-xs text-gray-700 italic py-1">No prediction</div>
+                              ) : (
+                                <div className="space-y-1.5">
+                                  {panel.bets.map((bet, i) => {
+                                    const rider = getPredRider(bet.riderId)
+                                    return (
+                                      <div key={i} className="flex items-center justify-between text-xs">
+                                        <div className="flex items-center gap-2 min-w-0">
+                                          <span className="text-sm leading-none shrink-0">{medals[i]}</span>
+                                          {rider ? (
+                                            <>
+                                              <span className="font-display font-black italic uppercase text-gray-200 truncate">
+                                                {surname(rider.name)}
+                                              </span>
+                                              <span className="font-mono text-gray-600 shrink-0">#{rider.number}</span>
+                                            </>
+                                          ) : (
+                                            <span className="text-gray-700">—</span>
+                                          )}
                                         </div>
-                                      )}
-                                    </div>
-                                    <div className="flex items-center gap-3">
-                                      <span className="text-xs text-gray-600 font-mono">
-                                        #{result.rider?.number}
+                                        {!panel.isGlorious && (
+                                          <span className={`font-mono font-bold shrink-0 ml-2 ${ptsCls(bet.pts)}`}>
+                                            {bet.pts > 0 ? `+${bet.pts}` : rider ? '0' : ''}
+                                          </span>
+                                        )}
+                                      </div>
+                                    )
+                                  })}
+                                  {panel.isGlorious && (
+                                    <div className="pt-1.5 mt-1.5 border-t border-gray-800 flex items-center justify-between">
+                                      <span className="text-[10px] text-gray-500 uppercase tracking-wider">Total</span>
+                                      <span className={`font-mono font-bold text-xs ${ptsCls(panel.gloriousTotalPts)}`}>
+                                        {panel.gloriousTotalPts > 0 ? `+${panel.gloriousTotalPts}` : panel.gloriousTotalPts}
                                       </span>
                                     </div>
-                                  </div>
-                                )
-                              })}
+                                  )}
+                                </div>
+                              )}
                             </div>
+
+                            {/* Results top 5 */}
+                            {panel.results.length > 0 && (
+                              <div className="space-y-1">
+                                <div className="text-[10px] text-gray-600 font-bold uppercase tracking-widest mb-1.5">Results</div>
+                                {panel.results.map((result: any) => {
+                                  const displayPos = panel.isGlorious ? result.relativePos : result.position
+                                  const isMatch = result.rider?.id && panel.predictedIds.has(result.rider.id)
+                                  return (
+                                    <div
+                                      key={displayPos}
+                                      className={`flex items-center justify-between text-xs px-2 py-1 rounded border ${isMatch ? 'bg-green-900/20 border-green-800/40' : 'bg-gray-900/20 border-gray-800/30'}`}
+                                    >
+                                      <div className="flex items-center gap-2 min-w-0">
+                                        <span className={`font-mono font-bold w-4 text-center shrink-0 ${posColor(displayPos)}`}>
+                                          {displayPos}
+                                        </span>
+                                        <span className={`font-display font-bold italic uppercase truncate ${isMatch ? 'text-green-400' : 'text-gray-400'}`}>
+                                          {result.rider ? surname(result.rider.name) : '?'}
+                                        </span>
+                                      </div>
+                                      <div className="flex items-center gap-2 shrink-0 ml-2">
+                                        {panel.isGlorious && (
+                                          <span className="text-[10px] text-gray-600 font-mono">P{result.position}</span>
+                                        )}
+                                        <span className="text-[10px] text-gray-700 font-mono">#{result.rider?.number}</span>
+                                      </div>
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                            )}
                           </div>
-                        )}
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Weekend total */}
+                    {scoreRow && (
+                      <div className="mt-4 pt-4 border-t border-gray-800/50 flex items-center justify-between">
+                        <span className="text-xs text-gray-500 font-bold uppercase tracking-widest">Weekend Total</span>
+                        <div className="flex items-center gap-3">
+                          {scoreRow.penalty_points > 0 && (
+                            <span className="text-xs text-red-500 font-mono">-{scoreRow.penalty_points} penalty</span>
+                          )}
+                          <span className={`text-lg font-display font-black italic ${scoreRow.total_points > 0 ? 'text-white' : 'text-gray-600'}`}>
+                            {scoreRow.total_points > 0 ? `+${scoreRow.total_points}` : scoreRow.total_points} pts
+                          </span>
+                        </div>
                       </div>
                     )}
                   </div>
