@@ -5,6 +5,7 @@ import Link from 'next/link'
 import LogoutButton from '@/components/LogoutButton'
 import CollapsibleSection from '@/components/CollapsibleSection'
 import CollapsibleRaceCard from '@/components/CollapsibleRaceCard'
+import { calculatePositionPoints } from '@/lib/scoring'
 
 export default async function DashboardPage() {
   const user = await getCurrentUser()
@@ -465,11 +466,32 @@ export default async function DashboardPage() {
                 const medals = ['🥇', '🥈', '🥉']
                 const getPredRider = (id: string | null | undefined) =>
                   id ? previousPredictedRiderMap[id] : null
-                const surname = (name: string) => name.split(' ').pop() ?? name
-                const ptsCls = (pts: number) =>
-                  pts > 0 ? 'text-green-400' : 'text-gray-600'
+                const surname = (name: string) => {
+                  const parts = name.trim().split(' ')
+                  return parts.length > 1 ? parts.slice(1).join(' ') : parts[0]
+                }
                 const posColor = (pos: number) =>
                   pos === 1 ? 'text-yellow-500' : pos === 2 ? 'text-gray-400' : pos === 3 ? 'text-orange-700' : 'text-gray-600'
+
+                // Green = exact, yellow = off by 1, orange = off by 2, gray = miss/no result
+                const accuracyColor = (diff: number | null) =>
+                  diff === 0 ? 'text-green-400' : diff === 1 ? 'text-yellow-400' : diff === 2 ? 'text-orange-400' : 'text-gray-400'
+                const accuracyBg = (diff: number | null) =>
+                  diff === 0 ? 'bg-green-900/20 border-green-800/40' : diff === 1 ? 'bg-yellow-900/20 border-yellow-800/40' : diff === 2 ? 'bg-orange-900/20 border-orange-800/40' : 'bg-gray-900/20 border-gray-800/30'
+
+                // Compute per-position G7 points by recalculating from gloriousResults
+                const calcG7Pts = (riderId: string | null | undefined, slot: number): number => {
+                  if (!riderId) return 0
+                  const res = gloriousResults.find(r => r.riderId === riderId)
+                  if (!res || res.relativePos === null) return 0
+                  return calculatePositionPoints(res.relativePos, slot, 'winner')
+                }
+
+                const g7Pts = [
+                  calcG7Pts((prediction as any)?.glorious_1st_id, 1),
+                  calcG7Pts((prediction as any)?.glorious_2nd_id, 2),
+                  calcG7Pts((prediction as any)?.glorious_3rd_id, 3),
+                ]
 
                 const panels = [
                   {
@@ -482,7 +504,7 @@ export default async function DashboardPage() {
                     results: sprintResults.slice(0, 5),
                     predictedIds: new Set([(prediction as any)?.sprint_1st_id, (prediction as any)?.sprint_2nd_id, (prediction as any)?.sprint_3rd_id].filter(Boolean)),
                     isGlorious: false,
-                    gloriousTotalPts: 0,
+                    panelTotal: (scoreRow?.sprint_1st_points ?? 0) + (scoreRow?.sprint_2nd_points ?? 0) + (scoreRow?.sprint_3rd_points ?? 0),
                   },
                   {
                     label: 'Race',
@@ -494,19 +516,19 @@ export default async function DashboardPage() {
                     results: raceFullResults.slice(0, 5),
                     predictedIds: new Set([(prediction as any)?.race_1st_id, (prediction as any)?.race_2nd_id, (prediction as any)?.race_3rd_id].filter(Boolean)),
                     isGlorious: false,
-                    gloriousTotalPts: 0,
+                    panelTotal: (scoreRow?.race_1st_points ?? 0) + (scoreRow?.race_2nd_points ?? 0) + (scoreRow?.race_3rd_points ?? 0),
                   },
                   {
                     label: 'Glorious 7',
                     bets: [
-                      { riderId: (prediction as any)?.glorious_1st_id, pts: 0 },
-                      { riderId: (prediction as any)?.glorious_2nd_id, pts: 0 },
-                      { riderId: (prediction as any)?.glorious_3rd_id, pts: 0 },
+                      { riderId: (prediction as any)?.glorious_1st_id, pts: g7Pts[0] },
+                      { riderId: (prediction as any)?.glorious_2nd_id, pts: g7Pts[1] },
+                      { riderId: (prediction as any)?.glorious_3rd_id, pts: g7Pts[2] },
                     ],
                     results: gloriousResults,
                     predictedIds: new Set([(prediction as any)?.glorious_1st_id, (prediction as any)?.glorious_2nd_id, (prediction as any)?.glorious_3rd_id].filter(Boolean)),
                     isGlorious: true,
-                    gloriousTotalPts: scoreRow?.glorious_7_points ?? 0,
+                    panelTotal: scoreRow?.glorious_7_points ?? 0,
                   },
                 ]
 
@@ -561,13 +583,27 @@ export default async function DashboardPage() {
                                 <div className="space-y-1.5">
                                   {panel.bets.map((bet, i) => {
                                     const rider = getPredRider(bet.riderId)
+                                    // Determine accuracy diff: find rider's actual finish position
+                                    let diff: number | null = null
+                                    if (rider && panel.results.length > 0) {
+                                      const actual = panel.results.find((r: any) => {
+                                        const rid = panel.isGlorious ? r.riderId : r.rider?.id
+                                        return rid === bet.riderId
+                                      })
+                                      if (actual) {
+                                        const a = actual as any
+                                        const actualPos = panel.isGlorious ? a.relativePos : a.position
+                                        if (actualPos != null) diff = Math.abs(actualPos - (i + 1))
+                                      }
+                                    }
+                                    const nameColor = rider && panel.results.length > 0 ? accuracyColor(diff) : 'text-gray-200'
                                     return (
                                       <div key={i} className="flex items-center justify-between text-xs">
                                         <div className="flex items-center gap-2 min-w-0">
                                           <span className="text-sm leading-none shrink-0">{medals[i]}</span>
                                           {rider ? (
                                             <>
-                                              <span className="font-display font-black italic uppercase text-gray-200 truncate">
+                                              <span className={`font-sans font-semibold uppercase truncate pr-0.5 ${nameColor}`}>
                                                 {surname(rider.name)}
                                               </span>
                                               <span className="font-mono text-gray-600 shrink-0">#{rider.number}</span>
@@ -576,19 +612,17 @@ export default async function DashboardPage() {
                                             <span className="text-gray-700">—</span>
                                           )}
                                         </div>
-                                        {!panel.isGlorious && (
-                                          <span className={`font-mono font-bold shrink-0 ml-2 ${ptsCls(bet.pts)}`}>
-                                            {bet.pts > 0 ? `+${bet.pts}` : rider ? '0' : ''}
-                                          </span>
-                                        )}
+                                        <span className={`font-mono font-bold shrink-0 ml-2 ${bet.pts > 0 ? 'text-green-400' : 'text-gray-600'}`}>
+                                          {bet.pts > 0 ? `+${bet.pts}` : rider ? '0' : ''}
+                                        </span>
                                       </div>
                                     )
                                   })}
-                                  {panel.isGlorious && (
+                                  {scoreRow && (
                                     <div className="pt-1.5 mt-1.5 border-t border-gray-800 flex items-center justify-between">
                                       <span className="text-[10px] text-gray-500 uppercase tracking-wider">Total</span>
-                                      <span className={`font-mono font-bold text-xs ${ptsCls(panel.gloriousTotalPts)}`}>
-                                        {panel.gloriousTotalPts > 0 ? `+${panel.gloriousTotalPts}` : panel.gloriousTotalPts}
+                                      <span className={`font-mono font-bold text-xs ${panel.panelTotal > 0 ? 'text-green-400' : 'text-gray-600'}`}>
+                                        {panel.panelTotal > 0 ? `+${panel.panelTotal}` : panel.panelTotal}
                                       </span>
                                     </div>
                                   )}
@@ -604,18 +638,23 @@ export default async function DashboardPage() {
                                 </div>
                                 {panel.results.map((result: any) => {
                                   const displayPos = panel.isGlorious ? result.relativePos : result.position
-                                  const isMatch = result.rider?.id && panel.predictedIds.has(result.rider?.id ?? result.riderId)
+                                  const matchedRiderId = panel.isGlorious ? result.riderId : result.rider?.id
+                                  const predictedSlot = matchedRiderId
+                                    ? [...panel.predictedIds].indexOf(matchedRiderId) + 1
+                                    : -1
+                                  // predictedSlot > 0 means this rider was predicted; diff = |displayPos - predictedSlot|
+                                  const resultDiff = predictedSlot > 0 ? Math.abs(displayPos - predictedSlot) : null
                                   const hasDnf = panel.isGlorious && result.position === null
                                   return (
                                     <div
                                       key={result.riderId ?? displayPos}
-                                      className={`flex items-center justify-between text-xs px-2 py-1 rounded border ${isMatch ? 'bg-green-900/20 border-green-800/40' : 'bg-gray-900/20 border-gray-800/30'}`}
+                                      className={`flex items-center justify-between text-xs px-2 py-1 rounded border ${resultDiff !== null ? accuracyBg(resultDiff) : 'bg-gray-900/20 border-gray-800/30'}`}
                                     >
                                       <div className="flex items-center gap-2 min-w-0">
                                         <span className={`font-mono font-bold w-4 text-center shrink-0 ${posColor(displayPos)}`}>
                                           {displayPos}
                                         </span>
-                                        <span className={`font-display font-bold italic uppercase truncate ${isMatch ? 'text-green-400' : 'text-gray-400'}`}>
+                                        <span className={`font-sans font-semibold uppercase truncate pr-0.5 ${resultDiff !== null ? accuracyColor(resultDiff) : 'text-gray-400'}`}>
                                           {result.rider ? surname(result.rider.name) : '?'}
                                         </span>
                                       </div>

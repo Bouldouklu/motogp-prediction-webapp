@@ -44,21 +44,21 @@ Maybe we change that
 
 
 
-## **-> Previous race bets**
+## **-> Previous race bets** ✅
 
-Same problem as for the current bets when it comes to readability, and chopped last letter (but the number after the name on the same line, is easier to read than with the number below the name like on the current race bets)
-
-
-
-The glorious 7 does not show points the same way as the sprint or the race (it should: not just the total, but also how many points per position)
+~~Same problem as for the current bets when it comes to readability, and chopped last letter (but the number after the name on the same line, is easier to read than with the number below the name like on the current race bets)~~
 
 
 
-The sprint and race should also have a total on top of the per position breakdown.
+~~The glorious 7 does not show points the same way as the sprint or the race (it should: not just the total, but also how many points per position)~~
 
 
 
-The highlighted line/rider when bets are correct should stay green, but should become yellow when off by one position, and orange when off by 2 positions.
+~~The sprint and race should also have a total on top of the per position breakdown.~~
+
+
+
+~~The highlighted line/rider when bets are correct should stay green, but should become yellow when off by one position, and orange when off by 2 positions.~~
 
 
 
