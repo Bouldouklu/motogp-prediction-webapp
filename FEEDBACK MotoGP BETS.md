@@ -6,12 +6,14 @@
 
 How to get an automatic list drawn for each race based on what riders are actually riding that event, which riders are most likely in the middle of the final ranking, and general diversity?
 
-## **-> Penalties:**
-1st offence: 25pts
-2nd offence: 45pts
-all following offences: 60pts
 
-Maybe we change that 
+## **-> Penalties:** ✅
+
+~~1st offence: 25pts~~
+~~2nd offence: 45pts~~
+~~all following offences: 60pts~~
+
+~~Maybe we change that~~ 
 
 
 

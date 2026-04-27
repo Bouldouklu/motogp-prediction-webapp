@@ -163,15 +163,15 @@ export default function ScoringPage() {
                             <div className="grid grid-cols-3 gap-4 text-center">
                                 <div className="p-4 bg-red-950/30 border border-red-800/50 rounded-lg">
                                     <div className="text-sm font-bold text-red-300 mb-1">1st Offense</div>
-                                    <div className="text-xl font-bold text-red-500">-35 pts</div>
+                                    <div className="text-xl font-bold text-red-500">-25 pts</div>
                                 </div>
                                 <div className="p-4 bg-red-950/30 border border-red-800/50 rounded-lg">
                                     <div className="text-sm font-bold text-red-300 mb-1">2nd Offense</div>
-                                    <div className="text-xl font-bold text-red-500">-55 pts</div>
+                                    <div className="text-xl font-bold text-red-500">-45 pts</div>
                                 </div>
                                 <div className="p-4 bg-red-950/30 border border-red-800/50 rounded-lg">
                                     <div className="text-sm font-bold text-red-300 mb-1">3rd+ Offense</div>
-                                    <div className="text-xl font-bold text-red-500">-75 pts</div>
+                                    <div className="text-xl font-bold text-red-500">-60 pts</div>
                                 </div>
                             </div>
                         </div>

@@ -28,9 +28,9 @@ export function calculatePositionPoints(
  * @returns Penalty points to deduct
  */
 export function calculatePenalty(offenseNumber: number): number {
-  if (offenseNumber === 1) return 35;
-  if (offenseNumber === 2) return 55;
-  return 75; // 3rd and beyond
+  if (offenseNumber === 1) return 25;
+  if (offenseNumber === 2) return 45;
+  return 60; // 3rd and beyond
 }
 
 /**
