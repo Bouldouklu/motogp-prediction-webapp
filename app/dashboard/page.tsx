@@ -520,7 +520,7 @@ export default async function DashboardPage() {
                           Round {race.round_number}
                         </span>
                       </div>
-                      <h3 className="text-2xl font-display font-black italic uppercase text-gray-300">
+                      <h3 className="text-2xl font-display font-black italic uppercase text-gray-300 group-hover:text-motogp-red transition-colors duration-300">
                         {race.name}
                       </h3>
                       <p className="text-sm text-gray-500 mb-2 font-medium">

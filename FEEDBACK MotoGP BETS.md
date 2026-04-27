@@ -38,9 +38,9 @@ Maybe we change that
 
 
 
-## **-> Previous race cards**
+## **-> Previous race cards** ✅
 
-They can have a slightly stronger animation when hover, like the country going red like on the upcoming one, but keeping all the rest desaturated.
+~~They can have a slightly stronger animation when hover, like the country going red like on the upcoming one, but keeping all the rest desaturated.~~
 
 
 
