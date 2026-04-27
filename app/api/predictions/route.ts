@@ -47,16 +47,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Race not found' }, { status: 404 })
     }
 
-    const deadline = new Date(race.fp1_datetime)
+    const FP1_DURATION_MS = 45 * 60 * 1000
+    const fp1Start = new Date(race.fp1_datetime)
+    const fp1End = new Date(fp1Start.getTime() + FP1_DURATION_MS)
     const now = new Date()
-    const late = isLateSubmission(now, deadline)
 
-    if (late) {
+    if (now > fp1End) {
       return NextResponse.json(
-        { error: 'Prediction deadline has passed' },
+        { error: 'Prediction window has closed' },
         { status: 400 }
       )
     }
+
+    const late = isLateSubmission(now, fp1Start)
 
     // Insert prediction with top 3 for sprint and race
     const { data, error } = await supabase
@@ -143,16 +146,19 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Race not found' }, { status: 404 })
     }
 
-    const deadline = new Date(race.fp1_datetime)
+    const FP1_DURATION_MS = 45 * 60 * 1000
+    const fp1Start = new Date(race.fp1_datetime)
+    const fp1End = new Date(fp1Start.getTime() + FP1_DURATION_MS)
     const now = new Date()
-    const late = isLateSubmission(now, deadline)
 
-    if (late) {
+    if (now > fp1End) {
       return NextResponse.json(
-        { error: 'Prediction deadline has passed' },
+        { error: 'Prediction window has closed' },
         { status: 400 }
       )
     }
+
+    const late = isLateSubmission(now, fp1Start)
 
     // Update prediction with top 3 for sprint and race
     const { data, error } = await supabase

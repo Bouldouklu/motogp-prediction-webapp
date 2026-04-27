@@ -10,7 +10,7 @@ Still show the complete list once a name is selected to allow for easy change �
 
 Not blocking an already selected rider name to allow for some shuffling, but maybe making the whole podium card go "ALERT" when a name is inputed twice — ✅ Done: duplicate detection per category (Sprint / Race / Glorious 7); any slot sharing a rider with another slot in the same category shows an amber "⚠ Duplicate rider — check your podium" banner and amber ring. Cross-category duplicates (e.g. same rider in Sprint 1st and Race 1st) are intentionally allowed.
 
-Change (edit prediction) button to locked or something once the cut-off is reached. And also add a penalty margin: end of FP1 as the latest time. 
+Change (edit prediction) button to locked or something once the cut-off is reached. And also add a penalty margin: end of FP1 as the latest time. — ✅ Done: 3 states — open (before FP1) → amber "⚠ Late — Penalty Applies" link (FP1 start to FP1+45min) → grey "🔒 Locked" badge (after FP1+45min). API accepts late submissions during the window (marks is_late=true) and hard-blocks after. PredictionForm shows amber warning banner + "Submit Late (Penalty Applies)" button during the window; grey lock screen after.
 
 Surname option when typing if possible, but definitely not prio
 

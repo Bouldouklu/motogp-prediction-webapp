@@ -73,8 +73,12 @@ export default function PredictionForm({
   )
 
   const deadline = new Date(deadlineAt)
-  const isPastDeadline = deadline < new Date()
-  const timeUntilDeadline = deadline.getTime() - Date.now()
+  const FP1_DURATION_MS = 45 * 60 * 1000
+  const fp1End = new Date(deadline.getTime() + FP1_DURATION_MS)
+  const nowMs = Date.now()
+  const isInPenaltyWindow = nowMs >= deadline.getTime() && nowMs < fp1End.getTime()
+  const isHardLocked = nowMs >= fp1End.getTime()
+  const timeUntilDeadline = deadline.getTime() - nowMs
 
   const sprintIds = [sprint1stId, sprint2ndId, sprint3rdId]
   const raceIds = [race1stId, race2ndId, race3rdId]
@@ -154,14 +158,14 @@ export default function PredictionForm({
     }
   }
 
-  if (isPastDeadline) {
+  if (isHardLocked) {
     return (
-      <div className="p-6 bg-red-900/20 border border-red-800 rounded-lg">
-        <h3 className="text-lg font-display italic font-bold text-red-500 mb-2 uppercase">
-          Deadline Passed
+      <div className="p-6 bg-gray-900/50 border border-gray-700 rounded-lg">
+        <h3 className="text-lg font-display italic font-bold text-gray-400 mb-2 uppercase">
+          🔒 Locked
         </h3>
-        <p className="text-gray-400">
-          The prediction deadline for this race has passed. You can no longer
+        <p className="text-gray-500">
+          The prediction window for this race has closed. You can no longer
           submit or modify predictions.
         </p>
       </div>
@@ -170,6 +174,15 @@ export default function PredictionForm({
 
   return (
     <div className="bg-black/20 p-6 rounded-xl border border-gray-800">
+      {isInPenaltyWindow && (
+        <div className="mb-6 flex items-center gap-3 bg-amber-500/10 border border-amber-500/50 rounded-lg px-4 py-3">
+          <span className="text-amber-400 text-lg shrink-0">⚠</span>
+          <div>
+            <p className="text-sm font-bold text-amber-400 uppercase tracking-wider">Late submission — penalty applies</p>
+            <p className="text-xs text-amber-400/70">Your prediction will be accepted but a late penalty will be deducted from your score.</p>
+          </div>
+        </div>
+      )}
       <div className="mb-8 p-4 bg-track-gray border-l-4 border-motogp-red rounded flex justify-between items-center">
         <div>
           <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">
@@ -311,9 +324,11 @@ export default function PredictionForm({
           <span className="inline-block skew-x-12">
             {loading
               ? 'Saving...'
-              : existingPrediction
-                ? 'Update Prediction'
-                : 'Submit Prediction'}
+              : isInPenaltyWindow
+                ? 'Submit Late (Penalty Applies)'
+                : existingPrediction
+                  ? 'Update Prediction'
+                  : 'Submit Prediction'}
           </span>
         </button>
       </form>

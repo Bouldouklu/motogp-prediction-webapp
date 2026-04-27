@@ -178,6 +178,13 @@ export default async function DashboardPage() {
   const getRiderPhotoUrl = (externalId: string | null | undefined) =>
     externalId ? `https://resources.motogp.com/files/results/2026/riders/${externalId}/portrait.png` : null
 
+  const FP1_DURATION_MS = 45 * 60 * 1000
+  const fp1Start = upcomingRaces?.[0]?.fp1_datetime ? new Date(upcomingRaces[0].fp1_datetime) : null
+  const fp1End = fp1Start ? new Date(fp1Start.getTime() + FP1_DURATION_MS) : null
+  const now = new Date()
+  const isInPenaltyWindow = fp1Start != null && fp1End != null && now >= fp1Start && now < fp1End
+  const isHardLocked = fp1End != null && now >= fp1End
+
   return (
     <main className="min-h-screen p-6 text-white font-sans">
       <div className="max-w-6xl mx-auto">
@@ -394,7 +401,18 @@ export default async function DashboardPage() {
                 )}
               </div>
 
-              {predictedRaceIds.has(upcomingRaces[0].id) ? (
+              {isHardLocked ? (
+                <div className="w-full md:w-auto px-8 py-5 bg-gray-800 border-2 border-gray-700 text-gray-500 font-black uppercase italic tracking-wider rounded-xl transform -skew-x-6 cursor-not-allowed select-none text-center">
+                  <span className="inline-block skew-x-6 text-xl">🔒 Locked</span>
+                </div>
+              ) : isInPenaltyWindow ? (
+                <Link
+                  href={`/predict/${upcomingRaces[0].id}`}
+                  className="w-full md:w-auto px-8 py-5 bg-amber-500/10 border-2 border-amber-500 hover:bg-amber-500/20 text-amber-400 font-black uppercase italic tracking-wider rounded-xl transform -skew-x-6 transition-all shadow-[0_0_20px_rgba(245,158,11,0.2)] hover:shadow-[0_0_40px_rgba(245,158,11,0.3)] group-hover:scale-[1.02] text-center"
+                >
+                  <span className="inline-block skew-x-6 text-xl">⚠ Late — Penalty Applies</span>
+                </Link>
+              ) : predictedRaceIds.has(upcomingRaces[0].id) ? (
                 <Link
                   href={`/predict/${upcomingRaces[0].id}`}
                   className="w-full md:w-auto px-8 py-5 bg-green-900/20 border-2 border-green-500 hover:bg-green-600 hover:border-green-600 text-green-500 hover:text-white font-black uppercase italic tracking-wider rounded-xl transform -skew-x-6 transition-all shadow-[0_0_20px_rgba(34,197,94,0.1)] hover:shadow-[0_0_40px_rgba(34,197,94,0.4)] group-hover:scale-[1.02] text-center"
