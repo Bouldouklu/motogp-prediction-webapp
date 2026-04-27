@@ -45,16 +45,17 @@ export default async function DashboardPage() {
       )
     `)
     .in('race_id', previousRaceIds)
-    .lte('position', 5)
+    .lte('position', 25)
     .order('position', { ascending: true })
 
   // Fetch Glorious 7 rider pools for previous races
   const { data: gloriousRiders } = previousRaceIds.length > 0
     ? await supabase
         .from('race_glorious_riders')
-        .select('race_id, rider_id')
+        .select('race_id, rider_id, display_order')
         .in('race_id', previousRaceIds)
-    : { data: [] as { race_id: string; rider_id: string }[] }
+        .order('display_order', { ascending: true })
+    : { data: [] as { race_id: string; rider_id: string; display_order: number | null }[] }
 
   // Fetch player scores for previous races
   const { data: userScores } = previousRaceIds.length > 0
@@ -425,9 +426,29 @@ export default async function DashboardPage() {
                 const raceFullResults = raceSpecificResults
                   .filter(r => r.result_type === 'race')
                   .sort((a, b) => a.position - b.position)
-                const gloriousResults = raceFullResults
-                  .filter((r: any) => r.rider?.id && gloriousPool.has(r.rider.id))
-                  .slice(0, 5)
+                const gloriousRiderOrder = (gloriousRiders || [])
+                  .filter(g => g.race_id === race.id)
+                  .sort((a, b) => (a.display_order ?? 99) - (b.display_order ?? 99))
+                  .map(g => g.rider_id)
+
+                const gloriousResultsRaw = gloriousRiderOrder.map((riderId, poolIdx) => {
+                  const result = raceFullResults.find((r: any) => r.rider?.id === riderId)
+                  return {
+                    riderId,
+                    rider: result?.rider ?? null,
+                    position: result?.position ?? null,
+                    relativePos: null as number | null,
+                    poolIdx,
+                  }
+                })
+                gloriousResultsRaw.sort((a, b) => {
+                  if (a.position === null && b.position === null) return a.poolIdx - b.poolIdx
+                  if (a.position === null) return 1
+                  if (b.position === null) return -1
+                  return a.position - b.position
+                })
+                gloriousResultsRaw.forEach((r, i) => { r.relativePos = i + 1 })
+                const gloriousResults = gloriousResultsRaw
 
                 const medals = ['🥇', '🥈', '🥉']
                 const getPredRider = (id: string | null | undefined) =>
@@ -470,7 +491,7 @@ export default async function DashboardPage() {
                       { riderId: (prediction as any)?.glorious_2nd_id, pts: 0 },
                       { riderId: (prediction as any)?.glorious_3rd_id, pts: 0 },
                     ],
-                    results: gloriousResults.map((r: any, idx: number) => ({ ...r, relativePos: idx + 1 })),
+                    results: gloriousResults,
                     predictedIds: new Set([(prediction as any)?.glorious_1st_id, (prediction as any)?.glorious_2nd_id, (prediction as any)?.glorious_3rd_id].filter(Boolean)),
                     isGlorious: true,
                     gloriousTotalPts: scoreRow?.glorious_7_points ?? 0,
@@ -563,16 +584,19 @@ export default async function DashboardPage() {
                               )}
                             </div>
 
-                            {/* Results top 5 */}
+                            {/* Results */}
                             {panel.results.length > 0 && (
                               <div className="space-y-1">
-                                <div className="text-[10px] text-gray-600 font-bold uppercase tracking-widest mb-1.5">Results</div>
+                                <div className="text-[10px] text-gray-600 font-bold uppercase tracking-widest mb-1.5">
+                                  {panel.isGlorious ? 'G7 Ranked (all 7)' : 'Results'}
+                                </div>
                                 {panel.results.map((result: any) => {
                                   const displayPos = panel.isGlorious ? result.relativePos : result.position
-                                  const isMatch = result.rider?.id && panel.predictedIds.has(result.rider.id)
+                                  const isMatch = result.rider?.id && panel.predictedIds.has(result.rider?.id ?? result.riderId)
+                                  const hasDnf = panel.isGlorious && result.position === null
                                   return (
                                     <div
-                                      key={displayPos}
+                                      key={result.riderId ?? displayPos}
                                       className={`flex items-center justify-between text-xs px-2 py-1 rounded border ${isMatch ? 'bg-green-900/20 border-green-800/40' : 'bg-gray-900/20 border-gray-800/30'}`}
                                     >
                                       <div className="flex items-center gap-2 min-w-0">
@@ -585,9 +609,11 @@ export default async function DashboardPage() {
                                       </div>
                                       <div className="flex items-center gap-2 shrink-0 ml-2">
                                         {panel.isGlorious && (
-                                          <span className="text-[10px] text-gray-600 font-mono">P{result.position}</span>
+                                          hasDnf
+                                            ? <span className="text-[10px] text-red-600 font-mono font-bold">DNF</span>
+                                            : <span className="text-[10px] text-gray-600 font-mono">P{result.position}</span>
                                         )}
-                                        <span className="text-[10px] text-gray-700 font-mono">#{result.rider?.number}</span>
+                                        <span className="text-[10px] text-gray-700 font-mono">#{result.rider?.number ?? '?'}</span>
                                       </div>
                                     </div>
                                   )
