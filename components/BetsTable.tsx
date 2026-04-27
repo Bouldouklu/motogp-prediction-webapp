@@ -32,10 +32,12 @@ const medals = ['🥇', '🥈', '🥉']
 
 function riderCell(rider: RiderCell | null) {
   if (!rider) return <span className="text-gray-700 text-xs">—</span>
+  const parts = rider.name.trim().split(' ')
+  const surname = parts.slice(1).join(' ') || parts[0]
   return (
-    <span className="font-display font-black italic uppercase text-white text-xs leading-tight">
-      {rider.name.split(' ').pop()}
-      <span className="font-mono font-normal not-italic normal-case text-gray-500 text-[10px] ml-1">#{rider.number}</span>
+    <span className="font-sans font-semibold uppercase text-white text-xs leading-tight">
+      {surname}
+      <span className="font-mono font-normal normal-case text-gray-500 text-[10px] ml-1">#{rider.number}</span>
     </span>
   )
 }
@@ -71,40 +73,33 @@ function RaceBlock({ raceBets, currentPlayerId }: { raceBets: RaceBets; currentP
 
       {open && (
         <div className="overflow-x-auto">
-          <table className="min-w-full text-sm">
+          <table className="min-w-full text-xs">
             <thead className="text-[10px] text-gray-500 uppercase tracking-wider bg-black/20 border-b border-gray-800">
               <tr>
-                <th className="px-4 py-3 text-left font-bold sticky left-0 bg-[#141414]">Player</th>
-                {(['Sprint', 'Race', 'Glorious 7'] as const).map(cat => (
-                  <th key={cat} className="px-4 py-3 text-left" colSpan={3}>
-                    <span className="text-motogp-red">{cat}</span>
-                  </th>
-                ))}
-              </tr>
-              <tr className="border-b border-gray-800/50">
-                <th className="px-4 pb-2 sticky left-0 bg-[#141414]"></th>
-                {[...Array(3)].flatMap((_, catIdx) =>
-                  medals.map((m, posIdx) => (
-                    <th key={`${catIdx}-${posIdx}`} className="px-2 pb-2 text-[10px] text-gray-600 font-normal">
-                      {m}
-                    </th>
-                  ))
-                )}
+                <th className="px-3 py-2 text-left font-bold sticky left-0 bg-[#141414]">Player</th>
+                <th className="px-3 py-2 text-left text-orange-400">Sprint</th>
+                <th className="px-3 py-2 text-left text-motogp-red">Race</th>
+                <th className="px-3 py-2 text-left text-blue-400">G7</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-800">
               {raceBets.players.map(player => (
                 <tr key={player.playerId} className={`transition-colors ${player.playerId === currentPlayerId ? 'bg-blue-950/40 border-l-2 border-blue-500' : 'hover:bg-white/5'}`}>
-                  <td className={`px-4 py-3 font-bold sticky left-0 border-r border-gray-800 text-sm whitespace-nowrap ${player.playerId === currentPlayerId ? 'text-blue-400 bg-blue-950/60' : 'text-white bg-track-gray'}`}>
+                  <td className={`px-3 py-2 font-bold sticky left-0 border-r border-gray-800 whitespace-nowrap ${player.playerId === currentPlayerId ? 'text-blue-400 bg-blue-950/60' : 'text-white bg-track-gray'}`}>
                     {player.playerName}
                   </td>
-                  {([player.sprint, player.race, player.glorious] as ((RiderCell | null)[] | null)[]).flatMap((group, gIdx) =>
-                    [0, 1, 2].map(pos => (
-                      <td key={`${gIdx}-${pos}`} className="px-2 py-3 whitespace-nowrap">
-                        {group ? riderCell(group[pos]) : <span className="text-gray-700 text-xs">—</span>}
-                      </td>
-                    ))
-                  )}
+                  {([player.sprint, player.race, player.glorious] as ((RiderCell | null)[] | null)[]).map((group, gIdx) => (
+                    <td key={gIdx} className="px-3 py-2 align-top">
+                      <div className="flex flex-col gap-0.5">
+                        {[0, 1, 2].map(pos => (
+                          <div key={pos} className="flex items-center gap-1">
+                            <span className="text-gray-600 font-mono text-[10px] shrink-0 w-3">{pos + 1}.</span>
+                            {group ? riderCell(group[pos]) : <span className="text-gray-700">—</span>}
+                          </div>
+                        ))}
+                      </div>
+                    </td>
+                  ))}
                 </tr>
               ))}
             </tbody>

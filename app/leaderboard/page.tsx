@@ -8,14 +8,19 @@ import { getCurrentUser } from '@/lib/auth'
 const PLAYER_COLORS = [
   "#EF4444", // Red
   "#3B82F6", // Blue
-  "#10B981", // Green
-  "#F59E0B", // Yellow
-  "#8B5CF6", // Purple
+  "#10B981", // Emerald
+  "#F59E0B", // Amber
+  "#8B5CF6", // Violet
   "#EC4899", // Pink
   "#06B6D4", // Cyan
   "#F97316", // Orange
-  "#6366F1", // Indigo
   "#84CC16", // Lime
+  "#14B8A6", // Teal
+  "#E879F9", // Fuchsia
+  "#FB7185", // Rose
+  "#A3E635", // Lime bright
+  "#38BDF8", // Sky
+  "#FBBF24", // Yellow
 ]
 
 export default async function LeaderboardPage() {
@@ -227,7 +232,7 @@ export default async function LeaderboardPage() {
                 raceName: race.name,
                 circuit: race.circuit,
                 roundNumber: race.round_number,
-                players: safePlayers.map(player => {
+                players: playerStats.map(player => {
                   const pred = safePredictions.find(
                     p => p.race_id === race.id && p.player_id === player.id
                   )

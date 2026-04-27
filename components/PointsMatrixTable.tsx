@@ -89,14 +89,14 @@ export default function PointsMatrixTable({ playerStats, races, scores, currentP
                         </div>
                       ) : (
                         <div className="flex flex-col items-center gap-1">
-                          <span>{score ? score.total_points : 0}</span>
+                          <span className="text-base font-bold text-white">{score ? score.total_points : <span className="text-gray-700">—</span>}</span>
                           {score && (
-                            <span className="text-[10px] text-gray-600 leading-none whitespace-nowrap">
+                            <span className="text-[11px] text-gray-400 leading-none whitespace-nowrap">
                               S:{sprintTotal} R:{raceTotal} G:{gloriousTotal}
                             </span>
                           )}
                           {score && score.penalty_points > 0 && (
-                            <span className="text-[10px] font-bold text-red-500 leading-none">
+                            <span className="text-[11px] font-bold text-red-400 leading-none">
                               -{score.penalty_points}
                             </span>
                           )}
