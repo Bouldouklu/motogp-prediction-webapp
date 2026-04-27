@@ -66,13 +66,13 @@ The highlighted line/rider when bets are correct should stay green, but should b
 
 ## **-> Leaderboard**
 
-For all tables in that section, the current users line should every time (except graph) have a slight different color to contrast and allow quicker readability
+~~For all tables in that section, the current users line should every time (except graph) have a slight different color to contrast and allow quicker readability~~ ✅
 
 
 
 **Main ranking**
 
-On mobile, the table does not show the diff leader, the diff previous and the penalties: The rest of the test should be smaller to have space for that information
+~~On mobile, the table does not show the diff leader, the diff previous and the penalties: The rest of the test should be smaller to have space for that information~~ ✅
 
 No issues on desktop
 
@@ -92,7 +92,7 @@ changes to do:
 
 * The pop up on hover should ideally re-order the list per points on each event to match the actualgraph behind
 * the scale need t be adapted a bit to have slightly more gaps (even though the ones that only  inputed the first race a fucking up the scale with their super low scores)
-* the track names should only be the country (same as the upcoming race cards), no need for the track name, that should make the graph narrower and help with readability when more races are in
+* ~~the track names should only be the country (same as the upcoming race cards), no need for the track name, that should make the graph narrower and help with readability when more races are in~~ ✅
 * clicking on a contestant name in the bottom list should reduce the opacity of the other curves in the graph
 * maybe several contestants can be selected at the same time (sort of a filter to follow only the desired contestants)
 * all colors should be different (now only 8 colors for 14 contestants)
@@ -102,7 +102,7 @@ changes to do:
 
 **Points per race**
 
-for the racer names, same as for the trend, country only (same as the upcoming race cards), no need for the track: each column is narrower making it better, especially on mobile
+~~for the racer names, same as for the trend, country only (same as the upcoming race cards), no need for the track: each column is narrower making it better, especially on mobile~~ ✅
 
 
 
