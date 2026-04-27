@@ -78,35 +78,29 @@ No issues on desktop
 
 
 
-**Trend**
+**Trend** ✅
 
-On mobile, the table is unreadable, the pop up on hover overview block any subsequent interaction
+~~On mobile, the table is unreadable, the pop up on hover overview block any subsequent interaction~~
 
-
-
-on desktop it is not much better
-
-
+~~on desktop it is not much better~~
 
 changes to do: 
 
-* The pop up on hover should ideally re-order the list per points on each event to match the actualgraph behind
-* the scale need t be adapted a bit to have slightly more gaps (even though the ones that only  inputed the first race a fucking up the scale with their super low scores)
+* ~~The pop up on hover should ideally re-order the list per points on each event to match the actualgraph behind~~ ✅
+* ~~the scale need t be adapted a bit to have slightly more gaps (even though the ones that only  inputed the first race a fucking up the scale with their super low scores)~~ ✅
 * ~~the track names should only be the country (same as the upcoming race cards), no need for the track name, that should make the graph narrower and help with readability when more races are in~~ ✅
-* clicking on a contestant name in the bottom list should reduce the opacity of the other curves in the graph
-* maybe several contestants can be selected at the same time (sort of a filter to follow only the desired contestants)
-* all colors should be different (now only 8 colors for 14 contestants)
-* removing or reducing the points on the curves, they overlap each other a bit too much
+* ~~clicking on a contestant name in the bottom list should reduce the opacity of the other curves in the graph~~ ✅
+* ~~maybe several contestants can be selected at the same time (sort of a filter to follow only the desired contestants)~~ ✅
+* ~~all colors should be different (now only 8 colors for 14 contestants)~~ ✅
+* ~~removing or reducing the points on the curves, they overlap each other a bit too much~~ ✅
 
 
 
-**Points per race**
+**Points per race** ✅
 
 ~~for the racer names, same as for the trend, country only (same as the upcoming race cards), no need for the track: each column is narrower making it better, especially on mobile~~ ✅
 
-
-
-The font size for the points and the breakdown can also be a bit bigger for readability, maybe the color also for a bit more contrast
+~~The font size for the points and the breakdown can also be a bit bigger for readability, maybe the color also for a bit more contrast~~ ✅
 
 
 
@@ -114,15 +108,11 @@ The font size for the points and the breakdown can also be a bit bigger for read
 
 To be checked after the next cutoff if the bets are visible to everybody
 
+~~Formatting is nore readable: similar font problem than for the current race bets on the main page (current race cards once the bets are inputed)~~ ✅
 
+~~To make it easier on mobile too, each race podium should be vertical and without medal icon, just simple last name + number: that would make the whole table narrower (3 races hsould fit on mobile as currently 3 columns are fitting), and just create morevertical scroll which is better on mobile.~~ ✅
 
-Formatting is nore readable: similar font problem than for the current race bets on the main page (current race cards once the bets are inputed)
-
-To make it easier on mobile too, each race podium should be vertical and without medal icon, just simple last name + number: that would make the whole table narrower (3 races hsould fit on mobile as currently 3 columns are fitting), and just create morevertical scroll which is better on mobile.
-
-
-
-The contestant list should also follow the live ranking as all the lists on the leaderboard page should
+~~The contestant list should also follow the live ranking as all the lists on the leaderboard page should~~ ✅
 
 
 
