@@ -23,23 +23,16 @@ Maybe we change that
 
 
 
-## **-> Current race bets (input page)**
+## **-> Current race bets (input page)** ✅
 
-When inputing the bets can we format the riders names in the dropdown list as such: 
+~~When inputing the bets can we format the riders names in the dropdown list as such:~~
+~~\##\_**NAME VORNAME** (race number and underscore in normal weight, then last name in bold CAPS and first name in bold First letter caps)~~
 
-\##\_**NOM Prenom** (race number and underscore in normal weight, then last name in bold CAPS and first name in bold First letter caps)
+~~49\_Di Giannantonio Fabio: the last name is missing the first part (Di)~~
 
+~~on mobile the countdown is awkwardly on 2 lines, it should be on 1 ideally~~
 
-
-49\_Di Giannantonio Fabio: the last name is missing the first part (Di)
-
-
-
-on mobile the countdown is awkwardly on 2 lines, it should be on 1 ideally
-
-
-
-The optional note next to glorious 7 should be removed (it is optional to save bets, but bot really if winning the championship is the target ^^)
+~~The optional note next to glorious 7 should be removed (it is optional to save bets, but not really if winning the championship is the target ^^)~~
 
 
 

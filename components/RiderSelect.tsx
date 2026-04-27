@@ -27,15 +27,19 @@ export default function RiderSelect({
   const containerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  // format helper
+  // format helper — DB stores names as "Firstname Surname(s)", e.g. "Fabio Di Giannantonio"
   const getDisplayRider = (rider: Rider) => {
-    const nameParts = rider.name.trim().split(' ')
-    const lastName = nameParts.length > 1 ? nameParts.pop() : ''
-    const firstName = nameParts.join(' ')
-    const displayName = lastName ? `${lastName} ${firstName}` : rider.name
+    const parts = rider.name.trim().split(' ')
+    const firstName = parts[0] ?? ''
+    const surname = parts.slice(1).join(' ') || firstName
+    // Plain string for the input field: "DI GIANNANTONIO Fabio"
+    const displayName = surname
+      ? `${surname.toUpperCase()} ${firstName}`
+      : rider.name.toUpperCase()
     return {
+      firstName,
+      surname,
       displayName,
-      fullText: `${rider.number}_${displayName}`,
     }
   }
 
@@ -216,7 +220,7 @@ export default function RiderSelect({
             ) : (
               <ul>
                 {availableRiders.map((rider, index) => {
-                  const { displayName, fullText } = getDisplayRider(rider)
+                  const { firstName, surname, displayName } = getDisplayRider(rider)
                   const isSelected = rider.id === value
                   const isHighlighted = index === highlightedIndex
 
@@ -230,7 +234,10 @@ export default function RiderSelect({
                         : 'text-gray-300 hover:bg-gray-800'
                         } ${isSelected ? 'bg-gray-800 border-l-2 border-motogp-red' : ''}`}
                     >
-                      <span className="font-bold uppercase truncate min-w-0">{fullText}</span>
+                      <span className="truncate min-w-0 font-sans text-sm">
+                        <span className="font-normal">{rider.number}_</span>
+                        <span className="font-bold">{surname.toUpperCase()} {firstName}</span>
+                      </span>
                       {isSelected && (
                         <span className="text-xs font-black italic shrink-0 ml-2">✓</span>
                       )}

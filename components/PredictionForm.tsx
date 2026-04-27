@@ -192,15 +192,15 @@ export default function PredictionForm({
         </div>
       )}
       <div className="mb-8 p-4 bg-track-gray border-l-4 border-motogp-red rounded flex justify-between items-center">
-        <div>
-          <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+        <div className="flex items-baseline gap-2 flex-wrap">
+          <p className="text-xs font-bold text-gray-500 uppercase tracking-wider shrink-0">
             Time Remaining
           </p>
-          <p className="text-2xl font-mono font-bold text-white">
+          <p className="text-2xl font-mono font-bold text-white leading-none">
             {formatTimeRemaining(timeUntilDeadline)}
           </p>
         </div>
-        <div className="text-right">
+        <div className="text-right shrink-0 ml-4">
           <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Deadline</p>
           <p className="text-sm font-bold text-motogp-red">{deadline.toLocaleString()}</p>
         </div>
@@ -278,9 +278,6 @@ export default function PredictionForm({
               <span className="w-8 h-8 flex items-center justify-center bg-blue-600 text-white font-black italic rounded skew-x-12">G7</span>
               <div className="flex items-center gap-2">
                 <h3 className="text-xl font-display italic font-bold uppercase">Glorious 7 - Mini League</h3>
-                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border border-amber-500/50 text-amber-400 bg-amber-500/10">
-                  Optional
-                </span>
               </div>
               <p className="text-sm text-gray-400 italic">
                 {gloriousRiders.length > 0
