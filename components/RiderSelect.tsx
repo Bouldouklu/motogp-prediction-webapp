@@ -8,7 +8,8 @@ interface RiderSelectProps {
   riders: Rider[]
   value: string
   onChange: (value: string) => void
-  excludeIds?: string[]
+  excludeIds?: string[]  // kept for API compat but no longer used for filtering
+  isDuplicate?: boolean
   required?: boolean
 }
 
@@ -17,7 +18,7 @@ export default function RiderSelect({
   riders,
   value,
   onChange,
-  excludeIds = [],
+  isDuplicate = false,
   required = true,
 }: RiderSelectProps) {
   const [isOpen, setIsOpen] = useState(false)
@@ -40,10 +41,8 @@ export default function RiderSelect({
 
   // Filter and sort riders
   const availableRiders = useMemo(() => {
-    // First, filter out excluded riders (keeping the currently selected one if any)
-    let filtered = riders.filter(
-      (rider) => !excludeIds.includes(rider.id) || rider.id === value
-    )
+    // Show all riders — no exclusion, so user can always see the full list
+    let filtered = [...riders]
 
     // Sort alphabetically by last name (same logic as before)
     filtered.sort((a, b) => {
@@ -76,7 +75,7 @@ export default function RiderSelect({
     }
 
     return filtered
-  }, [riders, excludeIds, value, searchQuery])
+  }, [riders, value, searchQuery])
 
   // Sync selected value to input text when not open or when value changes externally
   useEffect(() => {
@@ -145,7 +144,12 @@ export default function RiderSelect({
       <label className="block text-xs font-bold uppercase tracking-wider text-motogp-red mb-1 font-display italic">
         {label}
       </label>
-      <div className="relative">
+      {isDuplicate && (
+        <div className="mb-1 px-2 py-1 bg-amber-500/20 border border-amber-500/60 rounded text-amber-400 text-[10px] font-bold uppercase tracking-wider">
+          ⚠ Duplicate rider — check your podium
+        </div>
+      )}
+      <div className={`relative ${isDuplicate ? 'ring-2 ring-amber-500/60 rounded-r' : ''}`}>
         <input
           ref={inputRef}
           type="text"
@@ -157,24 +161,39 @@ export default function RiderSelect({
           }}
           onFocus={() => {
             setIsOpen(true)
-            // Optional: clear query on focus to show all?
-            // Or keep it to filter? Let's keep existing text but select all so they can overwrite easily
-            // e.target.select()
           }}
           onKeyDown={handleKeyDown}
           placeholder="Select a rider..."
-          className="w-full px-4 py-3 bg-track-gray border-l-4 border-gray-700 text-white font-bold uppercase focus:outline-none focus:border-motogp-red focus:bg-gray-900 transition-all rounded-r placeholder-gray-600"
+          className="w-full px-4 py-3 bg-track-gray border-l-4 border-gray-700 text-white font-bold uppercase focus:outline-none focus:border-motogp-red focus:bg-gray-900 transition-all rounded-r placeholder-gray-600 pr-16"
         />
 
-        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
-          <svg
-            className={`fill-current h-4 w-4 transform transition-transform ${isOpen ? 'rotate-180' : ''
-              }`}
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-          >
-            <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-          </svg>
+        <div className="absolute inset-y-0 right-0 flex items-center gap-1 px-2">
+          {value && (
+            <button
+              type="button"
+              onClick={() => {
+                onChange('')
+                setSearchQuery('')
+                setIsOpen(false)
+              }}
+              className="text-gray-500 hover:text-white transition-colors p-1 rounded"
+              aria-label="Clear selection"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          )}
+          <div className="pointer-events-none text-gray-400">
+            <svg
+              className={`fill-current h-4 w-4 transform transition-transform ${isOpen ? 'rotate-180' : ''}`}
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+            >
+              <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+            </svg>
+          </div>
         </div>
 
         {/* Dropdown Menu */}

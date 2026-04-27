@@ -76,6 +76,13 @@ export default function PredictionForm({
   const isPastDeadline = deadline < new Date()
   const timeUntilDeadline = deadline.getTime() - Date.now()
 
+  const sprintIds = [sprint1stId, sprint2ndId, sprint3rdId]
+  const raceIds = [race1stId, race2ndId, race3rdId]
+  const gloriousIds = [glorious1stId, glorious2ndId, glorious3rdId]
+
+  const hasDuplicate = (ids: string[], id: string) =>
+    id !== '' && ids.filter(x => x === id).length > 1
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
@@ -193,21 +200,21 @@ export default function PredictionForm({
                 riders={riders}
                 value={sprint1stId}
                 onChange={setSprint1stId}
-                excludeIds={[sprint2ndId, sprint3rdId]}
+                isDuplicate={hasDuplicate(sprintIds, sprint1stId)}
               />
               <RiderSelect
                 label="2nd Place"
                 riders={riders}
                 value={sprint2ndId}
                 onChange={setSprint2ndId}
-                excludeIds={[sprint1stId, sprint3rdId]}
+                isDuplicate={hasDuplicate(sprintIds, sprint2ndId)}
               />
               <RiderSelect
                 label="3rd Place"
                 riders={riders}
                 value={sprint3rdId}
                 onChange={setSprint3rdId}
-                excludeIds={[sprint1stId, sprint2ndId]}
+                isDuplicate={hasDuplicate(sprintIds, sprint3rdId)}
               />
             </div>
           </div>
@@ -225,21 +232,21 @@ export default function PredictionForm({
                 riders={riders}
                 value={race1stId}
                 onChange={setRace1stId}
-                excludeIds={[race2ndId, race3rdId]}
+                isDuplicate={hasDuplicate(raceIds, race1stId)}
               />
               <RiderSelect
                 label="2nd Place"
                 riders={riders}
                 value={race2ndId}
                 onChange={setRace2ndId}
-                excludeIds={[race1stId, race3rdId]}
+                isDuplicate={hasDuplicate(raceIds, race2ndId)}
               />
               <RiderSelect
                 label="3rd Place"
                 riders={riders}
                 value={race3rdId}
                 onChange={setRace3rdId}
-                excludeIds={[race1stId, race2ndId]}
+                isDuplicate={hasDuplicate(raceIds, race3rdId)}
               />
             </div>
           </div>
@@ -263,21 +270,21 @@ export default function PredictionForm({
                   riders={gloriousRiders}
                   value={glorious1stId}
                   onChange={setGlorious1stId}
-                  excludeIds={[glorious2ndId, glorious3rdId]}
+                  isDuplicate={hasDuplicate(gloriousIds, glorious1stId)}
                 />
                 <RiderSelect
                   label="G7 - 2nd Place"
                   riders={gloriousRiders}
                   value={glorious2ndId}
                   onChange={setGlorious2ndId}
-                  excludeIds={[glorious1stId, glorious3rdId]}
+                  isDuplicate={hasDuplicate(gloriousIds, glorious2ndId)}
                 />
                 <RiderSelect
                   label="G7 - 3rd Place"
                   riders={gloriousRiders}
                   value={glorious3rdId}
                   onChange={setGlorious3rdId}
-                  excludeIds={[glorious1stId, glorious2ndId]}
+                  isDuplicate={hasDuplicate(gloriousIds, glorious3rdId)}
                 />
               </div>
             )}
