@@ -1,104 +1,104 @@
-### **FEEDBACK MotoGP BETS**
+# **FEEDBACK MotoGP BETS**
+
+## **Functional**
+
+### **Race prediction**
+
+Being able to cancel a name in one click to allow for some shuffling around — ✅ Done: clear (✕) button appears on each RiderSelect when a rider is selected; clicking it calls onChange('') and clears the slot instantly.
+
+Still show the complete list once a name is selected to allow for easy change — ✅ Done: removed excludeIds filtering from the dropdown; all riders are always visible in the list.
+
+Not blocking an already selected rider name to allow for some shuffling, but maybe making the whole podium card go "ALERT" when a name is inputed twice — ✅ Done: duplicate detection per category (Sprint / Race / Glorious 7); any slot sharing a rider with another slot in the same category shows an amber "⚠ Duplicate rider — check your podium" banner and amber ring. Cross-category duplicates (e.g. same rider in Sprint 1st and Race 1st) are intentionally allowed.
+
+Change (edit prediction) button to locked or something once the cut-off is reached. And also add a penalty margin: end of FP1 as the latest time. 
+
+Surname option when typing if possible, but definitely not prio
+
+
+### **Glorious 7**
+
+TBD
+
+
+## **Aesthetics**
+
+### **player Main page**
+
+Being able to see the weekend bets in the player home page after prediction done to avoid having to go into edit mode to check — ✅ Done: "Your Bets" 3-column panel (Sprint / Race / Glorious 7) now appears in the Next Up card once a prediction is submitted.
+
+If possible to get images of the tracks in the block corresponding that would be great (similar to the GP or F1 websites), maybe just the one coming up? We can also use the images currently on the MotoGP website for the previous season
+
+Can we have the riders photos (from the GP website) once the podium selections are done both for the championship and the race? but very optional — ⚠️ Partially done / blocked: UI is wired up (circular photos in championship row, faded portraits in grid cards, Next Up hero card). However photos are not displaying — only a grey placeholder appears. The MotoGP CDN URL pattern (`resources.motogp.com/files/results/2026/riders/{external\_id}/portrait.png`) may be wrong or require authentication. Needs investigation: verify the correct CDN URL format for 2026 rider portraits.
+
+More clarity on the **race results in the "previous race" card**: 
+
+* showing all 3 podiums
+* Showing the inputed bets as priority
+* showing the actual results (top 5 each time)
+* Showing the points earned
 
 
 
-##### **Functional**
+### **Leaderboard:**
 
-###### **Main page**
+Being able to see everyone's bet after the cut-off -> extra table in the leaderboard to show that to avoid clutter? — ✅ Done: "Weekend Bets" collapsible section added at the bottom of the leaderboard. One row per past race; expanding it shows all players' Sprint / Race / Glorious 7 picks in a table. Only visible for races past their cut-off.
 
-* ~~Once the championship is made and locked, reduce the height of the block to have more relevant info on screen~~ ✅ Done — collapses to a single compact row when locked
-* ~~Have the previous race tab above the next up (after the first race is done obviously) but as a drop down option so that we don't loose to much height again~~ ✅ Done — Previous Races section is now collapsible and starts collapsed, keeping Upcoming Races visible without scrolling
-* ~~remove the right submitted tab for the championship podium~~ ✅ Done
-* ~~maybe make the leaderboard button something different from the other elements (like a browser tab at the top?) or just placed differently~~ ✅ Done — moved to header bar next to Logout, removed the card from the content area
+Detailed points for each weekend with the break down of each contestant's podium (on hover or when clicking on it?).
 
 
 
-###### **Race prediction**
+## **Scoring:** ✅ Done
 
-* ~~add time of the sprint and the race along with the date if possible and not too complicated~~ ✅ Done — sprint_datetime and race_datetime columns added; prediction page shows e.g. "Sat, Mar 1, 08:00 AM" (estimated UTC times, update via Supabase SQL editor once official schedule is published)
-* ~~on desktop at least, make the "Predict the top 3 finishers of the Sprint Race." on the same line as the title because unused space on the right~~ ✅ Done — subtitle now sits inline with the title for all 3 sections (Sprint, Race, Glorious 7)
-* ~~Mabe remove the # inb front of number and put an \_ between number and name for more visual clarity~~ ✅ Done — rider dropdown now shows `93_MARQUEZ Marc` instead of `#93 MARQUEZ Marc`
-* ~~Make sure all the name fit in one line width of the drop down menu (toprak \& diggia)~~ ✅ Done — names truncate to one line, SELECTED label replaced with a compact ✓
-* Surname option when typing if possible, but definitely not prio
+For race/sprint/glorious 7, reduce the total amount for 2nd and 3rd position to put a bit more focus on the winner
+Reduce total amount of points maybe? to balance with final podium value
 
-
-
-###### **Glorious 7**
-
-Je ne sais pas encore, tu peux me redonner les autres option que AI avait propose?
+1:
+Correct:20pts
+Off by 1:16pts
+Off by 2:12pts
 
 
 
-###### **Leaderboard**
-
-* ~~add the column for penalties to the general one~~ ✅ Done — Penalties column added to the standings table, shown in red when non-zero
-* ~~add the penalties as a small red element (when relevant) to the per race one~~ ✅ Done — small red `-10` badge appears below the score in each cell when a penalty was applied
-* ~~add a total column to the per race~~ ✅ Already done — sticky Total column on the right of the Points per Race table
-* ~~Make sure the per race as the details for each race, meaning points for each of the 3 results~~ ✅ Done — each cell now shows S:/R:/G: subtotals in small grey text beneath the total
-* ~~The per race should be scrollable left to right to go over the whole season without losing the names and total~~ ✅ Already done — overflow-x-auto with sticky Player (left) and Total (right) columns
+2:
+Correct:16pts
+Off by 1:12pts
+Off by 2:8pts
 
 
 
-##### **Aesthetics**
-
-###### **Main page**
-
-* If possible to get images of the tracks in the block corresponding that would be great (similar to the GP or F1 websites), maybe just the one coming up? We can also use the images currently on the MotoGP website for the previous season
-* Can we have the riders photos (from the GP website) once the podium selections are done both for the championship and the race? but very optional — ⚠️ Partially done / blocked: UI is wired up (circular photos in championship row, faded portraits in grid cards, Next Up hero card). However photos are not displaying — only a grey placeholder appears. The MotoGP CDN URL pattern (`resources.motogp.com/files/results/2026/riders/{external_id}/portrait.png`) may be wrong or require authentication. Needs investigation: verify the correct CDN URL format for 2026 rider portraits.
-* ~~Removing the line "round X" from each race element to make the rest of the text bigger. And maybe making the number a bigger low opacity element in the block~~ ✅ Done — "Round X" badge removed; large faint round number now sits as a decorative background element top-right of each card
-* ~~Do we need the "predict now" and "predict" buttons? maybe just clicking on the race element brings us to the prediction screen?~~ ✅ Done — entire card is now a clickable link; Predict/Edit buttons removed; predicted races show a small green "✓ Prediction submitted" line instead
+3:
+Correct:14pts
+Off by 1:10pts
+Off by 2:6pts
 
 
 
-
-
-
-
-# **Round 2:**
-
-being able to cancel a name in one click to allow for some shuffling around
-
-being able to see the bets in the home page after prediction done to avoid having to go into edit mode to check
-
-Change (edit prediction) to locked or something once the cut-off is reached
-
--> define penalties (50pts is too weak compared to the currently possible 225 total per weekend
-
-change scoring weight: maybe make final championship equivalent to 2,5 or 3 races?
-
-250
-
-175
-
-100
-
-and also have "off by" options
-
-
-
-for race/sprint/glorious 7, reduce the total amount for 2nd and 3rd position to put a bit more focus on the winner
-
-reduce total amount of points maybe? to balance with final podium value
-
-Maybe not going all the way to "off by 5"
+Not going all the way to "off by 5", stop at "off by 2" -> considering then the top 5 to determine the points — ✅ Implemented: off-by-3+ scores 0, position-aware tables in engine.
 
 
 
 
 
-being able to see everyone's bet after the cut-off (an penalty margin: probably end of FP1 as the latest time)
+**Penalties:** ✅ Done
+1st offence: 35pts
+2nd offence: 55pts
+all following offences: 75pts
 
 
 
-all names always with the same formatting in the leader board page
 
 
 
-Detailed points for each weekend (sprint + race + glorious) Maybe even the break down of each podium on hover or when clicking on it.
 
-A way to see what the others predictions were once the weekend is done
+**Final championship** ✅ Done — Option 1 chosen (350 pts total ≈ 2.3 perfect race weekends)
 
-missing the glorious 7 result in the previous race (and also results until last position to score points 5 right now) -> make that feature only visible for the last weekend, then it collapse when a new weekend is done
+option 1 (CHOSEN): 350 TOTAL
+
+1: 130 pts (correct) / 104 pts (off by 1) / 78 pts (off by 2)
+2: 120 pts (correct) / 96 pts (off by 1) / 72 pts (off by 2)
+3: 100 pts (correct) / 80 pts (off by 1) / 60 pts (off by 2)
+
+⚠️ After deploying, run "Calculate Scores" in /admin for every completed race to refresh stored scores in Supabase.
 
 
 
