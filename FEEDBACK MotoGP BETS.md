@@ -43,7 +43,7 @@ More clarity on the **race results in the "previous race" card**:
 
 Being able to see everyone's bet after the cut-off -> extra table in the leaderboard to show that to avoid clutter? — ✅ Done: "Weekend Bets" collapsible section added at the bottom of the leaderboard. One row per past race; expanding it shows all players' Sprint / Race / Glorious 7 picks in a table. Only visible for races past their cut-off.
 
-Detailed points for each weekend with the break down of each contestant's podium (on hover or when clicking on it?).
+Detailed points for each weekend with the break down of each contestant's podium (on hover or when clicking on it?). — ✅ Done: each scored cell in the "Points per Race" matrix is now clickable. Clicking opens a dark modal showing Sprint / Grand Prix / Glorious 7 breakdowns (Pick vs Real result, colour-coded points per slot, penalty bar if applicable, and a S+R+G summary line).
 
 
 
