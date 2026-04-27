@@ -71,6 +71,9 @@ export default async function DashboardPage() {
     nextRacePrediction.race_1st_id,
     nextRacePrediction.race_2nd_id,
     nextRacePrediction.race_3rd_id,
+    nextRacePrediction.glorious_1st_id,
+    nextRacePrediction.glorious_2nd_id,
+    nextRacePrediction.glorious_3rd_id,
   ].filter(Boolean) as string[] : []
 
   const { data: nextRacePredictedRiders } = nextRacePredictedRiderIds.length > 0
@@ -277,45 +280,55 @@ export default async function DashboardPage() {
                 </div>
 
                 {nextRacePrediction && nextRacePredictedRiders && nextRacePredictedRiders.length > 0 && (
-                  <div className="mt-4 pt-4 border-t border-gray-700/50">
-                    <div className="flex flex-col sm:flex-row gap-4">
-                      {(['sprint', 'race'] as const).map(type => {
+                  <div className="mt-5 pt-5 border-t border-gray-700/50">
+                    <div className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-3">Your Bets</div>
+                    <div className="grid grid-cols-3 gap-3">
+                      {([
+                        { label: 'Sprint', prefix: 'sprint' },
+                        { label: 'Race', prefix: 'race' },
+                        { label: 'Glorious 7', prefix: 'glorious' },
+                      ] as const).map(({ label, prefix }) => {
                         const ids = [
-                          nextRacePrediction[`${type}_1st_id` as keyof typeof nextRacePrediction] as string,
-                          nextRacePrediction[`${type}_2nd_id` as keyof typeof nextRacePrediction] as string,
-                          nextRacePrediction[`${type}_3rd_id` as keyof typeof nextRacePrediction] as string,
+                          nextRacePrediction[`${prefix}_1st_id` as keyof typeof nextRacePrediction] as string,
+                          nextRacePrediction[`${prefix}_2nd_id` as keyof typeof nextRacePrediction] as string,
+                          nextRacePrediction[`${prefix}_3rd_id` as keyof typeof nextRacePrediction] as string,
                         ]
                         const riders = ids.map(id => predictedRiderMap[id]).filter(Boolean)
-                        if (riders.length === 0) return null
                         return (
-                          <div key={type}>
-                            <div className="text-[10px] text-gray-600 font-bold uppercase tracking-widest mb-2">
-                              {type === 'sprint' ? 'Sprint' : 'Race'}
-                            </div>
-                            <div className="flex items-center gap-2">
-                              {riders.map((rider: any, i: number) => {
-                                const photoUrl = getRiderPhotoUrl(rider.external_id)
-                                return (
-                                  <div key={rider.id} className="flex items-center gap-1.5">
-                                    <span className="text-[10px] text-gray-600 font-mono">{i + 1}.</span>
-                                    {photoUrl ? (
-                                      <RiderPhoto
-                                        src={photoUrl}
-                                        alt={rider.name}
-                                        className="w-7 h-7 rounded-full object-cover object-top bg-gray-800 border border-gray-700"
-                                      />
-                                    ) : (
-                                      <div className="w-7 h-7 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center text-[10px] font-mono text-gray-500">
-                                        {rider.number}
+                          <div key={prefix} className="bg-black/30 rounded-lg border border-gray-800 p-3">
+                            <div className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-2">{label}</div>
+                            {riders.length === 0 ? (
+                              <div className="text-xs text-gray-700 italic">—</div>
+                            ) : (
+                              <div className="space-y-2">
+                                {riders.map((rider: any, i: number) => {
+                                  const medals = ['🥇', '🥈', '🥉']
+                                  const photoUrl = getRiderPhotoUrl(rider.external_id)
+                                  return (
+                                    <div key={rider.id} className="flex items-center gap-2">
+                                      <span className="text-sm leading-none">{medals[i]}</span>
+                                      {photoUrl ? (
+                                        <RiderPhoto
+                                          src={photoUrl}
+                                          alt={rider.name}
+                                          className="w-6 h-6 rounded-full object-cover object-top bg-gray-800 border border-gray-700 shrink-0"
+                                        />
+                                      ) : (
+                                        <div className="w-6 h-6 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center text-[9px] font-mono text-gray-500 shrink-0">
+                                          {rider.number}
+                                        </div>
+                                      )}
+                                      <div className="min-w-0">
+                                        <div className="text-xs font-display font-black italic uppercase text-white truncate leading-tight">
+                                          {rider.name.split(' ').pop()}
+                                        </div>
+                                        <div className="text-[10px] font-mono text-gray-600">#{rider.number}</div>
                                       </div>
-                                    )}
-                                    <span className="text-xs font-display font-bold italic uppercase text-gray-400 hidden sm:inline">
-                                      {rider.name.split(' ').pop()}
-                                    </span>
-                                  </div>
-                                )
-                              })}
-                            </div>
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                            )}
                           </div>
                         )
                       })}
