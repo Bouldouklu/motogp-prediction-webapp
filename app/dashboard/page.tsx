@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import LogoutButton from '@/components/LogoutButton'
 import CollapsibleSection from '@/components/CollapsibleSection'
+import CollapsibleRaceCard from '@/components/CollapsibleRaceCard'
 import RiderPhoto from '@/components/RiderPhoto'
 
 export default async function DashboardPage() {
@@ -504,35 +505,35 @@ export default async function DashboardPage() {
 
                 const hasAnyData = sprintResults.length > 0 || raceFullResults.length > 0 || gloriousResults.length > 0
 
-                return (
-                  <div
-                    key={race.id}
-                    className="group p-6 bg-track-gray/60 rounded-xl border border-gray-800 hover:border-gray-700 transition-all duration-200"
-                  >
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                      <div>
-                        <div className="flex items-center gap-3 mb-1">
-                          <span className="bg-gray-800 text-gray-500 text-xs font-bold uppercase px-2 py-0.5 rounded">
-                            Round {race.round_number}
-                          </span>
-                        </div>
-                        <h3 className="text-2xl font-display font-black italic uppercase text-gray-300">
-                          {race.name}
-                        </h3>
-                        <p className="text-sm text-gray-500 mb-2 font-medium">
-                          {race.circuit} • {race.country}
-                        </p>
-                        <div className="flex gap-4 text-sm text-gray-600 mt-2">
-                          <div>
-                            <span className="text-gray-500 font-bold">RACE:</span>{' '}
-                            {new Date(race.race_date).toLocaleDateString()}
-                          </div>
-                        </div>
+                const cardHeader = (
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                      <div className="flex items-center gap-3 mb-1">
+                        <span className="bg-gray-800 text-gray-500 text-xs font-bold uppercase px-2 py-0.5 rounded">
+                          Round {race.round_number}
+                        </span>
                       </div>
-                      <div className="w-full md:w-auto px-6 py-3 border border-gray-700 text-gray-500 font-black uppercase italic tracking-wider rounded transform -skew-x-12 text-center cursor-default">
-                        <span className="inline-block skew-x-12">Completed</span>
+                      <h3 className="text-2xl font-display font-black italic uppercase text-gray-300">
+                        {race.name}
+                      </h3>
+                      <p className="text-sm text-gray-500 mb-2 font-medium">
+                        {race.circuit} • {race.country}
+                      </p>
+                      <div className="flex gap-4 text-sm text-gray-600 mt-2">
+                        <div>
+                          <span className="text-gray-500 font-bold">RACE:</span>{' '}
+                          {new Date(race.race_date).toLocaleDateString()}
+                        </div>
                       </div>
                     </div>
+                    <div className="w-full md:w-auto px-6 py-3 border border-gray-700 text-gray-500 font-black uppercase italic tracking-wider rounded transform -skew-x-12 text-center cursor-default">
+                      <span className="inline-block skew-x-12">Completed</span>
+                    </div>
+                  </div>
+                )
+
+                return (
+                  <CollapsibleRaceCard key={race.id} header={cardHeader}>
 
                     {/* Results Display — 3 panels */}
                     {hasAnyData && (
@@ -638,7 +639,7 @@ export default async function DashboardPage() {
                         </div>
                       </div>
                     )}
-                  </div>
+                  </CollapsibleRaceCard>
                 )
               })}
             </div>
