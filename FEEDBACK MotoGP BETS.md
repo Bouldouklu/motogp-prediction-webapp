@@ -28,10 +28,9 @@ Being able to see the weekend bets in the player home page after prediction done
 
 If possible to get images of the tracks in the block corresponding that would be great (similar to the GP or F1 websites), maybe just the one coming up? We can also use the images currently on the MotoGP website for the previous season
 
-Can we have the riders photos (from the GP website) once the podium selections are done both for the championship and the race? but very optional — ⚠️ Partially done / blocked: UI is wired up (circular photos in championship row, faded portraits in grid cards, Next Up hero card). However photos are not displaying — only a grey placeholder appears. The MotoGP CDN URL pattern (`resources.motogp.com/files/results/2026/riders/{external\_id}/portrait.png`) may be wrong or require authentication. Needs investigation: verify the correct CDN URL format for 2026 rider portraits.
+Can we have the riders photos (from the GP website) once the podium selections are done both for the championship and the race? but very optional — ❌ Removed: MotoGP CDN requires authentication (AccessDenied on direct URLs, website proxies/signs requests). Photo UI elements removed to keep the app clean. Can revisit later with manual Supabase Storage upload if desired.
 
 More clarity on the **race results in the "previous race" card**: — ✅ Done: each completed race now shows 3 panels (Sprint / Race / Glorious 7). Each panel has a "Your Bets" sub-section (🥇🥈🥉 with rider name + per-slot points earned) and a "Results" sub-section (actual top-5 finishers, green-highlighted if you predicted them). Glorious 7 shows relative rank among the 7-rider pool plus the actual race position. A "Weekend Total" footer shows the combined points (with penalty if applicable).
-
 * showing all 3 podiums
 * Showing the inputed bets as priority
 * showing the actual results (top 5 each time)

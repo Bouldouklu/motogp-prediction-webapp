@@ -5,7 +5,6 @@ import Link from 'next/link'
 import LogoutButton from '@/components/LogoutButton'
 import CollapsibleSection from '@/components/CollapsibleSection'
 import CollapsibleRaceCard from '@/components/CollapsibleRaceCard'
-import RiderPhoto from '@/components/RiderPhoto'
 
 export default async function DashboardPage() {
   const user = await getCurrentUser()
@@ -97,9 +96,9 @@ export default async function DashboardPage() {
   const { data: nextRacePredictedRiders } = nextRacePredictedRiderIds.length > 0
     ? await supabase
         .from('riders')
-        .select('id, name, number, external_id')
+        .select('id, name, number')
         .in('id', nextRacePredictedRiderIds)
-    : { data: [] as { id: string; name: string; number: number; external_id: string | null }[] }
+    : { data: [] as { id: string; name: string; number: number }[] }
 
   // Build lookup map: rider_id -> rider (for next-race "Your Bets" display)
   const predictedRiderMap = Object.fromEntries(
@@ -175,9 +174,6 @@ export default async function DashboardPage() {
     redirect('/championship?welcome=true')
   }
 
-  const getRiderPhotoUrl = (externalId: string | null | undefined) =>
-    externalId ? `https://resources.motogp.com/files/results/2026/riders/${externalId}/portrait.png` : null
-
   const FP1_DURATION_MS = 45 * 60 * 1000
   const fp1Start = upcomingRaces?.[0]?.fp1_datetime ? new Date(upcomingRaces[0].fp1_datetime) : null
   const fp1End = fp1Start ? new Date(fp1Start.getTime() + FP1_DURATION_MS) : null
@@ -231,13 +227,6 @@ export default async function DashboardPage() {
                     <span key={medal} className="flex items-center gap-2 text-sm">
                       {i > 0 && <span className="text-gray-700 hidden sm:inline mr-2">·</span>}
                       <span>{medal}</span>
-                      {getRiderPhotoUrl((place as any)?.external_id) && (
-                        <RiderPhoto
-                          src={getRiderPhotoUrl((place as any)?.external_id)!}
-                          alt={(place as any)?.name || ''}
-                          className="w-6 h-6 rounded-full object-cover object-top bg-gray-800"
-                        />
-                      )}
                       <span className={`font-display font-black italic uppercase ${nameClass}`}>{(place as any)?.name}</span>
                       <span className="font-mono text-gray-500 text-xs">#{(place as any)?.number}</span>
                     </span>
@@ -250,13 +239,6 @@ export default async function DashboardPage() {
                     {/* 1st Place */}
                     <div className="p-4 bg-gradient-to-br from-gray-900 to-black border border-yellow-500/30 rounded-lg relative overflow-hidden">
                       <div className="absolute top-2 right-2 text-4xl opacity-20">🥇</div>
-                      {getRiderPhotoUrl((championshipPrediction.first_place as any)?.external_id) && (
-                        <RiderPhoto
-                          src={getRiderPhotoUrl((championshipPrediction.first_place as any)?.external_id)!}
-                          alt={championshipPrediction.first_place?.name || ''}
-                          className="absolute bottom-0 right-0 h-24 w-auto object-cover object-top opacity-30 pointer-events-none"
-                        />
-                      )}
                       <div className="text-xs text-yellow-500 font-bold uppercase tracking-wider mb-1">Winner</div>
                       <div className="text-xl font-display font-black italic uppercase">{championshipPrediction.first_place?.name}</div>
                       <div className="flex items-center gap-2 text-sm text-gray-400">
@@ -267,13 +249,6 @@ export default async function DashboardPage() {
                     {/* 2nd Place */}
                     <div className="p-4 bg-gradient-to-br from-gray-900 to-black border border-gray-700 rounded-lg relative overflow-hidden">
                       <div className="absolute top-2 right-2 text-4xl opacity-20">🥈</div>
-                      {getRiderPhotoUrl((championshipPrediction.second_place as any)?.external_id) && (
-                        <RiderPhoto
-                          src={getRiderPhotoUrl((championshipPrediction.second_place as any)?.external_id)!}
-                          alt={championshipPrediction.second_place?.name || ''}
-                          className="absolute bottom-0 right-0 h-24 w-auto object-cover object-top opacity-30 pointer-events-none"
-                        />
-                      )}
                       <div className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">Runner Up</div>
                       <div className="text-xl font-display font-black italic uppercase">{championshipPrediction.second_place?.name}</div>
                       <div className="flex items-center gap-2 text-sm text-gray-400">
@@ -284,13 +259,6 @@ export default async function DashboardPage() {
                     {/* 3rd Place */}
                     <div className="p-4 bg-gradient-to-br from-gray-900 to-black border border-orange-700/30 rounded-lg relative overflow-hidden">
                       <div className="absolute top-2 right-2 text-4xl opacity-20">🥉</div>
-                      {getRiderPhotoUrl((championshipPrediction.third_place as any)?.external_id) && (
-                        <RiderPhoto
-                          src={getRiderPhotoUrl((championshipPrediction.third_place as any)?.external_id)!}
-                          alt={championshipPrediction.third_place?.name || ''}
-                          className="absolute bottom-0 right-0 h-24 w-auto object-cover object-top opacity-30 pointer-events-none"
-                        />
-                      )}
                       <div className="text-xs text-orange-500 font-bold uppercase tracking-wider mb-1">Third</div>
                       <div className="text-xl font-display font-black italic uppercase">{championshipPrediction.third_place?.name}</div>
                       <div className="flex items-center gap-2 text-sm text-gray-400">
@@ -367,21 +335,9 @@ export default async function DashboardPage() {
                               <div className="space-y-2">
                                 {riders.map((rider: any, i: number) => {
                                   const medals = ['🥇', '🥈', '🥉']
-                                  const photoUrl = getRiderPhotoUrl(rider.external_id)
                                   return (
                                     <div key={rider.id} className="flex items-center gap-2">
                                       <span className="text-sm leading-none">{medals[i]}</span>
-                                      {photoUrl ? (
-                                        <RiderPhoto
-                                          src={photoUrl}
-                                          alt={rider.name}
-                                          className="w-6 h-6 rounded-full object-cover object-top bg-gray-800 border border-gray-700 shrink-0"
-                                        />
-                                      ) : (
-                                        <div className="w-6 h-6 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center text-[9px] font-mono text-gray-500 shrink-0">
-                                          {rider.number}
-                                        </div>
-                                      )}
                                       <div className="min-w-0">
                                         <div className="text-xs font-display font-black italic uppercase text-white truncate leading-tight">
                                           {rider.name.split(' ').pop()}
