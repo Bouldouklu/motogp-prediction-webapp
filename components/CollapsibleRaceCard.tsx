@@ -16,11 +16,10 @@ export default function CollapsibleRaceCard({
   const [isOpen, setIsOpen] = useState(defaultOpen)
 
   return (
-    <div className="group bg-track-gray/60 rounded-xl border border-gray-800 hover:border-motogp-red/50 transition-all duration-300 overflow-hidden relative">
-      <div className="absolute inset-0 bg-gradient-to-r from-motogp-red/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+    <div className="bg-track-gray/60 rounded-xl border border-gray-800 hover:border-motogp-red/50 transition-all duration-300 overflow-hidden">
       <button
         onClick={() => setIsOpen(prev => !prev)}
-        className="relative w-full text-left p-6"
+        className="relative w-full text-left p-6 hover:bg-motogp-red/5 transition-colors duration-200"
         aria-expanded={isOpen}
       >
         <div className="flex items-start justify-between gap-4">

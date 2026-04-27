@@ -107,7 +107,7 @@ export default async function DashboardPage() {
     (nextRacePredictedRiders || []).map(r => [r.id, r])
   )
 
-  // Collect all rider IDs predicted in previous races
+  // Collect all rider IDs predicted in previous races + all G7 pool rider IDs
   const previousPredictionRiderIds = [
     ...(userPredictions
       ?.filter(p => previousRaceIds.includes(p.race_id))
@@ -117,6 +117,7 @@ export default async function DashboardPage() {
         p.glorious_1st_id, p.glorious_2nd_id, p.glorious_3rd_id,
       ])
       .filter(Boolean) as string[]),
+    ...((gloriousRiders || []).map(g => g.rider_id)),
   ]
   const uniquePreviousPredictionRiderIds = [...new Set(previousPredictionRiderIds)]
 
@@ -655,7 +656,10 @@ export default async function DashboardPage() {
                                           {displayPos}
                                         </span>
                                         <span className={`font-sans font-semibold uppercase truncate pr-0.5 ${resultDiff !== null ? accuracyColor(resultDiff) : 'text-gray-400'}`}>
-                                          {result.rider ? surname(result.rider.name) : '?'}
+                                          {(() => {
+                                            const r = result.rider ?? previousPredictedRiderMap[result.riderId]
+                                            return r ? surname(r.name) : '?'
+                                          })()}
                                         </span>
                                       </div>
                                       <div className="flex items-center gap-2 shrink-0 ml-2">
@@ -664,7 +668,9 @@ export default async function DashboardPage() {
                                             ? <span className="text-[10px] text-red-600 font-mono font-bold">DNF</span>
                                             : <span className="text-[10px] text-gray-600 font-mono">P{result.position}</span>
                                         )}
-                                        <span className="text-[10px] text-gray-700 font-mono">#{result.rider?.number ?? '?'}</span>
+                                        <span className="text-[10px] text-gray-700 font-mono">
+                                          #{(result.rider ?? previousPredictedRiderMap[result.riderId])?.number ?? '?'}
+                                        </span>
                                       </div>
                                     </div>
                                   )
