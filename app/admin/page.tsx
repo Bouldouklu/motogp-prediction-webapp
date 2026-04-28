@@ -3,6 +3,7 @@ import Link from 'next/link'
 import ScoreCalculationPanel from '@/components/ScoreCalculationPanel'
 import ChampionshipResultsForm from '@/components/ChampionshipResultsForm'
 import MarkRaceCompletedButton from '@/components/MarkRaceCompletedButton'
+import PredictionStatusTable from '@/components/PredictionStatusTable'
 
 export default async function AdminDashboard() {
   const supabase = await createClient()
@@ -113,39 +114,14 @@ export default async function AdminDashboard() {
 
       {/* Prediction status for next race */}
       {nextRace && allPlayers && allPlayers.length > 0 && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-xl font-semibold mb-1 text-gray-900 dark:text-gray-100">
-            Predictions — Round {nextRace.round_number}: {nextRace.name}
-          </h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-            {allPlayers.filter((p: any) => predictionsByPlayer.has(p.id)).length} / {allPlayers.length} submitted
-          </p>
-          <div className="divide-y divide-gray-100 dark:divide-gray-700">
-            {allPlayers.map((player: any) => {
-              const pred = predictionsByPlayer.get(player.id)
-              return (
-                <div key={player.id} className="flex items-center justify-between py-2">
-                  <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
-                    {player.name}
-                  </span>
-                  {pred ? (
-                    <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                      pred.is_late
-                        ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300'
-                        : 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
-                    }`}>
-                      {pred.is_late ? 'Late' : 'Done'}
-                    </span>
-                  ) : (
-                    <span className="text-xs font-medium px-2 py-1 rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300">
-                      Missing
-                    </span>
-                  )}
-                </div>
-              )
-            })}
-          </div>
-        </div>
+        <PredictionStatusTable
+          roundNumber={nextRace.round_number}
+          raceName={nextRace.name}
+          players={allPlayers.map((p: any) => {
+            const pred = predictionsByPlayer.get(p.id)
+            return { id: p.id, name: p.name, submitted: !!pred, isLate: pred?.is_late ?? false }
+          })}
+        />
       )}
 
       {/* Quick Actions */}
