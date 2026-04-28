@@ -179,12 +179,6 @@ export default async function AdminDashboard() {
         </div>
       </div>
 
-      {/* Championship Results */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-6">
-        <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Championship Results (End of Season)</h2>
-        <ChampionshipResultsForm riders={riders || []} seasonYear={2026} />
-      </div>
-
       {/* Recent Activity */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-6">
         <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Recently Completed Races</h2>
@@ -217,7 +211,8 @@ export default async function AdminDashboard() {
         )}
       </div>
 
-
+      {/* Championship Results */}
+      <ChampionshipResultsForm riders={riders || []} seasonYear={2026} />
     </div>
   )
 }

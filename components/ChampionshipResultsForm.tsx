@@ -13,6 +13,7 @@ export default function ChampionshipResultsForm({
   riders,
   seasonYear = 2026,
 }: ChampionshipResultsFormProps) {
+  const [open, setOpen] = useState(false)
   const [firstPlaceId, setFirstPlaceId] = useState('')
   const [secondPlaceId, setSecondPlaceId] = useState('')
   const [thirdPlaceId, setThirdPlaceId] = useState('')
@@ -94,81 +95,88 @@ export default function ChampionshipResultsForm({
     }
   }
 
-  if (loadingExisting) {
-    return (
-      <div className="flex items-center justify-center p-4">
-        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-      </div>
-    )
-  }
-
   return (
-    <div className="space-y-4">
-      <div>
-        <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">Enter Final Championship Standings</h3>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-          Enter the top 3 riders from the {seasonYear} season finale. This will calculate
-          championship prediction points for all players.
-        </p>
-      </div>
-
-      {/* Success Message */}
-      {success && (
-        <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-          <p className="text-green-800 dark:text-green-200 text-sm">{success}</p>
-        </div>
-      )}
-
-      {/* Error Message */}
-      {error && (
-        <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-          <p className="text-red-800 dark:text-red-200 text-sm">{error}</p>
-        </div>
-      )}
-
-      {/* Rider Selectors */}
-      <div className="space-y-4">
-        <RiderSelect
-          label="🥇 1st Place Champion"
-          riders={riders}
-          value={firstPlaceId}
-          onChange={setFirstPlaceId}
-          excludeIds={[secondPlaceId, thirdPlaceId]}
-          required={false}
-        />
-
-        <RiderSelect
-          label="🥈 2nd Place"
-          riders={riders}
-          value={secondPlaceId}
-          onChange={setSecondPlaceId}
-          excludeIds={[firstPlaceId, thirdPlaceId]}
-          required={false}
-        />
-
-        <RiderSelect
-          label="🥉 3rd Place"
-          riders={riders}
-          value={thirdPlaceId}
-          onChange={setThirdPlaceId}
-          excludeIds={[firstPlaceId, secondPlaceId]}
-          required={false}
-        />
-      </div>
-
-      {/* Submit Button */}
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
       <button
-        onClick={handleSubmit}
-        disabled={loading || !firstPlaceId || !secondPlaceId || !thirdPlaceId}
-        className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center justify-between p-6 text-left"
       >
-        {loading ? 'Saving...' : 'Save Championship Results'}
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+          Championship Results (End of Season)
+        </h2>
+        <span className="text-gray-400 dark:text-gray-500 text-lg ml-4">
+          {open ? '▲' : '▼'}
+        </span>
       </button>
 
-      <div className="text-xs text-gray-500 dark:text-gray-500">
-        Note: Saving will overwrite any existing championship results for {seasonYear}.
-        Championship points will be automatically calculated and added to the leaderboard.
-      </div>
+      {open && (
+        <div className="px-6 pb-6 space-y-4">
+          {loadingExisting ? (
+            <div className="flex items-center justify-center p-4">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+            </div>
+          ) : (
+            <>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Enter the top 3 riders from the {seasonYear} season finale. This will calculate
+                championship prediction points for all players.
+              </p>
+
+              {success && (
+                <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                  <p className="text-green-800 dark:text-green-200 text-sm">{success}</p>
+                </div>
+              )}
+
+              {error && (
+                <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                  <p className="text-red-800 dark:text-red-200 text-sm">{error}</p>
+                </div>
+              )}
+
+              <div className="space-y-4">
+                <RiderSelect
+                  label="🥇 1st Place Champion"
+                  riders={riders}
+                  value={firstPlaceId}
+                  onChange={setFirstPlaceId}
+                  excludeIds={[secondPlaceId, thirdPlaceId]}
+                  required={false}
+                />
+                <RiderSelect
+                  label="🥈 2nd Place"
+                  riders={riders}
+                  value={secondPlaceId}
+                  onChange={setSecondPlaceId}
+                  excludeIds={[firstPlaceId, thirdPlaceId]}
+                  required={false}
+                />
+                <RiderSelect
+                  label="🥉 3rd Place"
+                  riders={riders}
+                  value={thirdPlaceId}
+                  onChange={setThirdPlaceId}
+                  excludeIds={[firstPlaceId, secondPlaceId]}
+                  required={false}
+                />
+              </div>
+
+              <button
+                onClick={handleSubmit}
+                disabled={loading || !firstPlaceId || !secondPlaceId || !thirdPlaceId}
+                className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? 'Saving...' : 'Save Championship Results'}
+              </button>
+
+              <p className="text-xs text-gray-500 dark:text-gray-500">
+                Note: Saving will overwrite any existing championship results for {seasonYear}.
+                Championship points will be automatically calculated and added to the leaderboard.
+              </p>
+            </>
+          )}
+        </div>
+      )}
     </div>
   )
 }
