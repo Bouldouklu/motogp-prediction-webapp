@@ -23,13 +23,7 @@ export default async function AdminDashboard() {
     .order('round_number', { ascending: false })
     .limit(5)
 
-  // Fetch all races for score calculation
-  const { data: allRaces } = await supabase
-    .from('races')
-    .select('*')
-    .order('round_number', { ascending: true })
-
-  // Fetch race IDs that have results entered (to show in score calculation even if status isn't 'completed')
+  // Fetch race IDs that have results (for "Results ✓" badges on race cards)
   const { data: racesWithResults } = await supabase
     .from('race_results')
     .select('race_id')
@@ -122,7 +116,7 @@ export default async function AdminDashboard() {
       {/* Calculate Scores — full width, compact horizontal layout */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-6">
         <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Calculate Scores</h2>
-        <ScoreCalculationPanel races={allRaces || []} raceIdsWithResults={raceIdsWithResults} />
+        <ScoreCalculationPanel />
       </div>
 
       {/* Completed Race Details */}
