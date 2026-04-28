@@ -59,6 +59,27 @@ export default async function LeaderboardPage() {
   const safeScores = scores || []
   const safePredictions = predictions || []
 
+  // Fetch actual results for past races
+  const pastRaces = safeRaces.filter(r => r.status !== 'upcoming')
+  const { data: raceResults } = await supabase
+    .from('race_results')
+    .select('race_id, result_type, position, rider:riders(name, number)')
+    .in('race_id', pastRaces.length > 0 ? pastRaces.map(r => r.id) : ['00000000-0000-0000-0000-000000000000'])
+    .lte('position', 3)
+    .order('position')
+
+  type RiderCellType = { name: string; number: number }
+  type ActualResultsType = { sprint: (RiderCellType | null)[]; race: (RiderCellType | null)[] }
+  const resultsMap: Record<string, ActualResultsType> = {}
+  for (const r of (raceResults || [])) {
+    const rr = r as unknown as { race_id: string; result_type: string; position: number; rider: RiderCellType | RiderCellType[] }
+    if (!resultsMap[rr.race_id]) resultsMap[rr.race_id] = { sprint: [null, null, null], race: [null, null, null] }
+    const idx = rr.position - 1
+    const rider = Array.isArray(rr.rider) ? rr.rider[0] : rr.rider
+    if (rr.result_type === 'sprint' && idx < 3) resultsMap[rr.race_id].sprint[idx] = rider ?? null
+    if (rr.result_type === 'race' && idx < 3) resultsMap[rr.race_id].race[idx] = rider ?? null
+  }
+
   // 1. Calculate Leaderboard Stats
   const playerStats = safePlayers.map(player => {
     const playerScores = safeScores.filter(s => s.player_id === player.id)
@@ -224,7 +245,6 @@ export default async function LeaderboardPage() {
 
             {/* Weekend Bets Section — visible after cut-off */}
             {(() => {
-              const pastRaces = safeRaces.filter(r => r.status !== 'upcoming')
               if (pastRaces.length === 0) return null
 
               const betsData = pastRaces.map(race => ({
@@ -232,6 +252,7 @@ export default async function LeaderboardPage() {
                 raceName: race.name,
                 circuit: race.circuit,
                 roundNumber: race.round_number,
+                actualResults: resultsMap[race.id] ?? null,
                 players: playerStats.map(player => {
                   const pred = safePredictions.find(
                     p => p.race_id === race.id && p.player_id === player.id

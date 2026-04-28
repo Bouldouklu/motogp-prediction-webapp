@@ -7,6 +7,11 @@ interface RiderCell {
   number: number
 }
 
+interface ActualResults {
+  sprint: (RiderCell | null)[]
+  race: (RiderCell | null)[]
+}
+
 interface PlayerBets {
   playerId: string
   playerName: string
@@ -20,6 +25,7 @@ interface RaceBets {
   raceName: string
   circuit: string
   roundNumber: number
+  actualResults: ActualResults | null
   players: PlayerBets[]
 }
 
@@ -83,6 +89,25 @@ function RaceBlock({ raceBets, currentPlayerId }: { raceBets: RaceBets; currentP
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-800">
+              {raceBets.actualResults && (
+                <tr className="bg-black/40 border-b-2 border-gray-700">
+                  <td className="px-3 py-2 font-bold sticky left-0 z-10 border-r border-gray-800 whitespace-nowrap text-gray-400 bg-black/40 text-[10px] uppercase tracking-wider">
+                    Results
+                  </td>
+                  {([raceBets.actualResults.sprint, raceBets.actualResults.race, null] as ((RiderCell | null)[] | null)[]).map((group, gIdx) => (
+                    <td key={gIdx} className="px-3 py-2 align-top">
+                      <div className="flex flex-col gap-0.5">
+                        {[0, 1, 2].map(pos => (
+                          <div key={pos} className="flex items-center gap-1">
+                            <span className="text-gray-600 font-mono text-[10px] shrink-0 w-3">{pos + 1}.</span>
+                            {group ? riderCell(group[pos]) : <span className="text-gray-700 text-xs">—</span>}
+                          </div>
+                        ))}
+                      </div>
+                    </td>
+                  ))}
+                </tr>
+              )}
               {raceBets.players.map(player => (
                 <tr key={player.playerId} className={`transition-colors ${player.playerId === currentPlayerId ? 'bg-blue-950/40 border-l-2 border-blue-500' : 'hover:bg-white/5'}`}>
                   <td className={`px-3 py-2 font-bold sticky left-0 z-10 border-r border-gray-800 whitespace-nowrap ${player.playerId === currentPlayerId ? 'text-blue-400 bg-blue-950/60' : 'text-white bg-track-gray'}`}>
