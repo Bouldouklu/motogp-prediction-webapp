@@ -19,6 +19,14 @@ interface PointsMatrixTableProps {
   currentPlayerId: string | null
 }
 
+function scoreCellColor(pts: number | undefined): string {
+  if (!pts) return 'text-white'
+  if (pts >= 80) return 'text-green-400'
+  if (pts >= 50) return 'text-yellow-400'
+  if (pts >= 20) return 'text-orange-400'
+  return 'text-white'
+}
+
 export default function PointsMatrixTable({ playerStats, races, scores, currentPlayerId }: PointsMatrixTableProps) {
   const [modal, setModal] = useState<{ raceId: string; playerId: string; raceName: string; playerName: string } | null>(null)
   const [breakdown, setBreakdown] = useState<ScoreBreakdown | null>(null)
@@ -89,7 +97,7 @@ export default function PointsMatrixTable({ playerStats, races, scores, currentP
                         </div>
                       ) : (
                         <div className="flex flex-col items-center gap-1">
-                          <span className="text-base font-bold text-white">{score ? score.total_points : <span className="text-gray-700">—</span>}</span>
+                          <span className={`text-base font-bold ${scoreCellColor(score?.total_points)}`}>{score ? score.total_points : <span className="text-gray-700">—</span>}</span>
                           {score && (
                             <span className="text-[11px] text-gray-400 leading-none whitespace-nowrap">
                               S:{sprintTotal} R:{raceTotal} G:{gloriousTotal}
