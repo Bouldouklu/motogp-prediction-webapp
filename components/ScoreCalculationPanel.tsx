@@ -114,10 +114,50 @@ export default function ScoreCalculationPanel({ races, raceIdsWithResults }: Sco
 
   return (
     <div className="space-y-4">
+      {/* Dropdown + buttons in one horizontal row */}
+      <div className="flex flex-col sm:flex-row gap-3 items-end">
+        <div className="flex-1">
+          <label className="block text-sm font-medium mb-1.5 text-gray-900 dark:text-gray-100">Select Race</label>
+          <select
+            value={selectedRaceId}
+            onChange={(e) => {
+              setSelectedRaceId(e.target.value)
+              setMessage(null)
+              setPreviewScores(null)
+            }}
+            disabled={loading || previewing}
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
+          >
+            <option value="">Choose a race...</option>
+            {completedRaces.map((race) => (
+              <option key={race.id} value={race.id}>
+                Round {race.round_number}: {race.name} ({race.country})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <button
+          onClick={handlePreview}
+          disabled={!selectedRaceId || loading || previewing}
+          className="px-4 py-2 border border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+        >
+          {previewing ? 'Loading...' : 'Preview'}
+        </button>
+
+        <button
+          onClick={handleCalculate}
+          disabled={!selectedRaceId || loading || previewing}
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+        >
+          {loading ? 'Calculating...' : 'Calculate & Save'}
+        </button>
+      </div>
+
       {/* Message */}
       {message && (
         <div
-          className={`p-3 rounded-lg ${
+          className={`p-3 rounded-lg text-sm ${
             message.type === 'success'
               ? 'bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200 border border-green-200 dark:border-green-800'
               : 'bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800'
@@ -126,28 +166,6 @@ export default function ScoreCalculationPanel({ races, raceIdsWithResults }: Sco
           {message.text}
         </div>
       )}
-
-      {/* Race selector */}
-      <div>
-        <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-100">Select Race</label>
-        <select
-          value={selectedRaceId}
-          onChange={(e) => {
-            setSelectedRaceId(e.target.value)
-            setMessage(null)
-            setPreviewScores(null)
-          }}
-          disabled={loading || previewing}
-          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
-        >
-          <option value="">Choose a race...</option>
-          {completedRaces.map((race) => (
-            <option key={race.id} value={race.id}>
-              Round {race.round_number}: {race.name} ({race.country})
-            </option>
-          ))}
-        </select>
-      </div>
 
       {/* Preview scores table */}
       {previewScores && previewScores.length > 0 && (
@@ -185,25 +203,6 @@ export default function ScoreCalculationPanel({ races, raceIdsWithResults }: Sco
           </table>
         </div>
       )}
-
-      {/* Action buttons */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <button
-          onClick={handlePreview}
-          disabled={!selectedRaceId || loading || previewing}
-          className="flex-1 px-4 py-2 border border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {previewing ? 'Loading...' : 'Preview Scores'}
-        </button>
-
-        <button
-          onClick={handleCalculate}
-          disabled={!selectedRaceId || loading || previewing}
-          className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {loading ? 'Calculating...' : 'Calculate & Save Scores'}
-        </button>
-      </div>
 
       {completedRaces.length === 0 && (
         <p className="text-sm text-gray-600 dark:text-gray-400">

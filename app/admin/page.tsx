@@ -2,7 +2,6 @@ import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import ScoreCalculationPanel from '@/components/ScoreCalculationPanel'
 import ChampionshipResultsForm from '@/components/ChampionshipResultsForm'
-import MarkRaceCompletedButton from '@/components/MarkRaceCompletedButton'
 import PredictionStatusTable from '@/components/PredictionStatusTable'
 
 export default async function AdminDashboard() {
@@ -44,20 +43,6 @@ export default async function AdminDashboard() {
     .eq('active', true)
     .order('number', { ascending: true })
 
-  // Get stats
-  const { count: totalRaces } = await supabase
-    .from('races')
-    .select('*', { count: 'exact', head: true })
-
-  const { count: completedRacesCount } = await supabase
-    .from('races')
-    .select('*', { count: 'exact', head: true })
-    .eq('status', 'completed')
-
-  const { count: totalPlayers } = await supabase
-    .from('players')
-    .select('*', { count: 'exact', head: true })
-
   // Prediction status for the next upcoming race
   const nextRace = racesNeedingResults?.[0] ?? null
   const { data: allPlayers } = await supabase
@@ -86,32 +71,6 @@ export default async function AdminDashboard() {
         </p>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-6">
-          <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Total Races</div>
-          <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-            {totalRaces || 0}
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-6">
-          <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-            Completed Races
-          </div>
-          <div className="text-3xl font-bold text-green-600 dark:text-green-400">
-            {completedRacesCount || 0}
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-6">
-          <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Total Players</div>
-          <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">
-            {totalPlayers || 0}
-          </div>
-        </div>
-      </div>
-
       {/* Prediction status for next race */}
       {nextRace && allPlayers && allPlayers.length > 0 && (
         <PredictionStatusTable
@@ -124,62 +83,43 @@ export default async function AdminDashboard() {
         />
       )}
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Race Details */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Race Details</h2>
+      {/* Race Details — full width, race cards in a grid */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-6">
+        <h2 className="text-xl font-semibold mb-1 text-gray-900 dark:text-gray-100">Race Details</h2>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+          Set Glorious 7 before the race · Enter results after
+        </p>
 
-          {racesNeedingResults && racesNeedingResults.length > 0 ? (
-            <div className="space-y-3">
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                Upcoming races — set Glorious 7 before the race, enter results after:
-              </p>
-              {racesNeedingResults.map((race: any) => {
-                const hasResults = raceIdsWithResults.includes(race.id)
-                return (
-                  <div
-                    key={race.id}
-                    className="p-4 border border-gray-300 dark:border-gray-600 rounded-lg"
-                  >
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="min-w-0 flex-1">
-                        <div className="font-medium text-gray-900 dark:text-gray-100">
-                          Round {race.round_number}: {race.name}
-                        </div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">
-                          {race.country} • {new Date(race.race_date).toLocaleDateString()}
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2 shrink-0">
-                        {hasResults && <MarkRaceCompletedButton raceId={race.id} />}
-                        <Link
-                          href={`/admin/results/${race.id}`}
-                          className="text-blue-600 dark:text-blue-400 text-sm font-medium hover:underline"
-                        >
-                          Manage →
-                        </Link>
-                      </div>
-                    </div>
+        {racesNeedingResults && racesNeedingResults.length > 0 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+            {racesNeedingResults.map((race: any) => {
+              const hasResults = raceIdsWithResults.includes(race.id)
+              return (
+                <Link
+                  key={race.id}
+                  href={`/admin/results/${race.id}`}
+                  className="flex flex-col gap-1 p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-colors"
+                >
+                  <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Round {race.round_number}</span>
+                  <span className="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-tight">{race.name}</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">{race.country}</span>
+                  <div className="mt-1 flex items-center gap-1.5 flex-wrap">
+                    {hasResults ? (
+                      <span className="text-xs px-1.5 py-0.5 rounded bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300">Results ✓</span>
+                    ) : (
+                      <span className="text-xs px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400">No results</span>
+                    )}
                   </div>
-                )
-              })}
-            </div>
-          ) : (
-            <p className="text-gray-600 dark:text-gray-400">
-              No upcoming races to manage.
-            </p>
-          )}
-        </div>
-
-        {/* Score Calculation */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Calculate Scores</h2>
-          <ScoreCalculationPanel races={allRaces || []} raceIdsWithResults={raceIdsWithResults} />
-        </div>
+                </Link>
+              )
+            })}
+          </div>
+        ) : (
+          <p className="text-gray-600 dark:text-gray-400">No upcoming races to manage.</p>
+        )}
       </div>
 
-      {/* Recent Activity */}
+      {/* Recently Completed Races */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-6">
         <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Recently Completed Races</h2>
 
@@ -209,6 +149,12 @@ export default async function AdminDashboard() {
         ) : (
           <p className="text-gray-600 dark:text-gray-400">No completed races yet.</p>
         )}
+      </div>
+
+      {/* Calculate Scores — full width, compact horizontal layout */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-6">
+        <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Calculate Scores</h2>
+        <ScoreCalculationPanel races={allRaces || []} raceIdsWithResults={raceIdsWithResults} />
       </div>
 
       {/* Championship Results */}
