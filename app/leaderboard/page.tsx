@@ -61,23 +61,67 @@ export default async function LeaderboardPage() {
 
   // Fetch actual results for past races
   const pastRaces = safeRaces.filter(r => r.status !== 'upcoming')
-  const { data: raceResults } = await supabase
-    .from('race_results')
-    .select('race_id, result_type, position, rider:riders(name, number)')
-    .in('race_id', pastRaces.length > 0 ? pastRaces.map(r => r.id) : ['00000000-0000-0000-0000-000000000000'])
-    .lte('position', 3)
-    .order('position')
+  const pastRaceIds = pastRaces.length > 0 ? pastRaces.map(r => r.id) : ['00000000-0000-0000-0000-000000000000']
+
+  const [
+    { data: raceResults },
+    { data: gloriousRidersData },
+    { data: allRaceResults },
+  ] = await Promise.all([
+    supabase
+      .from('race_results')
+      .select('race_id, result_type, position, rider:riders(name, number)')
+      .in('race_id', pastRaceIds)
+      .lte('position', 3)
+      .order('position'),
+    supabase
+      .from('race_glorious_riders')
+      .select('race_id, rider_id')
+      .in('race_id', pastRaceIds),
+    supabase
+      .from('race_results')
+      .select('race_id, rider_id, position, rider:riders(name, number)')
+      .in('race_id', pastRaceIds)
+      .eq('result_type', 'race')
+      .order('position'),
+  ])
 
   type RiderCellType = { name: string; number: number }
-  type ActualResultsType = { sprint: (RiderCellType | null)[]; race: (RiderCellType | null)[] }
+  type ActualResultsType = { sprint: (RiderCellType | null)[]; race: (RiderCellType | null)[]; glorious: (RiderCellType | null)[] }
+
+  // Build G7 top-3 per race (relative ranking among the 7 selected riders)
+  const g7RidersByRace: Record<string, string[]> = {}
+  for (const row of (gloriousRidersData || [])) {
+    if (!g7RidersByRace[row.race_id]) g7RidersByRace[row.race_id] = []
+    g7RidersByRace[row.race_id].push(row.rider_id)
+  }
+  const g7ResultsMap: Record<string, (RiderCellType | null)[]> = {}
+  for (const race of pastRaces) {
+    const g7Ids = g7RidersByRace[race.id] || []
+    const finishers = (allRaceResults || [])
+      .filter((r: any) => r.race_id === race.id && g7Ids.includes(r.rider_id))
+      .sort((a: any, b: any) => a.position - b.position)
+    const toCell = (r: any): RiderCellType | null => {
+      if (!r) return null
+      const raw = Array.isArray(r.rider) ? r.rider[0] : r.rider
+      return raw ?? null
+    }
+    g7ResultsMap[race.id] = [toCell(finishers[0]), toCell(finishers[1]), toCell(finishers[2])]
+  }
+
   const resultsMap: Record<string, ActualResultsType> = {}
   for (const r of (raceResults || [])) {
     const rr = r as unknown as { race_id: string; result_type: string; position: number; rider: RiderCellType | RiderCellType[] }
-    if (!resultsMap[rr.race_id]) resultsMap[rr.race_id] = { sprint: [null, null, null], race: [null, null, null] }
+    if (!resultsMap[rr.race_id]) resultsMap[rr.race_id] = { sprint: [null, null, null], race: [null, null, null], glorious: [null, null, null] }
     const idx = rr.position - 1
     const rider = Array.isArray(rr.rider) ? rr.rider[0] : rr.rider
     if (rr.result_type === 'sprint' && idx < 3) resultsMap[rr.race_id].sprint[idx] = rider ?? null
     if (rr.result_type === 'race' && idx < 3) resultsMap[rr.race_id].race[idx] = rider ?? null
+  }
+  // Attach G7 results to each race entry
+  for (const race of pastRaces) {
+    if (!resultsMap[race.id]) resultsMap[race.id] = { sprint: [null, null, null], race: [null, null, null], glorious: [null, null, null] }
+    resultsMap[race.id].glorious = g7ResultsMap[race.id] ?? [null, null, null]
   }
 
   // 1. Calculate Leaderboard Stats

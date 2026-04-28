@@ -42,12 +42,13 @@ Custom passphrase-based auth (no email/password). Session stored as a Base64-enc
 
 ### Supabase Clients
 
-Two separate clients, both in `lib/supabase/`:
+Three clients, all in `lib/supabase/`:
 - `server.ts` — server-side (uses `next/headers` cookies, for Server Components and API routes)
 - `client.ts` — browser-side (for Client Components)
+- `service.ts` — service role client that bypasses RLS; use only in admin API routes after verifying admin auth
 - `middleware.ts` — session refresh middleware
 
-Always use `lib/supabase/server.ts` in API routes and Server Components.
+Always use `lib/supabase/server.ts` in API routes and Server Components. Use `service.ts` only when RLS bypass is required (e.g., admin writes).
 
 ### Scoring Engine (`lib/scoring.ts`)
 
@@ -73,6 +74,7 @@ The core business logic. Key functions:
 | `/api/admin/results` | POST | Save race/sprint results (admin) |
 | `/api/admin/championship-results` | POST | Save championship results (admin) |
 | `/api/admin/generate-glorious-7` | POST | Set Glorious 7 riders for a race |
+| `/api/admin/races/[raceId]/status` | PATCH | Update race status (upcoming/in_progress/completed) |
 | `/api/cron/sync-motogp` | GET | Sync riders/races from MotoGP API |
 
 ### Database Schema (`supabase/schema.sql`)
@@ -98,7 +100,7 @@ The `leaderboard` view (in schema.sql) uses `security_invoker = true` and exclud
 3. **No duplicate riders within a category**: Cannot pick the same rider for sprint 1st and sprint 2nd. Same rider CAN appear in both sprint and race predictions.
 4. **Glorious 7 scoring**: Uses relative ranking within the 7 admin-selected riders, not their actual race position.
 5. **Tie-breaking**: Same total points → more exact predictions wins.
-6. **Championship**: Predictions locked before race 1, scored at season end. Points: 1st=37, 2nd=25, 3rd=25.
+6. **Championship**: Predictions locked before race 1, scored at season end. Points: 1st=250, 2nd=100, 3rd=100.
 
 ## Environment Variables
 

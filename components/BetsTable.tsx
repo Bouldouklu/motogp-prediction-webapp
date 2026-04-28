@@ -10,6 +10,7 @@ interface RiderCell {
 interface ActualResults {
   sprint: (RiderCell | null)[]
   race: (RiderCell | null)[]
+  glorious: (RiderCell | null)[]
 }
 
 interface PlayerBets {
@@ -94,7 +95,7 @@ function RaceBlock({ raceBets, currentPlayerId }: { raceBets: RaceBets; currentP
                   <td className="px-3 py-2 font-bold sticky left-0 z-10 border-r border-gray-800 whitespace-nowrap text-gray-400 bg-black/40 text-[10px] uppercase tracking-wider">
                     Results
                   </td>
-                  {([raceBets.actualResults.sprint, raceBets.actualResults.race, null] as ((RiderCell | null)[] | null)[]).map((group, gIdx) => (
+                  {([raceBets.actualResults.sprint, raceBets.actualResults.race, raceBets.actualResults.glorious] as ((RiderCell | null)[] | null)[]).map((group, gIdx) => (
                     <td key={gIdx} className="px-3 py-2 align-top">
                       <div className="flex flex-col gap-0.5">
                         {[0, 1, 2].map(pos => (
