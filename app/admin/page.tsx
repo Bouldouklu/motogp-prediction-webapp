@@ -85,7 +85,7 @@ export default async function AdminDashboard() {
 
       {/* Race Details — full width, race cards in a grid */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-6">
-        <h2 className="text-xl font-semibold mb-1 text-gray-900 dark:text-gray-100">Race Details</h2>
+        <h2 className="text-xl font-semibold mb-1 text-gray-900 dark:text-gray-100">Upcoming Race Details</h2>
         <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
           Set Glorious 7 before the race · Enter results after
         </p>
@@ -125,31 +125,26 @@ export default async function AdminDashboard() {
         <ScoreCalculationPanel races={allRaces || []} raceIdsWithResults={raceIdsWithResults} />
       </div>
 
-      {/* Recently Completed Races */}
+      {/* Completed Race Details */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-6">
-        <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Recently Completed Races</h2>
+        <h2 className="text-xl font-semibold mb-1 text-gray-900 dark:text-gray-100">Completed Race Details</h2>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+          Click a race to correct results if needed
+        </p>
 
         {completedRaces && completedRaces.length > 0 ? (
-          <div className="space-y-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
             {completedRaces.map((race: any) => (
               <Link
                 key={race.id}
                 href={`/admin/results/${race.id}`}
-                className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-colors"
+                className="flex flex-col gap-1 p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-colors"
               >
-                <div>
-                  <div className="font-medium text-gray-900 dark:text-gray-100">
-                    Round {race.round_number}: {race.name}
-                  </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    {race.country} • {new Date(race.race_date).toLocaleDateString()}
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 shrink-0">
-                  <span className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full text-sm font-medium">
-                    Completed
-                  </span>
-                  <span className="text-blue-600 dark:text-blue-400 text-sm font-medium">Manage →</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Round {race.round_number}</span>
+                <span className="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-tight">{race.name}</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">{race.country}</span>
+                <div className="mt-1">
+                  <span className="text-xs px-1.5 py-0.5 rounded bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300">Completed</span>
                 </div>
               </Link>
             ))}
