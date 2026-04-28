@@ -32,6 +32,21 @@ export default function PointsMatrixTable({ playerStats, races, scores, currentP
   const [breakdown, setBreakdown] = useState<ScoreBreakdown | null>(null)
   const [loadingCell, setLoadingCell] = useState<string | null>(null)
 
+  const podiumRingByRace: Record<string, Record<string, string>> = {}
+  races.forEach(race => {
+    const raceScores = scores
+      .filter(s => s.race_id === race.id && s.total_points > 0)
+      .sort((a, b) => b.total_points - a.total_points)
+    podiumRingByRace[race.id] = {}
+    const rings = ['ring-1 ring-yellow-400', 'ring-1 ring-gray-400', 'ring-1 ring-amber-700']
+    let rank = 0
+    let lastPts = -1
+    raceScores.forEach((s, i) => {
+      if (s.total_points !== lastPts) { rank = i; lastPts = s.total_points }
+      if (rank < 3) podiumRingByRace[race.id][s.player_id] = rings[rank]
+    })
+  })
+
   async function openBreakdown(raceId: string, playerId: string, raceName: string, playerName: string) {
     const key = `${raceId}-${playerId}`
     setLoadingCell(key)
@@ -97,7 +112,7 @@ export default function PointsMatrixTable({ playerStats, races, scores, currentP
                         </div>
                       ) : (
                         <div className="flex flex-col items-center gap-1">
-                          <span className={`text-base font-bold ${scoreCellColor(score?.total_points)}`}>{score ? score.total_points : <span className="text-gray-700">—</span>}</span>
+                          <span className={`text-base font-bold px-1.5 py-0.5 rounded ${scoreCellColor(score?.total_points)} ${podiumRingByRace[race.id]?.[player.id] ?? ''}`}>{score ? score.total_points : <span className="text-gray-700">—</span>}</span>
                           {score && (
                             <span className="text-[11px] text-gray-400 leading-none whitespace-nowrap">
                               S:{sprintTotal} R:{raceTotal} G:{gloriousTotal}
