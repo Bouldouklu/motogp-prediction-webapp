@@ -3,10 +3,6 @@
 import { useState } from 'react'
 import type { Rider } from '@/types'
 
-interface RiderWithPoints extends Rider {
-    points?: number
-}
-
 interface Props {
     raceId: string
     allRiders: Rider[]
@@ -18,7 +14,6 @@ const EMPTY_SLOT = ''
 export default function GloriousRidersPanel({ raceId, allRiders, initialGloriousRiders }: Props) {
     const padded = [...initialGloriousRiders.map(r => r.id), ...Array(7).fill(EMPTY_SLOT)].slice(0, 7)
     const [slots, setSlots] = useState<string[]>(padded)
-    const [pointsBadge, setPointsBadge] = useState<Map<string, number>>(new Map())
     const [generating, setGenerating] = useState(false)
     const [saving, setSaving] = useState(false)
     const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
@@ -46,11 +41,8 @@ export default function GloriousRidersPanel({ raceId, allRiders, initialGlorious
                 setMessage({ type: 'error', text: data.error || 'Generation failed' })
                 return
             }
-            const generated: RiderWithPoints[] = data.riders
-            setSlots(generated.map((r: RiderWithPoints) => r.id))
-            const pts = new Map<string, number>()
-            generated.forEach((r: RiderWithPoints) => { if (r.points !== undefined) pts.set(r.id, r.points) })
-            setPointsBadge(pts)
+            const generated: { id: string }[] = data.riders
+            setSlots(generated.map(r => r.id))
             setMessage({ type: 'success', text: 'Suggestion generated — review and save when ready.' })
         } catch {
             setMessage({ type: 'error', text: 'Network error during generation' })
@@ -109,7 +101,6 @@ export default function GloriousRidersPanel({ raceId, allRiders, initialGlorious
             <div className="space-y-3 mb-6">
                 {slots.map((selectedId, i) => {
                     const isDuplicate = selectedId && duplicates.has(selectedId)
-                    const pts = selectedId ? pointsBadge.get(selectedId) : undefined
                     return (
                         <div key={i} className="flex items-center gap-3">
                             <span className="text-sm font-medium text-gray-500 dark:text-gray-400 w-12 shrink-0">
@@ -136,11 +127,6 @@ export default function GloriousRidersPanel({ raceId, allRiders, initialGlorious
                                     </option>
                                 ))}
                             </select>
-                            {pts !== undefined && (
-                                <span className="text-xs font-medium px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full shrink-0">
-                                    {pts} pts
-                                </span>
-                            )}
                         </div>
                     )
                 })}
