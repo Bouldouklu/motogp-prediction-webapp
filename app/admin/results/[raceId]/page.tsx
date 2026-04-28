@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import RaceResultsForm from '@/components/RaceResultsForm'
+import GloriousRidersPanel from '@/components/GloriousRidersPanel'
 
 export default async function RaceResultsEntryPage({
   params,
@@ -44,6 +45,15 @@ export default async function RaceResultsEntryPage({
 
   const existingSprintResults = existingResults?.filter((r) => r.result_type === 'sprint') || []
   const existingRaceResults = existingResults?.filter((r) => r.result_type === 'race') || []
+
+  // Fetch currently saved Glorious 7 riders for this race
+  const { data: gloriousRows } = await supabase
+    .from('race_glorious_riders')
+    .select('display_order, riders(id, name, number, team, active)')
+    .eq('race_id', raceId)
+    .order('display_order', { ascending: true })
+
+  const gloriousRiders = (gloriousRows || []).map((row: any) => row.riders)
 
   return (
     <div className="space-y-6">
@@ -99,6 +109,13 @@ export default async function RaceResultsEntryPage({
         riders={riders}
         existingSprintResults={existingSprintResults}
         existingRaceResults={existingRaceResults}
+      />
+
+      {/* Glorious 7 */}
+      <GloriousRidersPanel
+        raceId={raceId}
+        allRiders={riders}
+        initialGloriousRiders={gloriousRiders}
       />
     </div>
   )

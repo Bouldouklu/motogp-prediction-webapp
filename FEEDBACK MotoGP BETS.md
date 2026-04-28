@@ -10,4 +10,4 @@
 ## Mobile display: Current race bet
 - ~~On mobile now the date for the current race is on 3 lines, it should be one line, even if that means the deadline text is below~~ ✅
 ## Glorious 7 system:
-- Option B that listed in @glorious-7-proposals.md seems to be the better option, as the Option C still does not handle proper sourcing of the starting list on its own. And then if I have access to the review for the proposed Glorious 7 list, you don't need to be involved.
+- Option B that listed in @glorious-7-proposals.md seems to be the better option, as the Option C still does not handle proper sourcing of the starting list on its own.
