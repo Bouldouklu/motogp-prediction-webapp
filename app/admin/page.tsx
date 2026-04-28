@@ -94,14 +94,14 @@ export default async function AdminDashboard() {
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Enter Results */}
+        {/* Race Details */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Enter Race Results</h2>
+          <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Race Details</h2>
 
           {racesNeedingResults && racesNeedingResults.length > 0 ? (
             <div className="space-y-3">
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                Races needing results:
+                Upcoming races — set Glorious 7 before the race, enter results after:
               </p>
               {racesNeedingResults.map((race: any) => {
                 const hasResults = raceIdsWithResults.includes(race.id)
@@ -125,7 +125,7 @@ export default async function AdminDashboard() {
                           href={`/admin/results/${race.id}`}
                           className="text-blue-600 dark:text-blue-400 text-sm font-medium hover:underline"
                         >
-                          Enter →
+                          Manage →
                         </Link>
                       </div>
                     </div>
@@ -135,7 +135,7 @@ export default async function AdminDashboard() {
             </div>
           ) : (
             <p className="text-gray-600 dark:text-gray-400">
-              All upcoming races have results entered.
+              No upcoming races to manage.
             </p>
           )}
         </div>
