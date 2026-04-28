@@ -76,7 +76,7 @@ function RaceBlock({ raceBets, currentPlayerId }: { raceBets: RaceBets; currentP
           <table className="min-w-full text-xs">
             <thead className="text-[10px] text-gray-500 uppercase tracking-wider bg-black/20 border-b border-gray-800">
               <tr>
-                <th className="px-3 py-2 text-left font-bold sticky left-0 bg-[#141414]">Player</th>
+                <th className="px-3 py-2 text-left font-bold sticky left-0 bg-[#141414] z-10">Player</th>
                 <th className="px-3 py-2 text-left text-orange-400">Sprint</th>
                 <th className="px-3 py-2 text-left text-motogp-red">Race</th>
                 <th className="px-3 py-2 text-left text-blue-400">G7</th>
@@ -85,7 +85,7 @@ function RaceBlock({ raceBets, currentPlayerId }: { raceBets: RaceBets; currentP
             <tbody className="divide-y divide-gray-800">
               {raceBets.players.map(player => (
                 <tr key={player.playerId} className={`transition-colors ${player.playerId === currentPlayerId ? 'bg-blue-950/40 border-l-2 border-blue-500' : 'hover:bg-white/5'}`}>
-                  <td className={`px-3 py-2 font-bold sticky left-0 border-r border-gray-800 whitespace-nowrap ${player.playerId === currentPlayerId ? 'text-blue-400 bg-blue-950/60' : 'text-white bg-track-gray'}`}>
+                  <td className={`px-3 py-2 font-bold sticky left-0 z-10 border-r border-gray-800 whitespace-nowrap ${player.playerId === currentPlayerId ? 'text-blue-400 bg-blue-950/60' : 'text-white bg-track-gray'}`}>
                     {player.playerName}
                   </td>
                   {([player.sprint, player.race, player.glorious] as ((RiderCell | null)[] | null)[]).map((group, gIdx) => (
