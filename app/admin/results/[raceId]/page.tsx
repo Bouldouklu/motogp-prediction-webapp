@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
+import Link from 'next/link'
 import RaceResultsForm from '@/components/RaceResultsForm'
 import GloriousRidersPanel from '@/components/GloriousRidersPanel'
 
@@ -57,6 +58,14 @@ export default async function RaceResultsEntryPage({
 
   return (
     <div className="space-y-6">
+      {/* Back link */}
+      <Link
+        href="/admin"
+        className="inline-flex items-center gap-1 text-sm text-blue-600 dark:text-blue-400 hover:underline"
+      >
+        ← Back to Dashboard
+      </Link>
+
       {/* Header */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-6">
         <h1 className="text-3xl font-bold mb-2 text-gray-900 dark:text-gray-100">Race Details</h1>
