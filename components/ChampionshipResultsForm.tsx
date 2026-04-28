@@ -105,7 +105,7 @@ export default function ChampionshipResultsForm({
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="text-lg font-semibold mb-2">Enter Final Championship Standings</h3>
+        <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">Enter Final Championship Standings</h3>
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
           Enter the top 3 riders from the {seasonYear} season finale. This will calculate
           championship prediction points for all players.
