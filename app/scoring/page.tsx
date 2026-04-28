@@ -61,7 +61,7 @@ export default function ScoringPage() {
                         </div>
                         <div className="bg-muted p-4 rounded-lg text-center">
                             <div className="text-sm font-medium mb-1">Maximum Championship Score</div>
-                            <div className="text-3xl font-bold tracking-tight text-green-500">350 pts</div>
+                            <div className="text-3xl font-bold tracking-tight text-foreground">350 pts</div>
                             <div className="text-xs text-muted-foreground mt-1">
                                 130 + 120 + 100 — perfect prediction of top 3
                             </div>
@@ -124,7 +124,7 @@ export default function ScoringPage() {
 
                         <div className="bg-muted p-4 rounded-lg mt-4 text-center">
                             <div className="text-sm font-medium mb-1">Maximum Weekend Score</div>
-                            <div className="text-3xl font-bold tracking-tight text-primary">150 pts</div>
+                            <div className="text-3xl font-bold tracking-tight text-foreground">150 pts</div>
                             <div className="text-xs text-muted-foreground mt-1">
                                 50 Sprint + 50 Race + 50 Glorious 7
                             </div>
