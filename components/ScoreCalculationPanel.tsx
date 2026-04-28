@@ -31,6 +31,7 @@ interface PlayerScore {
 export default function ScoreCalculationPanel({ races, raceIdsWithResults }: ScoreCalculationPanelProps) {
   const [selectedRaceId, setSelectedRaceId] = useState('')
   const [loading, setLoading] = useState(false)
+  const [recalculating, setRecalculating] = useState(false)
   const [previewing, setPreviewing] = useState(false)
   const [previewScores, setPreviewScores] = useState<PlayerScore[] | null>(null)
   const [message, setMessage] = useState<{
@@ -96,8 +97,8 @@ export default function ScoreCalculationPanel({ races, raceIdsWithResults }: Sco
 
       setMessage({
         type: 'success',
-        text: `Success! Calculated scores for ${data.scoresCalculated} players. ${
-          data.penaltiesApplied > 0 ? `${data.penaltiesApplied} penalties applied.` : ''
+        text: `Scores calculated for ${data.scoresCalculated} players.${
+          data.penaltiesApplied > 0 ? ` ${data.penaltiesApplied} penalties applied.` : ''
         }`,
       })
       setPreviewScores(null)
@@ -109,6 +110,36 @@ export default function ScoreCalculationPanel({ races, raceIdsWithResults }: Sco
       })
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleRecalculateAll = async () => {
+    setRecalculating(true)
+    setMessage(null)
+    setPreviewScores(null)
+
+    try {
+      const response = await fetch('/api/admin/scores/recalculate-all', {
+        method: 'POST',
+      })
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to recalculate scores')
+      }
+
+      const errText = data.errors?.length > 0 ? ` (${data.errors.length} races had errors)` : ''
+      setMessage({
+        type: data.errors?.length > 0 ? 'error' : 'success',
+        text: `Recalculated ${data.racesProcessed} races — ${data.totalScoresCalculated} player scores updated.${errText}`,
+      })
+    } catch (error) {
+      setMessage({
+        type: 'error',
+        text: error instanceof Error ? error.message : 'Failed to recalculate scores',
+      })
+    } finally {
+      setRecalculating(false)
     }
   }
 
@@ -209,6 +240,22 @@ export default function ScoreCalculationPanel({ races, raceIdsWithResults }: Sco
           No completed races available for score calculation.
         </p>
       )}
+
+      {/* Recalculate all */}
+      <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Recalculate every race at once — useful after scoring changes or manual data edits.
+          </p>
+          <button
+            onClick={handleRecalculateAll}
+            disabled={recalculating || loading || previewing}
+            className="px-4 py-2 border border-gray-400 dark:border-gray-500 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+          >
+            {recalculating ? 'Recalculating…' : 'Recalculate All Races'}
+          </button>
+        </div>
+      </div>
     </div>
   )
 }
