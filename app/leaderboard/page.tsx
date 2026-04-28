@@ -212,7 +212,7 @@ export default async function LeaderboardPage() {
             <div>
               <h2 className="text-2xl font-display font-black italic uppercase mb-6 flex items-center gap-2">
                 <span className="w-1 h-6 bg-green-500 skew-x-12 inline-block"></span>
-                Points per Race
+                Points Per Race
               </h2>
               <PointsMatrixTable
                 playerStats={playerStats}
