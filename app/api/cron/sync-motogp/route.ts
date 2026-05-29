@@ -25,9 +25,12 @@ export async function GET(request: NextRequest) {
 
         const results: Record<string, unknown> = {};
 
-        if (action === 'all' || action === 'riders') {
-            results.riders = await SyncService.syncRiders(year);
-        }
+        // Rider sync temporarily disabled — deactivateRidersNotIn() overrides manual
+        // active flag changes made for injury replacements and wildcards.
+        // Re-enable once a manual_override mechanism is in place.
+        // if (action === 'all' || action === 'riders') {
+        //     results.riders = await SyncService.syncRiders(year);
+        // }
 
         if (action === 'all' || action === 'races') {
             await SyncService.syncRaces(year);
