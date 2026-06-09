@@ -29,8 +29,9 @@ export function calculatePositionPoints(
  */
 export function calculatePenalty(offenseNumber: number): number {
   if (offenseNumber === 1) return 25;
-  if (offenseNumber === 2) return 45;
-  return 60; // 3rd and beyond
+  if (offenseNumber === 2) return 25;
+  if (offenseNumber === 3) return 50;
+  return 75; // 4th and beyond
 }
 
 /**

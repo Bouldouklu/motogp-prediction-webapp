@@ -82,10 +82,11 @@ console.log()
 console.log('📊 Test 3: Late Submission Penalty Calculation')
 console.log('-----------------------------------------------')
 const penaltyTests = [
-  { offense: 1, expected: 10, desc: '1st late submission' },
+  { offense: 1, expected: 25, desc: '1st late submission' },
   { offense: 2, expected: 25, desc: '2nd late submission' },
   { offense: 3, expected: 50, desc: '3rd late submission' },
-  { offense: 5, expected: 50, desc: '5th late submission' },
+  { offense: 4, expected: 75, desc: '4th late submission' },
+  { offense: 5, expected: 75, desc: '5th late submission' },
 ]
 
 penaltyTests.forEach((test) => {
@@ -232,12 +233,12 @@ console.log()
 const latePrediction = { ...mockPrediction, is_late: true }
 const lateScore = calculateRaceScore(latePrediction, sprintResults, raceResults, 0, gloriousRiderIds)
 
-if (lateScore.penalty_points === 10) {
+if (lateScore.penalty_points === 25) {
   passed++
   console.log(`✅ Late submission penalty (1st offense): -${lateScore.penalty_points} points`)
 } else {
   failed++
-  console.log(`❌ Late penalty: Expected -10, got -${lateScore.penalty_points}`)
+  console.log(`❌ Late penalty: Expected -25, got -${lateScore.penalty_points}`)
 }
 console.log()
 

@@ -92,19 +92,22 @@ describe('Scoring Engine Tests', () => {
   // ============================================================================
 
   describe('calculatePenalty', () => {
-    test('First late submission should be 10 points penalty', () => {
-      expect(calculatePenalty(1)).toBe(10)
+    test('First late submission should be 25 points penalty', () => {
+      expect(calculatePenalty(1)).toBe(25)
     })
 
     test('Second late submission should be 25 points penalty', () => {
       expect(calculatePenalty(2)).toBe(25)
     })
 
-    test('Third and subsequent late submissions should be 50 points penalty', () => {
+    test('Third late submission should be 50 points penalty', () => {
       expect(calculatePenalty(3)).toBe(50)
-      expect(calculatePenalty(4)).toBe(50)
-      expect(calculatePenalty(5)).toBe(50)
-      expect(calculatePenalty(10)).toBe(50)
+    })
+
+    test('Fourth and subsequent late submissions should be 75 points penalty', () => {
+      expect(calculatePenalty(4)).toBe(75)
+      expect(calculatePenalty(5)).toBe(75)
+      expect(calculatePenalty(10)).toBe(75)
     })
   })
 
@@ -200,7 +203,7 @@ describe('Scoring Engine Tests', () => {
     test('Late submission should apply penalty', () => {
       const latePrediction = { ...mockPrediction, is_late: true }
       const score = calculateRaceScore(latePrediction, mockSprintResults, mockRaceResults, 0, gloriousRiderIds)
-      expect(score.penalty_points).toBe(10) // First offense
+      expect(score.penalty_points).toBe(25) // First offense
     })
 
     test('Second late submission should have higher penalty', () => {

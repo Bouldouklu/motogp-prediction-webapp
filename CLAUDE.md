@@ -56,7 +56,7 @@ The core business logic. Key functions:
 - `calculatePositionPoints(actualPos, predictedPos, type)` — awards points for top-3 and glorious predictions
 - `calculateRaceScore(prediction, sprintResults, raceResults, lateCount, gloriousRiderIds)` — full score for one prediction
 - `calculateChampionshipPoints(predictions, results)` — end-of-season championship points
-- `calculatePenalty(offenseNumber)` — late submission penalties (10 / 25 / 50 pts)
+- `calculatePenalty(offenseNumber)` — late submission penalties (25 / 25 / 50 / 75 pts)
 
 **Glorious 7 Mini-League**: Admin selects 7 riders per race (`race_glorious_riders` table). Players predict the top 3 finishers *within that subset*. Scoring uses relative position among the 7 selected riders, not absolute race position.
 
@@ -96,7 +96,7 @@ The `leaderboard` view (in schema.sql) uses `security_invoker = true` and exclud
 ## Key Business Rules
 
 1. **Prediction deadline**: Locks at FP1 start time (`races.fp1_datetime`, UTC). Enforced in the prediction API.
-2. **Late submissions**: Progressive penalties — 1st: −10 pts, 2nd: −25 pts, 3rd+: −50 pts.
+2. **Late submissions**: Progressive penalties — 1st: −25 pts, 2nd: −25 pts, 3rd: −50 pts, 4th+: −75 pts.
 3. **No duplicate riders within a category**: Cannot pick the same rider for sprint 1st and sprint 2nd. Same rider CAN appear in both sprint and race predictions.
 4. **Glorious 7 scoring**: Uses relative ranking within the 7 admin-selected riders, not their actual race position.
 5. **Tie-breaking**: Same total points → more exact predictions wins.

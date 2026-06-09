@@ -69,9 +69,10 @@ function calculatePositionPoints(
 }
 
 function calculatePenalty(offenseNumber: number): number {
-    if (offenseNumber === 1) return 10
+    if (offenseNumber === 1) return 25
     if (offenseNumber === 2) return 25
-    return 50
+    if (offenseNumber === 3) return 50
+    return 75
 }
 
 // --- End duplicated logic ---
