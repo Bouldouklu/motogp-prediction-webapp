@@ -2,6 +2,16 @@
 
 import { useState } from 'react'
 import { ScoreBreakdown } from '@/lib/scoring'
+import {
+  PODIUM_RING,
+  scoreIntensity,
+  MAX_RACE_SCORE,
+  MAX_SLOT_SCORE,
+  PENALTY_TEXT,
+  EXACT_TEXT,
+  YOU_TEXT,
+  YOU_ROW,
+} from '@/lib/colors'
 
 interface PlayerStat { id: string; name: string; totalPoints: number }
 interface RaceRow { id: string; circuit: string; country: string; round_number: number; name: string }
@@ -19,14 +29,6 @@ interface PointsMatrixTableProps {
   currentPlayerId: string | null
 }
 
-function scoreCellColor(pts: number | undefined): string {
-  if (!pts) return 'text-white'
-  if (pts >= 80) return 'text-green-400'
-  if (pts >= 50) return 'text-yellow-400'
-  if (pts >= 20) return 'text-orange-400'
-  return 'text-white'
-}
-
 export default function PointsMatrixTable({ playerStats, races, scores, currentPlayerId }: PointsMatrixTableProps) {
   const [modal, setModal] = useState<{ raceId: string; playerId: string; raceName: string; playerName: string } | null>(null)
   const [breakdown, setBreakdown] = useState<ScoreBreakdown | null>(null)
@@ -38,12 +40,11 @@ export default function PointsMatrixTable({ playerStats, races, scores, currentP
       .filter(s => s.race_id === race.id && s.total_points > 0)
       .sort((a, b) => b.total_points - a.total_points)
     podiumRingByRace[race.id] = {}
-    const rings = ['ring-1 ring-yellow-400', 'ring-1 ring-gray-400', 'ring-1 ring-amber-700']
     let rank = 0
     let lastPts = -1
     raceScores.forEach((s, i) => {
       if (s.total_points !== lastPts) { rank = i; lastPts = s.total_points }
-      if (rank < 3) podiumRingByRace[race.id][s.player_id] = rings[rank]
+      if (rank < 3) podiumRingByRace[race.id][s.player_id] = PODIUM_RING[rank]
     })
   })
 
@@ -88,8 +89,8 @@ export default function PointsMatrixTable({ playerStats, races, scores, currentP
           </thead>
           <tbody className="divide-y divide-gray-800">
             {playerStats.map(player => (
-              <tr key={player.id} className={`transition-colors ${player.id === currentPlayerId ? 'bg-blue-950/40 border-l-2 border-blue-500' : 'hover:bg-white/5'}`}>
-                <td className={`px-6 py-4 font-bold sticky left-0 border-r border-gray-800 ${player.id === currentPlayerId ? 'text-blue-400 bg-blue-950/60' : 'text-white bg-track-gray'}`}>
+              <tr key={player.id} className={`transition-colors ${player.id === currentPlayerId ? YOU_ROW : 'hover:bg-white/5'}`}>
+                <td className={`px-6 py-4 font-bold sticky left-0 border-r border-gray-800 ${player.id === currentPlayerId ? `${YOU_TEXT} bg-blue-950/60` : 'text-white bg-track-gray'}`}>
                   {player.name}
                 </td>
                 {races.map(race => {
@@ -112,14 +113,14 @@ export default function PointsMatrixTable({ playerStats, races, scores, currentP
                         </div>
                       ) : (
                         <div className="flex flex-col items-center gap-1">
-                          <span className={`text-base font-bold px-1.5 py-0.5 rounded ${scoreCellColor(score?.total_points)} ${podiumRingByRace[race.id]?.[player.id] ?? ''}`}>{score ? score.total_points : <span className="text-gray-700">—</span>}</span>
+                          <span className={`text-base font-bold px-1.5 py-0.5 rounded ${score ? scoreIntensity(score.total_points, MAX_RACE_SCORE) : ''} ${podiumRingByRace[race.id]?.[player.id] ?? ''}`}>{score ? score.total_points : <span className="text-gray-700">—</span>}</span>
                           {score && (
                             <span className="text-[11px] text-gray-400 leading-none whitespace-nowrap">
                               S:{sprintTotal} R:{raceTotal} G:{gloriousTotal}
                             </span>
                           )}
                           {score && score.penalty_points > 0 && (
-                            <span className="text-[11px] font-bold text-red-400 leading-none">
+                            <span className={`text-[11px] font-bold ${PENALTY_TEXT} leading-none`}>
                               -{score.penalty_points}
                             </span>
                           )}
@@ -222,8 +223,8 @@ function BreakdownModal({
 
           {breakdown.penalty_points > 0 && (
             <div className="flex items-center justify-between bg-red-950/30 border border-red-800/50 rounded-lg px-4 py-3">
-              <span className="text-xs font-bold uppercase tracking-wider text-red-400">Late Penalty</span>
-              <span className="font-black italic text-red-400 text-lg">−{breakdown.penalty_points}</span>
+              <span className={`text-xs font-bold uppercase tracking-wider ${PENALTY_TEXT}`}>Late Penalty</span>
+              <span className={`font-black italic ${PENALTY_TEXT} text-lg`}>−{breakdown.penalty_points}</span>
             </div>
           )}
 
@@ -266,7 +267,7 @@ function CategorySection({ label, accentColor, letterLabel, total, slots }: {
 
 function SlotCard({ pos, prediction, actual, points }: { pos: string; prediction?: string; actual?: string; points: number }) {
   const medals: Record<string, string> = { '1st': '🥇', '2nd': '🥈', '3rd': '🥉' }
-  const ptColor = points >= 16 ? 'text-green-400' : points >= 10 ? 'text-blue-400' : points >= 6 ? 'text-yellow-400' : points > 0 ? 'text-orange-400' : 'text-gray-600'
+  const ptColor = points > 0 ? scoreIntensity(points, MAX_SLOT_SCORE) : 'text-gray-600'
 
   // "Jorge Martin (#89) - Finished P1" → "Martin #89"
   const fmt = (str?: string) => {
@@ -293,7 +294,7 @@ function SlotCard({ pos, prediction, actual, points }: { pos: string; prediction
         </div>
         <div className="flex items-start gap-1">
           <span className="text-gray-600 shrink-0">Real</span>
-          <span className={`font-bold truncate ${actual ? 'text-green-400' : 'text-gray-600'}`}>{fmt(actual)}</span>
+          <span className={`font-bold truncate ${actual ? EXACT_TEXT : 'text-gray-600'}`}>{fmt(actual)}</span>
         </div>
       </div>
     </div>

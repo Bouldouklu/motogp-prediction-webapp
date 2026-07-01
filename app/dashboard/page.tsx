@@ -6,6 +6,7 @@ import LogoutButton from '@/components/LogoutButton'
 import CollapsibleSection from '@/components/CollapsibleSection'
 import CollapsibleRaceCard from '@/components/CollapsibleRaceCard'
 import { calculatePositionPoints } from '@/lib/scoring'
+import { PODIUM_TEXT, scoreIntensity, MAX_SLOT_SCORE, PENALTY_TEXT, EXACT_TEXT } from '@/lib/colors'
 
 export default async function DashboardPage() {
   const user = await getCurrentUser()
@@ -471,14 +472,13 @@ export default async function DashboardPage() {
                   const parts = name.trim().split(' ')
                   return parts.length > 1 ? parts.slice(1).join(' ') : parts[0]
                 }
+                // Rank carries the color (gold/silver/bronze); everything else stays neutral.
                 const posColor = (pos: number) =>
-                  pos === 1 ? 'text-yellow-500' : pos === 2 ? 'text-gray-400' : pos === 3 ? 'text-orange-700' : 'text-gray-600'
+                  pos >= 1 && pos <= 3 ? PODIUM_TEXT[pos - 1] : 'text-gray-600'
 
-                // Green = exact, yellow = off by 1, orange = off by 2, gray = miss/no result
-                const accuracyColor = (diff: number | null) =>
-                  diff === 0 ? 'text-green-400' : diff === 1 ? 'text-yellow-400' : diff === 2 ? 'text-orange-400' : 'text-gray-400'
-                const accuracyBg = (diff: number | null) =>
-                  diff === 0 ? 'bg-green-900/20 border-green-800/40' : diff === 1 ? 'bg-yellow-900/20 border-yellow-800/40' : diff === 2 ? 'bg-orange-900/20 border-orange-800/40' : 'bg-gray-900/20 border-gray-800/30'
+                // Exact predictions get a subtle amber row tint; otherwise a single neutral background.
+                const rowBg = (diff: number | null) =>
+                  diff === 0 ? 'bg-amber-400/5 border-amber-400/20' : 'bg-gray-900/20 border-gray-800/30'
 
                 // Compute per-position G7 points by recalculating from gloriousResults
                 const calcG7Pts = (riderId: string | null | undefined, slot: number): number => {
@@ -597,23 +597,24 @@ export default async function DashboardPage() {
                                         if (actualPos != null) diff = Math.abs(actualPos - (i + 1))
                                       }
                                     }
-                                    const nameColor = rider && panel.results.length > 0 ? accuracyColor(diff) : 'text-gray-200'
+                                    const isExact = rider && panel.results.length > 0 && diff === 0
                                     return (
                                       <div key={i} className="flex items-center justify-between text-xs">
                                         <div className="flex items-center gap-2 min-w-0">
                                           <span className="text-sm leading-none shrink-0">{medals[i]}</span>
                                           {rider ? (
                                             <>
-                                              <span className={`font-sans font-semibold uppercase truncate pr-0.5 ${nameColor}`}>
+                                              <span className="font-sans font-semibold uppercase truncate pr-0.5 text-gray-200">
                                                 {surname(rider.name)}
                                               </span>
+                                              {isExact && <span className={`shrink-0 ${EXACT_TEXT}`}>✓</span>}
                                               <span className="font-mono text-gray-600 shrink-0">#{rider.number}</span>
                                             </>
                                           ) : (
                                             <span className="text-gray-700">—</span>
                                           )}
                                         </div>
-                                        <span className={`font-mono font-bold shrink-0 ml-2 ${bet.pts > 0 ? 'text-green-400' : 'text-gray-600'}`}>
+                                        <span className={`font-mono font-bold shrink-0 ml-2 ${bet.pts > 0 ? scoreIntensity(bet.pts, MAX_SLOT_SCORE) : 'text-gray-600'}`}>
                                           {bet.pts > 0 ? `+${bet.pts}` : rider ? '0' : ''}
                                         </span>
                                       </div>
@@ -622,7 +623,7 @@ export default async function DashboardPage() {
                                   {scoreRow && (
                                     <div className="pt-1.5 mt-1.5 border-t border-gray-800 flex items-center justify-between">
                                       <span className="text-[10px] text-gray-500 uppercase tracking-wider">Total</span>
-                                      <span className={`font-mono font-bold text-xs ${panel.panelTotal > 0 ? 'text-green-400' : 'text-gray-600'}`}>
+                                      <span className={`font-mono font-bold text-xs ${panel.panelTotal > 0 ? scoreIntensity(panel.panelTotal, MAX_SLOT_SCORE * 3) : 'text-gray-600'}`}>
                                         {panel.panelTotal > 0 ? `+${panel.panelTotal}` : panel.panelTotal}
                                       </span>
                                     </div>
@@ -649,23 +650,24 @@ export default async function DashboardPage() {
                                   return (
                                     <div
                                       key={result.riderId ?? displayPos}
-                                      className={`flex items-center justify-between text-xs px-2 py-1 rounded border ${resultDiff !== null ? accuracyBg(resultDiff) : 'bg-gray-900/20 border-gray-800/30'}`}
+                                      className={`flex items-center justify-between text-xs px-2 py-1 rounded border ${rowBg(resultDiff)}`}
                                     >
                                       <div className="flex items-center gap-2 min-w-0">
                                         <span className={`font-mono font-bold w-4 text-center shrink-0 ${posColor(displayPos)}`}>
                                           {displayPos}
                                         </span>
-                                        <span className={`font-sans font-semibold uppercase truncate pr-0.5 ${resultDiff !== null ? accuracyColor(resultDiff) : 'text-gray-400'}`}>
+                                        <span className="font-sans font-semibold uppercase truncate pr-0.5 text-gray-300">
                                           {(() => {
                                             const r = result.rider ?? previousPredictedRiderMap[result.riderId]
                                             return r ? surname(r.name) : '?'
                                           })()}
                                         </span>
+                                        {resultDiff === 0 && <span className={`shrink-0 ${EXACT_TEXT}`}>✓</span>}
                                       </div>
                                       <div className="flex items-center gap-2 shrink-0 ml-2">
                                         {panel.isGlorious && (
                                           hasDnf
-                                            ? <span className="text-[10px] text-red-600 font-mono font-bold">DNF</span>
+                                            ? <span className={`text-[10px] ${PENALTY_TEXT} font-mono font-bold`}>DNF</span>
                                             : <span className="text-[10px] text-gray-600 font-mono">P{result.position}</span>
                                         )}
                                         <span className="text-[10px] text-gray-700 font-mono">
@@ -688,7 +690,7 @@ export default async function DashboardPage() {
                         <span className="text-xs text-gray-500 font-bold uppercase tracking-widest">Weekend Total</span>
                         <div className="flex items-center gap-3">
                           {scoreRow.penalty_points > 0 && (
-                            <span className="text-xs text-red-500 font-mono">-{scoreRow.penalty_points} penalty</span>
+                            <span className={`text-xs ${PENALTY_TEXT} font-mono`}>-{scoreRow.penalty_points} penalty</span>
                           )}
                           <span className={`text-lg font-display font-black italic ${scoreRow.total_points > 0 ? 'text-white' : 'text-gray-600'}`}>
                             {scoreRow.total_points > 0 ? `+${scoreRow.total_points}` : scoreRow.total_points} pts
