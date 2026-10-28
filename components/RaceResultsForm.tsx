@@ -37,6 +37,7 @@ export default function RaceResultsForm({
       : Array.from({ length: 15 }, (_, i) => ({ position: i + 1, riderId: '' }))
   )
 
+  const [raceCancelled, setRaceCancelled] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
@@ -96,13 +97,21 @@ export default function RaceResultsForm({
     return errors
   }
 
+  // A cancelled Grand Prix has no main race to validate: only the Sprint counts
+  const collectValidationErrors = (): string[] => [
+    ...validateResults(sprintResults, 'Sprint'),
+    ...(raceCancelled ? [] : validateResults(raceResults, 'Race')),
+  ]
+
+  const handleRaceCancelledChange = (checked: boolean) => {
+    setRaceCancelled(checked)
+    setError(null)
+    setSuccess(null)
+    setValidationErrors([])
+  }
+
   const handleValidate = () => {
-    const errors: string[] = []
-
-    const sprintErrors = validateResults(sprintResults, 'Sprint')
-    const raceErrors = validateResults(raceResults, 'Race')
-
-    errors.push(...sprintErrors, ...raceErrors)
+    const errors = collectValidationErrors()
 
     setValidationErrors(errors)
 
@@ -115,10 +124,7 @@ export default function RaceResultsForm({
 
   const handleSubmit = async () => {
     // Validate before submit
-    const errors: string[] = []
-    const sprintErrors = validateResults(sprintResults, 'Sprint')
-    const raceErrors = validateResults(raceResults, 'Race')
-    errors.push(...sprintErrors, ...raceErrors)
+    const errors = collectValidationErrors()
 
     if (errors.length > 0) {
       setValidationErrors(errors)
@@ -144,11 +150,11 @@ export default function RaceResultsForm({
       const response = await fetch('/api/admin/results', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          raceId,
-          sprintResults: sprintData,
-          raceResults: raceData,
-        }),
+        body: JSON.stringify(
+          raceCancelled
+            ? { raceId, sprintResults: sprintData, raceCancelled: true }
+            : { raceId, sprintResults: sprintData, raceResults: raceData }
+        ),
       })
 
       const data = await response.json()
@@ -158,7 +164,9 @@ export default function RaceResultsForm({
       }
 
       setSuccess(
-        `Results saved successfully! Sprint: ${data.sprintResultsCount} positions, Race: ${data.raceResultsCount} positions.`
+        raceCancelled
+          ? `Results saved successfully! Sprint: ${data.sprintResultsCount} positions, Race: cancelled.`
+          : `Results saved successfully! Sprint: ${data.sprintResultsCount} positions, Race: ${data.raceResultsCount} positions.`
       )
 
       // Redirect to dashboard after 2 seconds
@@ -247,34 +255,54 @@ export default function RaceResultsForm({
       {/* Race Results Section */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-6">
         <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Main Race Results (Sunday)</h2>
-        <div className="space-y-4">
-          {raceResults.map((result) => (
-            <div key={result.position} className="grid grid-cols-12 gap-4 items-center">
-              <div className="col-span-2 text-center">
-                <span className="text-lg font-semibold text-gray-700 dark:text-gray-300">
-                  P{result.position}
-                </span>
-              </div>
-              <div className="col-span-10">
-                <RiderSelect
-                  label=""
-                  riders={riders}
-                  value={result.riderId}
-                  onChange={(riderId) => updateRaceResult(result.position, riderId)}
-                  excludeIds={getExcludedRiders(raceResults, result.position)}
-                  required={false}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
 
-        <button
-          onClick={() => addMorePositions('race')}
-          className="mt-4 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors"
-        >
-          + Add More Positions
-        </button>
+        <label className="flex items-start gap-3 mb-4 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={raceCancelled}
+            onChange={(e) => handleRaceCancelledChange(e.target.checked)}
+            className="mt-1 h-4 w-4 rounded border-gray-300 dark:border-gray-600"
+          />
+          <span>
+            <span className="font-medium text-gray-900 dark:text-gray-100">Grand Prix cancelled</span>
+            <span className="block text-sm text-gray-500 dark:text-gray-400">
+              Only the Sprint is scored. Race and Glorious 7 predictions earn 0 points.
+            </span>
+          </span>
+        </label>
+
+        {!raceCancelled && (
+          <>
+            <div className="space-y-4">
+              {raceResults.map((result) => (
+                <div key={result.position} className="grid grid-cols-12 gap-4 items-center">
+                  <div className="col-span-2 text-center">
+                    <span className="text-lg font-semibold text-gray-700 dark:text-gray-300">
+                      P{result.position}
+                    </span>
+                  </div>
+                  <div className="col-span-10">
+                    <RiderSelect
+                      label=""
+                      riders={riders}
+                      value={result.riderId}
+                      onChange={(riderId) => updateRaceResult(result.position, riderId)}
+                      excludeIds={getExcludedRiders(raceResults, result.position)}
+                      required={false}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={() => addMorePositions('race')}
+              className="mt-4 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors"
+            >
+              + Add More Positions
+            </button>
+          </>
+        )}
       </div>
 
       {/* Action Buttons */}

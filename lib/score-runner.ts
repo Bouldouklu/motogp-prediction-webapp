@@ -42,12 +42,25 @@ export async function calculateAndSaveRaceScores(
     .eq('result_type', 'race')
 
   if (raceError) return { raceId, scoresCalculated: 0, penaltiesApplied: 0, error: 'Failed to fetch race results' }
-  if (!raceResults || raceResults.length === 0) return { raceId, scoresCalculated: 0, penaltiesApplied: 0, error: 'Race results not found' }
+
+  // A completed race with no main race results is a cancelled Grand Prix: score the Sprint
+  // alone, with Race and Glorious 7 predictions earning 0 against an empty result set
+  if (!raceResults || raceResults.length === 0) {
+    const { data: race, error: raceStatusError } = await supabase
+      .from('races')
+      .select('status')
+      .eq('id', raceId)
+      .single()
+
+    if (raceStatusError) return { raceId, scoresCalculated: 0, penaltiesApplied: 0, error: 'Failed to fetch race status' }
+    if (race?.status !== 'completed') return { raceId, scoresCalculated: 0, penaltiesApplied: 0, error: 'Race results not found' }
+  }
+  const effectiveRaceResults = (raceResults ?? []) as RaceResult[]
 
   const sprintValidation = validateRaceResults(sprintResults as RaceResult[])
   if (!sprintValidation.valid) return { raceId, scoresCalculated: 0, penaltiesApplied: 0, error: `Invalid sprint results: ${sprintValidation.error}` }
 
-  const raceValidation = validateRaceResults(raceResults as RaceResult[])
+  const raceValidation = validateRaceResults(effectiveRaceResults)
   if (!raceValidation.valid) return { raceId, scoresCalculated: 0, penaltiesApplied: 0, error: `Invalid race results: ${raceValidation.error}` }
 
   const { data: allLatePredictions } = await supabase
@@ -75,7 +88,7 @@ export async function calculateAndSaveRaceScores(
   const scores = calculateAllRaceScores(
     predictions as RacePrediction[],
     sprintResults as RaceResult[],
-    raceResults as RaceResult[],
+    effectiveRaceResults,
     lateSubmissionCounts,
     gloriousRiderIds
   )

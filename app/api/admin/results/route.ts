@@ -13,6 +13,7 @@ import { validateRaceResults, type RaceResult } from '@/lib/scoring'
  *   raceId: string;
  *   sprintResults?: Array<{position: number, riderId: string}>;
  *   raceResults?: Array<{position: number, riderId: string}>;
+ *   raceCancelled?: boolean; // Grand Prix cancelled: Sprint only, raceResults ignored
  * }
  *
  * This endpoint:
@@ -20,7 +21,8 @@ import { validateRaceResults, type RaceResult } from '@/lib/scoring'
  * 2. Validates results (no duplicates, sequential positions)
  * 3. Deletes existing results for the race (allows recalculation)
  * 4. Inserts new results
- * 5. Updates race status to 'completed' if both sprint and race submitted
+ * 5. Updates race status to 'completed' if both sprint and race submitted,
+ *    or if the Grand Prix is cancelled and sprint results exist
  */
 export async function POST(request: NextRequest) {
   try {
@@ -32,11 +34,21 @@ export async function POST(request: NextRequest) {
 
     const supabase = await createClient()
     const body = await request.json()
-    const { raceId, sprintResults, raceResults } = body
+    const { raceId, sprintResults } = body
+    const raceCancelled = body.raceCancelled === true
+    // A cancelled Grand Prix has no main race, so any race results sent are ignored
+    const raceResults = raceCancelled ? undefined : body.raceResults
 
     // Validate request
     if (!raceId) {
       return NextResponse.json({ error: 'raceId is required' }, { status: 400 })
+    }
+
+    if (raceCancelled && (!Array.isArray(sprintResults) || sprintResults.length === 0)) {
+      return NextResponse.json(
+        { error: 'sprintResults are required when the Grand Prix is cancelled' },
+        { status: 400 }
+      )
     }
 
     if (!sprintResults && !raceResults) {
@@ -192,7 +204,25 @@ export async function POST(request: NextRequest) {
       raceCount = raceData.length
     }
 
+    // Stale race results from an earlier save would otherwise still be scored
+    if (raceCancelled) {
+      const { error: deleteError } = await supabase
+        .from('race_results')
+        .delete()
+        .eq('race_id', raceId)
+        .eq('result_type', 'race')
+
+      if (deleteError) {
+        console.error('Error deleting race results for cancelled Grand Prix:', deleteError)
+        return NextResponse.json(
+          { error: 'Failed to delete existing race results' },
+          { status: 500 }
+        )
+      }
+    }
+
     // Update race status to completed if both sprint and race results now exist in DB
+    // (or sprint only when the Grand Prix is cancelled)
     const { data: allResults } = await supabase
       .from('race_results')
       .select('result_type')
@@ -202,7 +232,7 @@ export async function POST(request: NextRequest) {
     const hasRace = allResults?.some((r) => r.result_type === 'race')
 
     let statusUpdateFailed = false
-    if (hasSprint && hasRace) {
+    if (hasSprint && (hasRace || raceCancelled)) {
       const serviceClient = createServiceClient()
       const { error: updateError } = await serviceClient
         .from('races')
@@ -220,6 +250,7 @@ export async function POST(request: NextRequest) {
       message: 'Race results saved successfully',
       sprintResultsCount: sprintCount,
       raceResultsCount: raceCount,
+      raceCancelled,
       ...(statusUpdateFailed && { statusUpdateFailed: true }),
     })
   } catch (error) {
