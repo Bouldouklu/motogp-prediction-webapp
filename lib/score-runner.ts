@@ -2,6 +2,7 @@ import {
   calculateAllRaceScores,
   validateRaceResults,
   countLateSubmissions,
+  type LateSubmission,
   type RacePrediction,
   type RaceResult,
 } from '@/lib/scoring'
@@ -12,6 +13,47 @@ export interface RaceScoreResult {
   scoresCalculated: number
   penaltiesApplied: number
   error?: string
+}
+
+interface LatePredictionRow {
+  player_id: string
+  race_id: string
+  is_late: boolean
+  race: { round_number: number } | null
+}
+
+/**
+ * Count each player's late submissions in rounds before `currentRoundNumber`,
+ * which gives the offense number (count + 1) for a late prediction in that round.
+ * Returns null if the late predictions cannot be fetched, so callers never score
+ * penalties from an incomplete history.
+ */
+export async function fetchLateSubmissionCounts(
+  supabase: SupabaseClient,
+  currentRoundNumber: number,
+  playerIds: string[]
+): Promise<Map<string, number> | null> {
+  const { data, error } = await supabase
+    .from('race_predictions')
+    .select('player_id, race_id, is_late, race:races(round_number)')
+    .eq('is_late', true)
+
+  if (error) return null
+
+  const lateSubmissions: LateSubmission[] = ((data ?? []) as unknown as LatePredictionRow[])
+    .filter((row) => row.race !== null)
+    .map((row) => ({
+      player_id: row.player_id,
+      race_id: row.race_id,
+      is_late: row.is_late,
+      round_number: row.race!.round_number,
+    }))
+
+  const counts = new Map<string, number>()
+  playerIds.forEach((playerId) => {
+    counts.set(playerId, countLateSubmissions(playerId, currentRoundNumber, lateSubmissions))
+  })
+  return counts
 }
 
 export async function calculateAndSaveRaceScores(
@@ -25,6 +67,14 @@ export async function calculateAndSaveRaceScores(
 
   if (predictionsError) return { raceId, scoresCalculated: 0, penaltiesApplied: 0, error: 'Failed to fetch predictions' }
   if (!predictions || predictions.length === 0) return { raceId, scoresCalculated: 0, penaltiesApplied: 0 }
+
+  const { data: race, error: raceFetchError } = await supabase
+    .from('races')
+    .select('round_number, status')
+    .eq('id', raceId)
+    .single()
+
+  if (raceFetchError || !race) return { raceId, scoresCalculated: 0, penaltiesApplied: 0, error: 'Failed to fetch race' }
 
   const { data: sprintResults, error: sprintError } = await supabase
     .from('race_results')
@@ -45,15 +95,8 @@ export async function calculateAndSaveRaceScores(
 
   // A completed race with no main race results is a cancelled Grand Prix: score the Sprint
   // alone, with Race and Glorious 7 predictions earning 0 against an empty result set
-  if (!raceResults || raceResults.length === 0) {
-    const { data: race, error: raceStatusError } = await supabase
-      .from('races')
-      .select('status')
-      .eq('id', raceId)
-      .single()
-
-    if (raceStatusError) return { raceId, scoresCalculated: 0, penaltiesApplied: 0, error: 'Failed to fetch race status' }
-    if (race?.status !== 'completed') return { raceId, scoresCalculated: 0, penaltiesApplied: 0, error: 'Race results not found' }
+  if ((!raceResults || raceResults.length === 0) && race.status !== 'completed') {
+    return { raceId, scoresCalculated: 0, penaltiesApplied: 0, error: 'Race results not found' }
   }
   const effectiveRaceResults = (raceResults ?? []) as RaceResult[]
 
@@ -63,20 +106,12 @@ export async function calculateAndSaveRaceScores(
   const raceValidation = validateRaceResults(effectiveRaceResults)
   if (!raceValidation.valid) return { raceId, scoresCalculated: 0, penaltiesApplied: 0, error: `Invalid race results: ${raceValidation.error}` }
 
-  const { data: allLatePredictions } = await supabase
-    .from('race_predictions')
-    .select('player_id, race_id, is_late')
-    .eq('is_late', true)
-
-  const lateSubmissionCounts = new Map<string, number>()
-  predictions.forEach((prediction) => {
-    const count = countLateSubmissions(
-      prediction.player_id,
-      raceId,
-      (allLatePredictions || []) as RacePrediction[]
-    )
-    lateSubmissionCounts.set(prediction.player_id, count)
-  })
+  const lateSubmissionCounts = await fetchLateSubmissionCounts(
+    supabase,
+    race.round_number,
+    predictions.map((p) => p.player_id)
+  )
+  if (!lateSubmissionCounts) return { raceId, scoresCalculated: 0, penaltiesApplied: 0, error: 'Failed to fetch late submissions' }
 
   const { data: gloriousRidersData } = await supabase
     .from('race_glorious_riders')

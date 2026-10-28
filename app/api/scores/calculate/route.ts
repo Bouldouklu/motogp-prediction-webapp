@@ -2,12 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import {
   calculateAllRaceScores,
-  validateRaceResults,
-  countLateSubmissions,
   type RacePrediction,
   type RaceResult,
 } from '@/lib/scoring';
-import { calculateAndSaveRaceScores } from '@/lib/score-runner';
+import { calculateAndSaveRaceScores, fetchLateSubmissionCounts } from '@/lib/score-runner';
 
 export async function POST(request: NextRequest) {
   try {
@@ -85,21 +83,29 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Fetch late submission counts
-    const { data: allPredictions } = await supabase
-      .from('race_predictions')
-      .select('player_id, race_id, is_late')
-      .eq('is_late', true);
+    // Fetch late submission counts (offense numbers follow race round order)
+    const { data: race, error: raceError } = await supabase
+      .from('races')
+      .select('round_number')
+      .eq('id', raceId)
+      .single();
 
-    const lateSubmissionCounts = new Map<string, number>();
-    predictions.forEach((prediction) => {
-      const count = countLateSubmissions(
-        prediction.player_id,
-        raceId,
-        (allPredictions || []) as RacePrediction[]
+    if (raceError || !race) {
+      return NextResponse.json({ error: 'Race not found' }, { status: 404 });
+    }
+
+    const lateSubmissionCounts = await fetchLateSubmissionCounts(
+      supabase,
+      race.round_number,
+      predictions.map((p) => p.player_id)
+    );
+
+    if (!lateSubmissionCounts) {
+      return NextResponse.json(
+        { error: 'Failed to fetch late submissions' },
+        { status: 500 }
       );
-      lateSubmissionCounts.set(prediction.player_id, count);
-    });
+    }
 
     // Calculate scores (preview only)
     const scores = calculateAllRaceScores(

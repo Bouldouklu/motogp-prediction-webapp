@@ -13,6 +13,7 @@ import {
   countLateSubmissions,
   getRiderPosition,
   isLateSubmission,
+  type LateSubmission,
   type RacePrediction,
   type RaceResult,
 } from './scoring'
@@ -264,49 +265,55 @@ describe('Scoring Engine Tests', () => {
   // ============================================================================
 
   describe('countLateSubmissions', () => {
-    const mockPredictions: RacePrediction[] = [
-      {
-        id: 'p1',
-        player_id: 'player1',
-        race_id: 'race1',
-        sprint_winner_id: 'r1',
-        race_winner_id: 'r2',
-        glorious_7_id: 'r3',
-        submitted_at: '2026-03-01T10:00:00Z',
-        is_late: true,
-      },
-      {
-        id: 'p2',
-        player_id: 'player1',
-        race_id: 'race2',
-        sprint_winner_id: 'r1',
-        race_winner_id: 'r2',
-        glorious_7_id: 'r3',
-        submitted_at: '2026-03-08T10:00:00Z',
-        is_late: false,
-      },
-      {
-        id: 'p3',
-        player_id: 'player1',
-        race_id: 'race3',
-        sprint_winner_id: 'r1',
-        race_winner_id: 'r2',
-        glorious_7_id: 'r3',
-        submitted_at: '2026-03-15T10:00:00Z',
-        is_late: true,
-      },
+    const mockPredictions: LateSubmission[] = [
+      { player_id: 'player1', race_id: 'race1', round_number: 1, is_late: true },
+      { player_id: 'player1', race_id: 'race2', round_number: 2, is_late: false },
+      { player_id: 'player1', race_id: 'race3', round_number: 3, is_late: true },
     ]
 
     test('Should count previous late submissions', () => {
-      expect(countLateSubmissions('player1', 'race4', mockPredictions)).toBe(2)
+      expect(countLateSubmissions('player1', 4, mockPredictions)).toBe(2)
     })
 
     test('Should not count the current race', () => {
-      expect(countLateSubmissions('player1', 'race3', mockPredictions)).toBe(1)
+      expect(countLateSubmissions('player1', 3, mockPredictions)).toBe(1)
+    })
+
+    test('Should not count late submissions from later rounds', () => {
+      expect(countLateSubmissions('player1', 1, mockPredictions)).toBe(0)
     })
 
     test('Should return 0 for player with no late submissions', () => {
-      expect(countLateSubmissions('player2', 'race1', mockPredictions)).toBe(0)
+      expect(countLateSubmissions('player2', 1, mockPredictions)).toBe(0)
+    })
+
+    describe('Offense numbers follow round order, not calculation order', () => {
+      // Late at rounds 5, 12 and 16 → offenses 1, 2, 3 → penalties 25 / 25 / 50
+      const lateRounds: LateSubmission[] = [
+        { player_id: 'player1', race_id: 'race5', round_number: 5, is_late: true },
+        { player_id: 'player1', race_id: 'race12', round_number: 12, is_late: true },
+        { player_id: 'player1', race_id: 'race16', round_number: 16, is_late: true },
+      ]
+      const expectedPenaltyByRound: Record<number, number> = { 5: 25, 12: 25, 16: 50 }
+
+      const penaltyFor = (round: number) =>
+        calculatePenalty(countLateSubmissions('player1', round, lateRounds) + 1)
+
+      test.each([
+        [[5, 12, 16]],
+        [[16, 12, 5]],
+        [[12, 16, 5]],
+      ])('Calculation order %j gives 25 / 25 / 50', (order: number[]) => {
+        order.forEach((round: number) => {
+          expect(penaltyFor(round)).toBe(expectedPenaltyByRound[round])
+        })
+      })
+
+      test('Recalculating round 5 after round 16 keeps the first offense at 25', () => {
+        expect(penaltyFor(16)).toBe(50)
+        expect(penaltyFor(5)).toBe(25)
+        expect(penaltyFor(12)).toBe(25)
+      })
     })
   })
 

@@ -381,18 +381,30 @@ export function validateRaceResults(
 }
 
 /**
- * Count late submissions for a player up to a specific race
+ * A prediction's late flag together with the round of the race it belongs to
+ */
+export interface LateSubmission {
+  player_id: string;
+  race_id: string;
+  is_late: boolean;
+  round_number: number;
+}
+
+/**
+ * Count a player's late submissions in races before the current one.
+ * Ordering by round (not by submission time or by calculation order) keeps
+ * offense numbers stable when scores are recalculated after later races.
  * @param playerId Player's UUID
- * @param raceId Current race UUID (to count up to but not including this race)
- * @param allPredictions All predictions to scan through
- * @returns Number of late submissions
+ * @param currentRoundNumber Round of the race being scored (excluded from the count)
+ * @param lateSubmissions Predictions to scan through, with their race round
+ * @returns Number of late submissions in earlier rounds
  */
 export function countLateSubmissions(
   playerId: string,
-  raceId: string,
-  allPredictions: RacePrediction[]
+  currentRoundNumber: number,
+  lateSubmissions: LateSubmission[]
 ): number {
-  return allPredictions.filter(
-    (p) => p.player_id === playerId && p.race_id !== raceId && p.is_late
+  return lateSubmissions.filter(
+    (p) => p.player_id === playerId && p.is_late && p.round_number < currentRoundNumber
   ).length;
 }
